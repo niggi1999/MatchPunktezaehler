@@ -1,0 +1,64 @@
+Raspberry als Bluetooth Empfänger
+Armbänder senden Zählaufforderung über Bluetooth an Raspberry
+Raspberry mit WLAN
+    Lokales Netzwerk
+    Powerbank
+Webseite die den Spielstand anzeigt
+    Wird auf 2 Tablets angezeigt (in Webbrowser)
+
+System muss autark sein
+    keine Steckdose
+    kein Internetanschluss/WLAN
+
+Hardware
+    Vorstellungen für Armband?
+    Hardware Kosten unter 100 €
+    Akkubetrieb über mindestens 3 Stunden möglich
+
+Spiele:
+    Badminton, Volleyball, Tischtennis
+        Kennt die Zählregeln des gewählten Spiels (Endstand, Verlängerung, Satz, Match)
+
+Sehr einfache Konfiguration (welches Spiel, wer spielt)
+    Teamnamen okay?
+
+Betrieb mehrerer Match-Punktezähler in einer Halle möglich
+    Was ist hier das Problem?
+
+
+Webseite
+    Konfiguration (Bedient am IPad)
+        Pairing der Armbänder
+        Spielewahl
+            Dropdown
+        Spieleranzahl
+            Vorgegebene Werte je Spiel (Dropdown)
+        Teamnamen eingeben
+        Start Button
+    Spielstand Anzeige
+        Punktezähler
+        Teamnamen
+        Aufschlageanzeige
+            Spielernummer
+            erster Spieler/Team wird automatisch ausgelost
+            Genaue Spielerposition im Feld
+                Rechts Links, Seitenwechsel etc.
+        Aktueller Satz/Match
+        Ergebnisse vorheriger Sätze
+
+Webserver
+    Koroutine
+
+Unterschiedliche Webseiten für jedes?
+
+Idee: RasPi mit zwei Displays (oder zwei alte Tablets/iPads, welche einen Webbrowser
+verwenden). Server Python, Webbrowser SPA (Handgestrickt oder z.B. Vue)
+
+
+Optional:
+    Handy als Bluetooth Empfänger
+        Raspberry an anderem Ort
+    Verwalten von Spielern mit Name, Foto
+        Automatische Teamauslosung
+    Verbindung zu einem Server in der Halle mit dortiger Datenverwaltung
+    Gehäuse
