@@ -1,6 +1,6 @@
 Raspberry als Bluetooth Empfänger
-Armbänder senden Zählaufforderung über Bluetooth an Raspberry
-Raspberry mit WLAN
+Armbänder senden Zählaufforderung über Bluetooth Low Energy an Raspberry
+Raspberry Zero? mit WLAN
     Lokales Netzwerk
     Powerbank
 Webseite die den Spielstand anzeigt
@@ -11,45 +11,56 @@ System muss autark sein
     kein Internetanschluss/WLAN
 
 Hardware
-    Vorstellungen für Armband?
+    Bedienung mit nur einem Armband
+        Undo
+        Punkt zählen
+            Team 1
+            Team 2
     Hardware Kosten unter 100 €
     Akkubetrieb über mindestens 3 Stunden möglich
+    Aliexpress etc. durchsuchen
 
 Spiele:
-    Badminton, Volleyball, Tischtennis
+    Badminton       Später: Volleyball, Tischtennis
         Kennt die Zählregeln des gewählten Spiels (Endstand, Verlängerung, Satz, Match)
 
 Sehr einfache Konfiguration (welches Spiel, wer spielt)
-    Teamnamen okay?
 
 Betrieb mehrerer Match-Punktezähler in einer Halle möglich
     Was ist hier das Problem?
 
 
-Webseite
+Webseite (kompatibel mit alten Browsern) Single Page, nicht PWA
     Konfiguration (Bedient am IPad)
         Pairing der Armbänder
         Spielewahl
             Dropdown
         Spieleranzahl
             Vorgegebene Werte je Spiel (Dropdown)
-        Teamnamen eingeben
+        Teamauswahl (2 verschiedene Webseiten)
         Start Button
     Spielstand Anzeige
         Punktezähler
-        Teamnamen
-        Aufschlageanzeige
-            Spielernummer
+            Aufblicken bei erfolgreichem zählen
+        Aufschlageanzeige (Nur für eigenes Team-->eine Seite für jedes Team)
+            Spielernummer/Buchstabe
             erster Spieler/Team wird automatisch ausgelost
             Genaue Spielerposition im Feld
                 Rechts Links, Seitenwechsel etc.
-        Aktueller Satz/Match
-        Ergebnisse vorheriger Sätze
+        Kleiner Angezeigt
+            Aktueller Satz/Match
+            Ergebnisse vorheriger Sätze
 
 Webserver
+    Welche Sprache auch für Bluetooth Kommunikation kompatibel
+        Python
+        Javascript
+            Nodejs
+        Ruby
+        c++ mit qt
+            Aufwändig
+        php
     Koroutine
-
-Unterschiedliche Webseiten für jedes?
 
 Idee: RasPi mit zwei Displays (oder zwei alte Tablets/iPads, welche einen Webbrowser
 verwenden). Server Python, Webbrowser SPA (Handgestrickt oder z.B. Vue)
@@ -62,3 +73,4 @@ Optional:
         Automatische Teamauslosung
     Verbindung zu einem Server in der Halle mit dortiger Datenverwaltung
     Gehäuse
+    Optional: Teamnamen eingeben
