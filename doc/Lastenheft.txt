@@ -74,3 +74,8 @@ Optional:
     Verbindung zu einem Server in der Halle mit dortiger Datenverwaltung
     Gehäuse
     Optional: Teamnamen eingeben
+
+
+Ziel bis Woche 5
+    Reiner Punktezähler nur für Badminton
+    Anschluss von Bluetooth Armband
