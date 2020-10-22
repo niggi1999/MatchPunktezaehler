@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Flask-SSE Quickstart</title>
+</head>
+<body>
+  <h1>Flask-SSE Quickstart</h1>
+  <script>
+    var source = new EventSource("{{ url_for('sse.stream') }}");
+    source.addEventListener('greeting', function(event) {
+        var data = JSON.parse(event.data);
+        //alert("The server says " + data.message);
+
+
+        var h = document.createElement("H1"); // Create the H1 element 
+        var t = document.createTextNode("The server says " + data.message); // Create a text element 
+        h.appendChild(t); // Append the text node to the H1 element 
+ 
+        document.body.appendChild(h); // Append the H1 element to the document body 
+
+
+    }, false);
+    source.addEventListener('error', function(event) {
+        alert("Failed to connect to event stream. Is Redis running?");
+    }, false);
+  </script>
+</body>
+</html>
