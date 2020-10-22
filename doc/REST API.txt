@@ -1,0 +1,5 @@
+Zählerstand 1                           /Zaehler1
+Zählerstand 2                           /Zaehler2
+Anzahl der verbundenen Armbänder        /Armbaender
+Aktueller Satz                          /Satz
+Aktuelles Match                         /Match
