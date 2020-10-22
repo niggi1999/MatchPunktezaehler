@@ -3,7 +3,8 @@ from game import Game
 
 class Badminton(Game):
     maxPointsWithoutOvertime = 21
-    absoluteMaxPoints = 29
+    absoluteMaxPoints = 30
+    roundsInAGame = 2
 
     def isRoundOver(self):
         self.determineCurrentMaxPoints()
@@ -19,4 +20,10 @@ class Badminton(Game):
             self.currentMaxPoints = self.counter["Team1"] + 2
         if (self.currentMaxPoints >= self.absoluteMaxPoints):
             self.currentMaxPoints = self.absoluteMaxPoints
+
+    def isGameOver(self):
+        if (self.roundsInAGame == self.wonRounds["Team1"] or self.roundsInAGame == self.counter["Team2"]):
+            return True
+        else:
+            return False
 
