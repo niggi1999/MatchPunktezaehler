@@ -2,13 +2,21 @@
 from game import Game
 
 class Badminton(Game):
-    def isRoundOver(self):
-        isCounterEqual = self.counterTeam1 == self.counterTeam2
-        if (isCounterEqual and (self.counterTeam1 >= 20)):
-            self.maxPoints = self.counterTeam1 + 2
+    maxPointsWithoutOvertime = 21
+    absoluteMaxPoints = 29
 
-        if (self.maxPoints == self.counterTeam1 or self.maxPoints == self.counterTeam2):
-            self.maxPoints = 21
+    def isRoundOver(self):
+        self.determineCurrentMaxPoints()
+        if (self.currentMaxPoints == self.counter["Team1"] or self.currentMaxPoints == self.counter["Team2"]):
+            self.currentMaxPoints = self.maxPointsWithoutOvertime
             return True
         else:
             return False
+
+    def determineCurrentMaxPoints(self):
+        isCounterEqual = self.counter["Team1"] == self.counter["Team2"]
+        if (isCounterEqual and (self.counter["Team1"] >= 20)):
+            self.currentMaxPoints = self.counter["Team1"] + 2
+        if (self.currentMaxPoints >= self.absoluteMaxPoints):
+            self.currentMaxPoints = self.absoluteMaxPoints
+

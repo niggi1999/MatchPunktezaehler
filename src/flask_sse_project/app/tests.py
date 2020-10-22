@@ -9,15 +9,16 @@ class TestClass(unittest.TestCase):
 
     def testCounterStartsAtZero(self):
         badminton = Badminton()
-        self.assertEqual(badminton.counterTeam1, 0)
-        self.assertEqual(badminton.counterTeam2, 0)
+        testCounter = {"Team1": 0, "Team2": 0}
+        self.assertDictEqual(badminton.counter, testCounter)
 
     def testCounterUp(self):
         badminton = Badminton()
         badminton.counterUp(1)
         badminton.counterUp(2)
-        self.assertEqual(badminton.counterTeam1, 1)
-        self.assertEqual(badminton.counterTeam2, 1)
+
+        testCounter = {"Team1": 1, "Team2": 1}
+        self.assertDictEqual(badminton.counter, testCounter)
         with self.assertRaises(ValueError):
             badminton.counterUp(3)
 
@@ -26,20 +27,22 @@ class TestClass(unittest.TestCase):
         maxPoints = 21
         for i in range(maxPoints):
             badminton.counterUp(1)
-        self.assertEqual(badminton.wonRoundsTeam1, 1)
-        self.assertEqual(badminton.wonRoundsTeam2, 0)
-        self.assertEqual(badminton.counterTeam1, 0)
-        self.assertEqual(badminton.counterTeam2, 0)
+
+        testWonRounds = {"Team1": 1, "Team2": 0}
+        self.assertDictEqual(badminton.wonRounds, testWonRounds)
+        testCounter = {"Team1": 0, "Team2": 0}
+        self.assertDictEqual(badminton.counter, testCounter)
 
     def testRoundEndsTeam2(self):
         badminton = Badminton()
         maxPoints = 21
         for i in range(maxPoints):
             badminton.counterUp(2)
-        self.assertEqual(badminton.wonRoundsTeam2, 1)
-        self.assertEqual(badminton.wonRoundsTeam1, 0)
-        self.assertEqual(badminton.counterTeam1, 0)
-        self.assertEqual(badminton.counterTeam2, 0)
+
+        testWonRounds = {"Team1": 0, "Team2": 1}
+        self.assertDictEqual(badminton.wonRounds, testWonRounds)
+        testCounter = {"Team1": 0, "Team2": 0}
+        self.assertDictEqual(badminton.counter, testCounter)
 
     def testCounterEqualAt20(self):
         badminton = Badminton()
@@ -52,12 +55,22 @@ class TestClass(unittest.TestCase):
         for i in range(pointsToWin):
             badminton.counterUp(2)
 
-        self.assertEqual(badminton.wonRoundsTeam2, 1)
-        self.assertEqual(badminton.wonRoundsTeam1, 0)
-        self.assertEqual(badminton.counterTeam1, 0)
-        self.assertEqual(badminton.counterTeam2, 0)
+        testWonRounds = {"Team1": 0, "Team2": 1}
+        self.assertDictEqual(badminton.wonRounds, testWonRounds)
+        testCounter = {"Team1": 0, "Team2": 0}
+        self.assertDictEqual(badminton.counter, testCounter)
 
+    def testEndsWithAbsoluteEnd(self):
+        badminton = Badminton()
+        pointsTillAbsoluteEnd = 29
+        for i in range(pointsTillAbsoluteEnd):
+            badminton.counterUp(1)
+            badminton.counterUp(2)
 
+        testWonRounds = {"Team1": 1, "Team2": 0}
+        self.assertDictEqual(badminton.wonRounds, testWonRounds)
+        testCounter = {"Team1": 0, "Team2": 1}
+        self.assertDictEqual(badminton.counter, testCounter)
 
 
 if __name__ == '__main__':
