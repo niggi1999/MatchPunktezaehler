@@ -3,6 +3,7 @@
 __pycache__
 mpz
 db.sqlite3
+dump.rdb
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
