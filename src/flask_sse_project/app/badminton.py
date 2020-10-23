@@ -26,4 +26,3 @@ class Badminton(Game):
             return True
         else:
             return False
-
