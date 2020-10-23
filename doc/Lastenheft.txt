@@ -41,7 +41,7 @@ Webseite (kompatibel mit alten Browsern) Single Page, nicht PWA
         Start Button
     Spielstand Anzeige
         Punktezähler
-            Aufblicken bei erfolgreichem zählen
+            Aufblinken bei erfolgreichem zählen
         Aufschlageanzeige (Nur für eigenes Team-->eine Seite für jedes Team)
             Spielernummer/Buchstabe
             erster Spieler/Team wird automatisch ausgelost

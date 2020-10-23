@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import unittest
 from badminton import *
+from gameFactory import *
 
 class TestClass(unittest.TestCase):
     def testBadmintonExists(self):
@@ -92,6 +93,13 @@ class TestClass(unittest.TestCase):
         testWonRounds = {"Team1" : 0, "Team2" : 0}
         self.assertDictEqual(badminton.wonRounds, testWonRounds)
         testCounter = {"Team1" : 0, "Team2" : 0}
+        self.assertDictEqual(badminton.counter, testCounter)
+
+    def testGameFactoryWorks(self):
+        badminton = GameFactory.create("badminton")
+        badminton.counterUp(1)
+
+        testCounter = {"Team1" : 1, "Team2" : 0}
         self.assertDictEqual(badminton.counter, testCounter)
 
         #TODO: Aufschlag, Doppel, Seitenwechsel
