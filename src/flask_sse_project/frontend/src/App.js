@@ -44,10 +44,9 @@ constructor(){
   render() {
     return (
       
-     <div>
-       <h1> { this.state.data.counterTeam1} </h1>
-       <Teamview counterTeam={this.state.data.counterTeam1} />
-       <Teamview counterTeam={this.state.data.counterTeam2} />
+     <div className="app" class="flex-container">
+       <Teamview className="teamview" counterTeam={this.state.data.counterTeam1} />
+       <Teamview className="teamview" counterTeam={this.state.data.counterTeam2} />
      </div> 
 
     )

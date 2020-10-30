@@ -14,7 +14,24 @@ class Teamview extends React.Component{
     }
 
     render() {
-    return <h2>{this.props.counterTeam}</h2>
+    const teamstyle = {
+        display: "flex",
+        backgroundColor: "green",
+        flexGrow: "1",
+        justifyContent: "center",
+        borderStyle: "solid",
+        borderWidth: "5px"
+    };
+
+    const counterstyle = {
+        alignSelf: "center",
+        fontSize: "40vh"
+    };
+    return (
+        <div style={teamstyle}>
+            <h2 style={counterstyle}>{this.props.counterTeam}</h2>
+        </div>
+    )
     }
 }
 
