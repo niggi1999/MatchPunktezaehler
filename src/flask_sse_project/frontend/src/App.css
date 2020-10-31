@@ -1,6 +1,15 @@
-.flex-container {
+.header {
+  height: 10%;
+  font: bold;
+  font-size: x-large;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.field {
   display: flex;
   flex-direction: row;
-  height: 100vh;
+  height: 80%;
   justify-content: center;
-}
+};

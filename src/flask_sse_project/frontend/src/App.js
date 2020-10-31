@@ -1,7 +1,9 @@
 import React from 'react';
 import './App.css';
-import axios from 'axios'
+import axios from 'axios';
 import Teamview from './teamview';
+import Counter1 from './counter1';
+import Counter2 from './counter2';
 
 class App extends React.Component {
 constructor(){
@@ -42,13 +44,14 @@ constructor(){
         this.setState(Object.assign({}, { data: newState }));
       }
   render() {
-    return (
-      
-     <div className="app" class="flex-container">
-       <Teamview className="teamview" counterTeam={this.state.data.counterTeam1} />
-       <Teamview className="teamview" counterTeam={this.state.data.counterTeam2} />
-     </div> 
 
+    return (
+     <div class="field">
+        <Counter1 counter1={this.state.data.counterTeam1}/>
+        <Counter2 counter2={this.state.data.counterTeam2}/>
+        <Teamview className="teamview" />
+        <Teamview className="teamview" />
+     </div> 
     )
 }
 }

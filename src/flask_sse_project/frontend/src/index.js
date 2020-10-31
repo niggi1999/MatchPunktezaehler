@@ -5,8 +5,14 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
+  <React.StrictMode >
+    <div style={{height: "100vh"}} >
+      <div class="header">
+        MatchPunkteZähler
+      </div>
+      <App />
+    </div>
+
   </React.StrictMode>,
   document.getElementById('root')
 );
