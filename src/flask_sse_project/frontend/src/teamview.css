@@ -1,0 +1,14 @@
+.halfField {
+    display: flex;
+    flex-direction: column;
+    background-color: green;
+    flex-grow: 1;
+    justify-content: center;
+}
+
+.quarterField {
+    display: flex;
+    flex-grow: 1;
+    border-style: solid;
+    border-width: 2px;
+};
