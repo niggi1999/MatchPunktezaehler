@@ -20,7 +20,7 @@ pyparsing==2.4.7
 pytest==6.1.2
 python-dotenv==0.15.0
 redis==3.5.3
-redis-server==6.0.9
+redis-server==5.0.7
 six==1.15.0
 toml==0.10.2
 Werkzeug==1.0.1

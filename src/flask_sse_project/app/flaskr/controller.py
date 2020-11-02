@@ -7,7 +7,7 @@ class Controller(Blueprint):
         Blueprint.__init__(self, name, import_Name)
         self.sse = sse
         self.startGame('badminton')
-        self.game.counterUp(2)
+        self.game.counterUp(1)
 
     def connectBluetooth(self):
         pass
