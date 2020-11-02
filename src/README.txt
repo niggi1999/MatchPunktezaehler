@@ -3,7 +3,7 @@ Einmal ausführen:
     sudo apt install python3-pip
     sudo apt install python3-venv
     sudo apt install npm
-    In Ordner über App oder höher
+    In Ordner App oder höher
         python3 -m venv mpz
     in frontend
     	npm install
@@ -24,3 +24,4 @@ drittes Terminal
     export FLASK_APP=flaskr      Nur mit development server nötig(nicht mit gunicorn)
     Proxy Gunicorn from Webserver
     gunicorn "flaskr:create_app()" --worker-class gevent --bind 127.0.0.1:5000
+    gunicorn "flaskr:create_app()" --worker-class gevent --bind 127.0.0.1:5000 --error-logfile gunicornLog.txt
