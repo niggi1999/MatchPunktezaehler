@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from game import Game
+from .game import Game
 
 class Badminton(Game):
     maxPointsWithoutOvertime = 21

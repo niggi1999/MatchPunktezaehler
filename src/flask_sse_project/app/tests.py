@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 import unittest
-from badminton import *
-from gameFactory import *
-from model import *
+from flaskr import Badminton, GameFactory, Controller
 
 class TestBadminton(unittest.TestCase):
     def testBadmintonExists(self):
@@ -156,13 +154,13 @@ class TestGameFactoy(unittest.TestCase):
         testCounter = {"Team1" : 1, "Team2" : 0}
         self.assertDictEqual(badminton.counter, testCounter)
 
-class TestModel(unittest.TestCase):
-    def testModelStartWorks(self):
-        model = Model()
-        model.startGame("badminton")
+class TestController(unittest.TestCase):
+    def testControllerStartWorks(self):
+        pass
 
-        self.assertIsInstance(model.game, Badminton)
-
+class TestApp(unittest.TestCase):
+    def testAppConfig(self):
+        pass
 
 
 #TODO: Aufschlag, Doppel, Seitenwechsel

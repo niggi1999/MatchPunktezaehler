@@ -4,3 +4,4 @@ flask-Cors~=3.0.9
 gevent~=20.9.0
 gunicorn~=20.0.4
 redis-server~=6.0.8
+python-dotenv~=0.15.0

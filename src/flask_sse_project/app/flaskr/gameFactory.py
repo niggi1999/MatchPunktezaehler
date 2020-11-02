@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from badminton import Badminton
+from .badminton import Badminton
 class GameFactory():
     @classmethod
     def create(cls, specificGameName):

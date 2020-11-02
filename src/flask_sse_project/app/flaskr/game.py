@@ -15,7 +15,7 @@ class Game(ABC):
 
     def counterUp(self, teamNumber):
         self.__undoStack.append(self.gameState())
-        __redoStack = []
+        self.__redoStack = []
 
         if (teamNumber not in range(1, 3)):
             raise ValueError('Team Number "{}" invalid'.format(teamNumber))
