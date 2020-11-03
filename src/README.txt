@@ -26,6 +26,7 @@ drittes Terminal
 
 
 Raspberry:
+    Static IP: 192.168.178.71
     In app:
         __init__.py
             app.config.from_object('config.DevConfig')
