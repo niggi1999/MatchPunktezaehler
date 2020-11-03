@@ -32,3 +32,5 @@ if(device_path):
           print("ok")
         else:
           print("unknown")
+
+print("Hello Word")
