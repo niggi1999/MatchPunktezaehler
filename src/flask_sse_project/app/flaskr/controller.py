@@ -1,5 +1,3 @@
-import random
-
 from flask import Blueprint
 
 from .gameFactory import GameFactory
@@ -8,10 +6,17 @@ class Controller(Blueprint):
     def __init__(self, name, import_Name, sse):
         Blueprint.__init__(self, name, import_Name)
         self.sse = sse
+        self.startGame('badminton')
+        self.game.counterUp(1)
+
+    def connectBluetooth(self):
+        pass
+        #subscriben zu device, das zurückkommt für countUp beide Teams und undo/redo
 
     def startGame(self, gameName):
         self.game = GameFactory.create(gameName)
-        #TODO:Anzeige ändern
 
     def updateStream(self):
-        self.sse.publish({'counterTeam1': random.randrange(1, 100), 'counterTeam2': random.randrange(1, 100)}, type='updateData')
+        gameState = self.game.gameState()
+        self.sse.publish({'counterTeam1': gameState['counter']['Team1'], 'counterTeam2': gameState['counter']['Team2']}, type='updateData')
+        #restliche Werte hinzufügen

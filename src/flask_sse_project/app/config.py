@@ -10,19 +10,17 @@ class Config:
     TEMPLATES_FOLDER = 'templates'
     FLASK_APP = 'flaskr'
 
-    #Flask-Session
-    SESSION_TYPE = 'redis'
-    SESSION_REDIS = "redis://localhost"
-
-    #Flask-sse
-    REDIS_URL = "redis://localhost"
 
 class ProdConfig(Config):
     FLASK_ENV = 'production'
     DEBUG = False
     TESTING = False
+    #Flask-sse
+    REDIS_URL = "redis://192.168.178.71:6379"
 
 class DevConfig(Config):
     FLASK_ENV = 'development'
     DEBUG = True
     TESTING = True
+    #Flask-sse
+    REDIS_URL = "redis://localhost"

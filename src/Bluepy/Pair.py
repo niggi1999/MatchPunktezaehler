@@ -28,38 +28,43 @@ class BluetoothConnection():
     def scan(self, scanTime):
         scanner = Scanner().withDelegate(ScanDelegate())
         devices = scanner.scan(scanTime)
-        #if(len(devices)>0):
-        #    rssilvl= -200
-        #    nearestDevice = devices[0]
-        #    for dev in devices:
-        #        if(rssilvl<dev.rssi):
-        #            rssilvl = dev.rssi
-        #    for dev in devices:
-        #        if(rssilvl==dev.rssi):
-        #            nearestDevice = dev
-        return devices
+        if(len(devices)>0):
+            rssilvl= -200
+            for dev in devices:
+                if(rssilvl<dev.rssi):
+                    rssilvl = dev.rssi
+            for dev in devices:
+                if(rssilvl==dev.rssi):
+                    return dev
+        
 
 bto = BluetoothConnection()
 
-devices = bto.scan(2)
+dev = bto.scan(2.0)
 
-for dev in devices:
-    print ("Device %s (%s), RSSI=%d dB" % (dev.addr, dev.addrType, dev.rssi))
-    for (adtype, desc, value) in dev.getScanData():
-       print ("  %s = %s" % (desc, value))
-
+#for dev in devices:
+  #  print ("Device %s (%s), RSSI=%d dB" % (dev.addr, dev.addrType, dev.rssi))
+   # for (adtype, desc, value) in dev.getScanData():
+   #    print ("  %s = %s" % (desc, value))
 
 p = Peripheral()
 p.connect(dev)
 p.withDelegate(MyDelegate())
 
-    #dicti = p.getServices()
+dicti = p.getServices()
 
-    #print(" Sevices:")
-    #for item in dicti:
-    #    print (item)
+print(" Sevices:")
+for item in dicti:
+    print (str(item.uuid)) 
+    print(item)
 
-if(True):
+#human = p.getServiceByUUID(0x1812)
+#chars = human.getCharacteristics(0x2a4d)
+
+#for char in chars:
+    #print(char)
+
+if(False):
     characteristics = p.getCharacteristics()
     print ("Handle   UUID                                Properties")
     print ("-------------------------------------------------------") 
@@ -75,17 +80,25 @@ if(True):
         #for desc in descriptors:
          #   hand=desc.handle()
          #   print ("Handle: "+str(hand)+" Inhalt: "+ format(p.readCharacteristic(hand)))
+
 Name=p.readCharacteristic(0x07)
 print(Name)
 
-chars=p.getCharacteristics(0x2A00)
+#try:
+    #ch = human.getCharacteristics(0x2a4d)
+    #for c in ch:
+       # if (c.supportsRead()):
+            #val = binascii.b2a_hex(c.read())
+            #print ("0x" + str(val))
+            #time.sleep(1)
 
+#finally:
+    #p.disconnect()
 
 while(True):
     if(p.waitForNotifications(1)):
         print("True Note")
             
-
 #while True:
     #if p.waitForNotifications(1.0):
         # handleNotification() was called
