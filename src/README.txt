@@ -14,9 +14,9 @@ Immer ausführen:
     pip3 install -r requirements.txt
 in app
     export FLASK_APP=sse.py
-    gunicorn sse:app --worker-class gevent --bind 127.0.0.1:5000
+    gunicorn "flaskr:create_app()" --worker-class gevent --bind 127.0.0.1:5000
         Auf Raspberry
-            gunicorn sse:app --worker-class gevent --bind 0.0.0.0:5000
+            gunicorn "flaskr:create_app()" --worker-class gevent --bind 0.0.0.0:5000
 in zweitem Terminal
     redis-server
 drittes Terminal
@@ -36,7 +36,7 @@ Raspberry:
     Erstes Terminal:
         source mpz/bin/activate
         in app directory
-            gunicorn sse:app --worker-class gevent --bind 0.0.0.0:5000
+            gunicorn "flaskr:create_app()" --worker-class gevent --bind 0.0.0.0:5000
 
     zweites Terminal
         In frontend directory
