@@ -15,17 +15,31 @@ Immer ausführen:
 in app
     export FLASK_APP=sse.py
     gunicorn sse:app --worker-class gevent --bind 127.0.0.1:5000
+        Auf Raspberry
+            gunicorn sse:app --worker-class gevent --bind 0.0.0.0:5000
 in zweitem Terminal
     redis-server
 drittes Terminal
     In frontend directory
-	npm start
+	    npm start
 
-In app:
-    __init__.py
-        app.config.from_object('config.DevConfig')
-        ersetzen durch
-            app.config.from_object('config.ProdConfig')
+
+
+Raspberry:
+    In app:
+        __init__.py
+            app.config.from_object('config.DevConfig')
+            ersetzen durch
+                app.config.from_object('config.ProdConfig')
+
+    Erstes Terminal:
+        source mpz/bin/activate
+        in app directory
+            gunicorn sse:app --worker-class gevent --bind 0.0.0.0:5000
+
+    zweites Terminal
+        In frontend directory
+    	    npm start
 
 
 
