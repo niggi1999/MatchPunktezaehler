@@ -11,8 +11,8 @@ class Controller(Blueprint):
         self.sse = sse
         self.startGame('badminton')
         self.bluetoothController = BluetoothController()
-        self.loop = asyncio.get_event_loop()
-        self.loop.run_until_complete(self.readBluetooth())
+        #self.loop = asyncio.get_event_loop()
+        #self.loop.run_until_complete(self.readBluetooth())
 
     async def readBluetooth(self):
         while True:
@@ -43,5 +43,10 @@ class Controller(Blueprint):
     def updateStream(self):
         gameState = self.game.gameState()
         self.sse.publish({'counterTeam1': gameState['counter']['Team1'], 'counterTeam2': gameState['counter']['Team2'],
-                         'leftSide': random.randint(1,2), 'firstContact': random.randint(1,2), 'firstContactleft': random.randint(0,1)}, type='updateData')
+                         'leftSide': random.randint(1,2), 'firstContact': 1, 'firstContactleft': 1}, type='updateData')
         #restliche Werte hinzufügen
+
+    def updateStream1(self): #zum testen des frontends
+        gameState = self.game.gameState()
+        self.sse.publish({'counterTeam1': gameState['counter']['Team1'], 'counterTeam2': gameState['counter']['Team2'],
+                         'leftSide': random.randint(1,2), 'firstContact': 1, 'firstContactleft': 1}, type='updateData')

@@ -7,12 +7,21 @@ class Teamview extends React.Component{
     constructor() {
         super();
         this.state = {
-            side: "left",
-            firstContactRight: false,
-            firstContactSide: "left"
+            colorLeftSide: "white",
+            colorRightSide: "white"
         };
     }
 
+    showFirstContactField() {
+        if (this.props.firstContact === 1) {
+            if(this.props.firstContactField === 'left') {
+                //change css
+            }
+            else {
+                //change css
+            }
+        }
+    }
     render() {
     
     return (

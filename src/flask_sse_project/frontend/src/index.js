@@ -6,10 +6,7 @@ import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode >
-    <div style={{height: "100vh"}} >
-      <div class="header">
-        MatchPunkteZähler
-      </div>
+    <div style={{height: '100vh'}} >
       <App />
     </div>
 

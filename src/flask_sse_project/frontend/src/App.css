@@ -10,6 +10,6 @@
 .field {
   display: flex;
   flex-direction: row;
-  height: 80%;
+  height: 100%;
   justify-content: center;
 };

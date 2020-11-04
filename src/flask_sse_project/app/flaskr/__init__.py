@@ -13,7 +13,7 @@ def construct_controller(sse):
 
     @con.route('/test')
     def test():
-        con.updateStream()
+        con.updateStream1()
         return 'Works'
 
     return(con)
