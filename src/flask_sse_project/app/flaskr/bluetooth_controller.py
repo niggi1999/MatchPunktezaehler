@@ -4,7 +4,8 @@ import asyncio
 class BluetoothController:
     def __init__(self):
         self.device = None
-        self.findDevice()
+        self.loop = asyncio.get_event_loop()
+        self.loop.run_until_complete(self.findDevice())
 
     async def findDevice(self):
         devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
