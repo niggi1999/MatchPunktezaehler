@@ -53,12 +53,16 @@ class BluetoothController:
                             scancode = evdev.categorize(event).scancode
                             if(scancode == 115):
                                 print("up")
+                                return 'redo'
                             elif(scancode == 114):
                                 print("down")
+                                return 'undo'
                             elif(scancode == 163):
                                 print("right")
+                                return 'counter2'
                             elif(scancode == 165):
                                 print("left")
+                                return 'counter1'
                             elif(scancode == 164):
                                 print("ok")
                             else:

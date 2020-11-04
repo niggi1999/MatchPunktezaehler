@@ -36,6 +36,7 @@ class Controller(Blueprint):
 
             self.updateStream()
 
+
     def startGame(self, gameName):
         self.game = GameFactory.create(gameName)
 
