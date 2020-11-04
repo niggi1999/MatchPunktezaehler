@@ -3,12 +3,16 @@ import asyncio
 
 class BluetoothController:
     def __init__(self):
-        devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
         self.device = None
+        self.findDevice()
+
+    async def findDevice(self):
+        devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
         for device in devices:
             if (device.name == "SmartRemote Consumer Control"):
                 print("Device found")
                 self.device = evdev.InputDevice(device.path)
+
 
     def readLoop(self):
         if(self.device):
@@ -60,6 +64,9 @@ class BluetoothController:
                                 print("unknown")
         else:
             print("No Device found")
+            await asyncio.sleep(2)
+            await self.findDevice()
+
 
 if __name__ == "__main__":
     bluetoothController = BluetoothController()

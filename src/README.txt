@@ -3,27 +3,32 @@ Einmal ausführen:
     sudo apt install python3-pip
     sudo apt install python3-venv
     sudo apt install npm
-    In Ordner App oder höher
+    In Ordner app
+        Datei .env.example in .env umbenennen
         python3 -m venv mpz
-    in frontend
+        source mpz/bin/activate
+        pip3 install -r requirements.txt
+    in Ordner frontend
     	npm install
 
 
 Immer ausführen:
-    source mpz/bin/activate
-    pip3 install -r requirements.txt
-in app
-    export FLASK_APP=sse.py
-    gunicorn "flaskr:create_app()" --worker-class gevent --bind 127.0.0.1:5000
-        Auf Raspberry
-            gunicorn "flaskr:create_app()" --worker-class gevent --bind 0.0.0.0:5000
-in zweitem Terminal
-    redis-server
-drittes Terminal
-    In frontend directory
-	    npm start
+    erstes Terminal
+        in app directory
+            source mpz/bin/activate
+            gunicorn "flaskr:create_app()" --worker-class gevent --bind 127.0.0.1:5000
+    zweites Terminal
+        redis-server
+    drittes Terminal
+        In frontend directory
+	        npm start (dauert lange)
 
-.env.example in .env umbenennen
+Browser:
+    http://localhost:3000/
+
+
+
+
 
 
 Raspberry:

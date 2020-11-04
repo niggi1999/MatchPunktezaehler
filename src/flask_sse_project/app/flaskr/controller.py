@@ -1,7 +1,9 @@
 from flask import Blueprint
 
-from .bluetoothController import BluetoothController
+from .bluetooth_controller import BluetoothController
 from .gameFactory import GameFactory
+
+import asyncio
 
 class Controller(Blueprint):
     def __init__(self, name, import_Name, sse):
@@ -9,11 +11,12 @@ class Controller(Blueprint):
         self.sse = sse
         self.startGame('badminton')
         self.bluetoothController = BluetoothController()
-        self.readBluetooth()
+        self.loop = asyncio.get_event_loop()
+        self.loop.run_until_complete(self.readBluetooth())
 
-    def readBluetooth(self):
+    async def readBluetooth(self):
         while True:
-            pressedButton = self.bluetoothController.readLoop()
+            pressedButton = await self.bluetoothController.readAsync()
             if ('counter1' == pressedButton):
                 self.game.counterUp(1)
             elif ('counter2' == pressedButton):
@@ -32,7 +35,6 @@ class Controller(Blueprint):
                 continue
 
             self.updateStream()
-        #subscriben zu device, das zurückkommt für countUp beide Teams und undo/redo
 
     def startGame(self, gameName):
         self.game = GameFactory.create(gameName)
