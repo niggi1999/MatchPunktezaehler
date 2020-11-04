@@ -23,6 +23,7 @@ drittes Terminal
     In frontend directory
 	    npm start
 
+.env.example in .env umbenennen
 
 
 Raspberry:

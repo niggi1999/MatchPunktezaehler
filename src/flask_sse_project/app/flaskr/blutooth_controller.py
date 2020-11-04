@@ -1,4 +1,5 @@
 import evdev
+import asyncio
 
 class BluetoothController:
     def __init__(self):
@@ -17,16 +18,20 @@ class BluetoothController:
                     """ print(evdev.categorize(event).scancode) # Ist Eventcode
                     print(evdev.categorize(event).keycode)  # Ist übersetzter Eventcode
                     print(event.type) """
-                    scancode = evdev.categorize(event).scancode
                     if (evdev.categorize(event).keystate == 0):
+                        scancode = evdev.categorize(event).scancode
                         if(scancode == 115):
                             print("up")
+                            return 'redo'
                         elif(scancode == 114):
                             print("down")
+                            return 'undo'
                         elif(scancode == 163):
                             print("right")
+                            return 'counter2'
                         elif(scancode == 165):
                             print("left")
+                            return 'counter1'
                         elif(scancode == 164):
                             print("ok")
                         else:
@@ -34,6 +39,30 @@ class BluetoothController:
         else:
             print("No Device found")
 
+    async def readAsync(self):
+        if(self.device):
+            print(self.device)
+            async for event in self.device.async_read_loop():
+                    if (evdev.ecodes.EV_KEY == event.type):
+                        if (evdev.categorize(event).keystate == 0):
+                            scancode = evdev.categorize(event).scancode
+                            if(scancode == 115):
+                                print("up")
+                            elif(scancode == 114):
+                                print("down")
+                            elif(scancode == 163):
+                                print("right")
+                            elif(scancode == 165):
+                                print("left")
+                            elif(scancode == 164):
+                                print("ok")
+                            else:
+                                print("unknown")
+        else:
+            print("No Device found")
+
 if __name__ == "__main__":
     bluetoothController = BluetoothController()
-    bluetoothController.readLoop()
+    #bluetoothController.readLoop()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(bluetoothController.readAsync())
