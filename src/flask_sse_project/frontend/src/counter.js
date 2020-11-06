@@ -1,5 +1,4 @@
 import React from "react";
-const { Component } = require("react");
 
 class Counter extends React.Component{
     constructor() {
@@ -24,7 +23,7 @@ class Counter extends React.Component{
 
     return (
         <div style={counterstyle}>
-            <h2>{this.props.counter}</h2>
+            <h2>12</h2>
         </div>
     )
     }
