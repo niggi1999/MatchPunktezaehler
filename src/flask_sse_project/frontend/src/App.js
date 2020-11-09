@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import Procedure from './procedure';
+import "./App.css"
 
 class App extends React.Component {
 constructor(){
@@ -48,7 +49,9 @@ constructor(){
     
   render() {
     return (
-      <Procedure status='game'/>
+      <div className="app">
+        <Procedure status='init'/>
+      </div>
     )
 }
 }

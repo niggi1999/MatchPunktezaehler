@@ -1,13 +1,13 @@
 import React from "react";
 import Game from './game';
 import GameMenu from "./gameMenu";
-import Init from './initConnection';
+import Init from './init';
 import PlayerMenu from "./playerMenu";
 
 function Procedure ( {status} ){
     switch(status) {
         case 'init':
-            return <Init />;
+            return <Init connectedController="2" />;
         case 'playerMenu':
             return <PlayerMenu />;
         case 'gameMenu':
