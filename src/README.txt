@@ -10,6 +10,7 @@ Einmal ausführen:
         pip3 install -r requirements.txt
     in Ordner frontend
     	npm install
+	npm install bootstrap react-bootstrap
 
 
 Immer ausführen:
