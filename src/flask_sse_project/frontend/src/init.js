@@ -26,7 +26,7 @@ function Init (props) {
     }
 
     return (
-    <div className="init">
+    <div className="config">
         {message}
         <ButtonLine fowardButtonText="Press -> to continue to Player-Menu" fowardButtonActive={fowardButtonActive}
          backwardsButtonText="" backwardsButtonActive={false}/>

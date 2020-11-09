@@ -1,0 +1,15 @@
+.chooseField {  
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+}
+
+.choose {
+    height: 20vh;
+    width: 30vh;
+    font-size: xx-large;
+    margin-left: 20px;
+    margin-right: 20px;
+}
