@@ -50,7 +50,8 @@ constructor(){
   render() {
     return (
       <div className="app">
-        <Procedure status='init'/>
+        <h1>Test: {this.state.data.counterTeam1}</h1>
+        <Procedure status='game'/>
       </div>
     )
 }

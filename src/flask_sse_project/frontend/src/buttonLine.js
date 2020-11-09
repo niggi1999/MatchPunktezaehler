@@ -16,7 +16,7 @@ function ButtonLine(props) {
 
     let backwardButton = null;
     if(props.backwardButtonActive) {
-        backwardButton = <Button variant="outline-primary" size="lg" active>{props.backwardsButtonText}</Button>;
+        backwardButton = <Button variant="outline-primary" size="lg" active>{props.backwardButtonText}</Button>;
     }
     else {
         backwardButton = <div></div>;

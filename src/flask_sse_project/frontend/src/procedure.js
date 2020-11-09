@@ -9,7 +9,7 @@ function Procedure ( {status} ){
         case 'init':
             return <Init connectedController="2" />;
         case 'playerMenu':
-            return <PlayerMenu />;
+            return <PlayerMenu activeChooseField={2} />;
         case 'gameMenu':
             return <GameMenu />;
         case 'game':
