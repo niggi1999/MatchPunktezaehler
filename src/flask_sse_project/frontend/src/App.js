@@ -1,9 +1,6 @@
 import React from 'react';
-import './App.css';
 import axios from 'axios';
-import Teamview from './teamview';
-import Counter1 from './counter1';
-import Counter2 from './counter2';
+import Procedure from './procedure';
 
 class App extends React.Component {
 constructor(){
@@ -12,8 +9,11 @@ constructor(){
         data: []
       };
     this.eventSource = new EventSource("http://localhost:5000/events");
+    this.updateState = this.updateState.bind(this)
 
   }
+
+  
 
   componentDidMount() {
 
@@ -43,15 +43,12 @@ constructor(){
         console.log("Server side event recieved at",new Date())
         this.setState(Object.assign({}, { data: newState }));
       }
-  render() {
 
+       
+    
+  render() {
     return (
-     <div class="field">
-        <Counter1 counter1={this.state.data.counterTeam1}/>
-        <Counter2 counter2={this.state.data.counterTeam2}/>
-        <Teamview className="teamview" />
-        <Teamview className="teamview" />
-     </div> 
+      <Procedure status='game'/>
     )
 }
 }

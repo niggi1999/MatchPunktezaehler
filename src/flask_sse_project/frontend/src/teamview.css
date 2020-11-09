@@ -1,7 +1,6 @@
-.halfField {
+.teamView {
     display: flex;
     flex-direction: column;
-    background-color: green;
     flex-grow: 1;
     justify-content: center;
 }

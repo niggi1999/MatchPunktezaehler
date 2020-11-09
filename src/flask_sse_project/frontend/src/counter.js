@@ -1,14 +1,13 @@
 import React from "react";
-const { Component } = require("react");
 
-class Counter2 extends React.Component{
+class Counter extends React.Component{
     constructor() {
         super();
     }
 
     render() {
     
-    const counterstyle2 = {
+    const counterstyle = {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -17,15 +16,17 @@ class Counter2 extends React.Component{
         height: "100%",
         position: "absolute",
         top: "0",
-        right: "0",
+        left: this.props.isLeft ? '0' : null,
+        right: this.props.isRight ? '0' : null,
+        fontSize: "40vh"
     };
 
     return (
-        <div style={counterstyle2}>
-          <h2 style={{fontSize: "40vh"}}>{this.props.counter2}</h2>
+        <div style={counterstyle}>
+            <h2>12</h2>
         </div>
     )
     }
 }
 
-export default Counter2
+export default Counter

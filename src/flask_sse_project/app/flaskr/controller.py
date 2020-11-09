@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect
-
+import random
 from .bluetooth_controller import BluetoothController
 from .gameFactory import GameFactory
 
@@ -48,7 +48,8 @@ class Controller(Blueprint):
     def updateStream(self):
         print('updateStream')
         gameState = self.game.gameState()
-        self.sse.publish({'counterTeam1': gameState['counter']['Team1'], 'counterTeam2': gameState['counter']['Team2']}, type='updateData')
+        self.sse.publish({'counterTeam1': gameState['counter']['Team1'], 'counterTeam2': gameState['counter']['Team2'],
+                         'leftSide': random.randint(1,2), 'firstContact': 1, 'firstContactleft': 1}, type='updateData')
         #print(gameState['counter']['Team1'])
         #loop = asyncio.get_running_loop()
         #await loop.run_in_executor(None, self.sse.publish({'counterTeam1': gameState['counter']['Team1'], 'counterTeam2': gameState['counter']['Team2']}, type='updateData'))
@@ -56,3 +57,7 @@ class Controller(Blueprint):
             #loop.run_in_executor(pool, self.sse.publish({'counterTeam1': gameState['counter']['Team1'], 'counterTeam2': gameState['counter']['Team2']}, type='updateData'))
         #print('nach Publish')
         #restliche Werte hinzufügen
+    def updateStream1(self): #zum testen des frontends
+        gameState = self.game.gameState()
+        self.sse.publish({'counterTeam1': gameState['counter']['Team1'], 'counterTeam2': gameState['counter']['Team2'],
+                         'leftSide': random.randint(1,2), 'firstContact': 1, 'firstContactleft': 1}, type='updateData')
