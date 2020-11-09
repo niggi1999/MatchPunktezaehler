@@ -46,7 +46,6 @@ class BluetoothController:
 
     async def readAsync(self):
         if(self.device):
-            print(self.device)
             async for event in self.device.async_read_loop():
                     if (evdev.ecodes.EV_KEY == event.type):
                         if (evdev.categorize(event).keystate == 0):

@@ -42,8 +42,9 @@ Webseite (kompatibel mit alten Browsern) Single Page, nicht PWA
     Spielstand Anzeige
         Punktezähler
             Aufblinken bei erfolgreichem zählen
+            Zählerstand des aufsschlagenden Teams wird vorne angezeigt
         Aufschlageanzeige (Nur für eigenes Team-->eine Seite für jedes Team)
-            Spielernummer/Buchstabe
+            Spielernummer/Buchstabe/Farbe
             erster Spieler/Team wird automatisch ausgelost
             Genaue Spielerposition im Feld
                 Rechts Links, Seitenwechsel etc.
