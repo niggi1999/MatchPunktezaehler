@@ -4,6 +4,7 @@ from .bluetooth_controller import BluetoothController
 from .gameFactory import GameFactory
 
 import asyncio
+import requests
 #from asgiref.sync import sync_to_async
 import concurrent.futures
 
@@ -40,7 +41,8 @@ class Controller(Blueprint):
             else:
                 continue
 
-            self.updateStream()
+            requests.post('http://localhost:5000/con/test')
+            #self.updateStream()
 
     def startGame(self, gameName):
         self.game = GameFactory.create(gameName)
@@ -57,6 +59,7 @@ class Controller(Blueprint):
             #loop.run_in_executor(pool, self.sse.publish({'counterTeam1': gameState['counter']['Team1'], 'counterTeam2': gameState['counter']['Team2']}, type='updateData'))
         #print('nach Publish')
         #restliche Werte hinzufügen
+
     def updateStream1(self): #zum testen des frontends
         gameState = self.game.gameState()
         self.sse.publish({'counterTeam1': gameState['counter']['Team1'], 'counterTeam2': gameState['counter']['Team2'],
