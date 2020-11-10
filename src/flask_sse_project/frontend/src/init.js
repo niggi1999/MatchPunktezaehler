@@ -1,6 +1,7 @@
 import React from "react";
 import "./init.css"
 import ButtonLine from "./buttonLine"
+import ChooseField from "./chooseField"
 
 
 function Init (props) {
@@ -10,15 +11,15 @@ function Init (props) {
     let fowardButtonActive = false;
 
     switch(props.connectedController) {
-        case "0":
-            message = <h1 className="message">There is no Controller connected. Check your Bluetooth-Connection!</h1>;
+        case 0:
+            message = <h1 className="message">There is no connected Controller. Check your Bluetooth-Connection!</h1>;
             break;
-        case "1":
-            message = <h1 className="message">There is one Controller connected!</h1>;
+        case 1:
+            message = <h1 className="message">There is one connected Controller!</h1>;
             fowardButtonActive = true;
             break;
-        case "2":
-            message = <h1 className="message">There are two Controllers connected!</h1>;
+        case 2:
+            message = <h1 className="message">There are two connected Controllers!</h1>;
             fowardButtonActive = true;
             break;
         default:

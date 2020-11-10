@@ -7,15 +7,21 @@ class App extends React.Component {
 constructor(){
     super()
       this.state = {
-        data: []
+        data: [
+          {status: 'game'}, //data for Procedure
+          {connectedController: 1}, //data for Init
+          {activeChooseField: 1}, //data for Player-Menu
+          {playMode: 1, activeChooseField1: 5, activeChooseField2: null}, //data for Name Selection Team 1
+          {playMode: 1, activeChooseField1: 8, activeChooseField2: null}, //data for Name Selection Team 1
+          {activeChooseField: 0} // data for Game-Menu
+        ]
+
       };
     this.eventSource = new EventSource("http://localhost:5000/events");
     this.updateState = this.updateState.bind(this)
 
   }
-
   
-
   componentDidMount() {
 
       this.eventSource.addEventListener("updateData", e =>
@@ -51,7 +57,7 @@ constructor(){
     return (
       <div className="app">
         <h1>Test: {this.state.data.counterTeam1}</h1>
-        <Procedure status='game'/>
+        <Procedure data={this.state.data}/>
       </div>
     )
 }

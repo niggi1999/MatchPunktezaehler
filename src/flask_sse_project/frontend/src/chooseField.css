@@ -5,11 +5,27 @@
     align-items: center;
     width: 100vw;
 }
+.chooseFieldTable {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+}
 
-.choose {
+.chooseElement {
     height: 20vh;
     width: 30vh;
     font-size: xx-large;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+
+.chooseTableElement {
+    height: 5vh;
+    width: 50vh;
+    font-size: x-large;
     margin-left: 20px;
     margin-right: 20px;
 }

@@ -6,27 +6,21 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 function ChooseField (props) {
 
-    let fieldOne = <Button variant="outline-primary" className="choose" disabled>1vs1</Button>
-    let fieldTwo = <Button variant="outline-primary" className="choose" disabled>2vs2</Button>
-
-    switch(props.activeChooseField) {
-        case 0:
-            break;
-        case 1:
-            fieldOne = <Button variant="outline-primary" className="choose" active>1vs1</Button>
-            break;
-        case 2:
-            fieldTwo = <Button variant="outline-primary" className="choose" active>2vs2</Button>
-            break;
-        default:
-            return <h1>Error</h1>;
-
+    if(props.activeChooseField1 > props.fieldNames.length) {
+        return <h1>Out of Range Error!</h1>;
     }
+    let chooseField = props.fieldNames.map((element, index) =>
+        
+        (props.activeChooseField1 === (index + 1) || props.activeChooseField2 === (index + 1))
+            ? (<Button variant="outline-primary" className={props.type === "table" ? "chooseTableElement" : "chooseElement"} active>{element}</Button>)
+            : (<Button variant="outline-primary" className={props.type === "table" ? "chooseTableElement" : "chooseElement"} disabled>{element}</Button>)
+    )
 
     return(
-        <div className="chooseField">
-            {fieldOne}
-            {fieldTwo}
+        <div className={props.type === "table" ? "chooseFieldTable" : "chooseField"}>
+            {chooseField.map((element) => 
+                element
+            )}
         </div>
     )
 }
