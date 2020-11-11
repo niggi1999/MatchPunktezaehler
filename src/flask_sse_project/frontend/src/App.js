@@ -13,7 +13,8 @@ constructor(){
           {activeChooseField: 1}, //data for Player-Menu
           {playMode: 1, activeChooseField1: 5, activeChooseField2: null}, //data for Name Selection Team 1
           {playMode: 1, activeChooseField1: 8, activeChooseField2: null}, //data for Name Selection Team 1
-          {activeChooseField: 0} // data for Game-Menu
+          {activeChooseField: 0}, // data for Game-Menu
+          {counterTeam1: 10, counterTeam2: 15}
         ]
 
       };
