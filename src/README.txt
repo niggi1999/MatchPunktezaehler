@@ -59,6 +59,8 @@ Raspberry:
     gunicorn "flaskr:create_app()" --worker-class gevent --bind 127.0.0.1:5000 --error-logfile gunicornLog.txt
 
 
+Raspberry System to does:
+
 Ad hoc Access Point auf Ubuntu Raspberrry:
 
 DHCPD:
@@ -152,3 +154,20 @@ AP aktivieren:
 sudo systemctl start isc-dhcp-server
 sudo systemctl start hostapd
 sudo reboot
+
+
+
+
+Server und Frontend automatisch starten:
+
+startscript.sh unter /etc/home/ubuntu ablegen
+
+(Wie oben einrichten)
+
+sudo crontab -e
+
+folgendes hinzufügen:
+@reboot cd /home/ubuntu/ && ./startscript.sh
+
+
+ 
