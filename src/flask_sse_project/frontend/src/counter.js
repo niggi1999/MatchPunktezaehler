@@ -23,7 +23,7 @@ class Counter extends React.Component{
 
     return (
         <div style={counterstyle}>
-            <h2>12</h2>
+            <h2>{this.props.counter}</h2>
         </div>
     )
     }

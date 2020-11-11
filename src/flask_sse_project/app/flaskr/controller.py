@@ -62,5 +62,10 @@ class Controller(Blueprint):
 
     def updateStream1(self): #zum testen des frontends
         gameState = self.game.gameState()
-        self.sse.publish({'counterTeam1': gameState['counter']['Team1'], 'counterTeam2': gameState['counter']['Team2'],
-                         'leftSide': random.randint(1,2), 'firstContact': 1, 'firstContactleft': 1}, type='updateData')
+        self.sse.publish([{'status': 'game'},
+          {'connectedController': 1},
+          {'activeChooseField': 1},
+          {'playMode': 1, 'activeChooseField1': 5, 'activeChooseField2': None},
+          {'playMode': 1, 'activeChooseField1': 8, 'activeChooseField2': None},
+          {'activeChooseField': 0},
+          {'counterTeam1': 9, 'counterTeam2': 19}], type='updateData')
