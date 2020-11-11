@@ -4,16 +4,18 @@ import asyncio
 class BluetoothController:
     def __init__(self):
         self.device = None
-        self.loop = asyncio.get_event_loop()
-        self.loop.run_until_complete(self.findDevice())
+        #self.loop = asyncio.get_event_loop()
+        #self.loop.run_until_complete(self.findDevice())
+        asyncio.set_event_loop(asyncio.new_event_loop())
+        self.findDevice()
 
-    async def findDevice(self):
+    def findDevice(self):
         devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
         for device in devices:
             if (device.name == "SmartRemote Consumer Control"):
                 print("Device found")
                 self.device = evdev.InputDevice(device.path)
-
+                print(device.path)
 
     def readLoop(self):
         if(self.device):
@@ -46,10 +48,12 @@ class BluetoothController:
 
     async def readAsync(self):
         if(self.device):
+            print(self.device)
             async for event in self.device.async_read_loop():
                     if (evdev.ecodes.EV_KEY == event.type):
                         if (evdev.categorize(event).keystate == 0):
                             scancode = evdev.categorize(event).scancode
+                            print(scancode)
                             if(scancode == 115):
                                 print("up")
                                 return 'redo'
