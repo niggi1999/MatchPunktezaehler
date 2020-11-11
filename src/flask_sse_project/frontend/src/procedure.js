@@ -20,11 +20,10 @@ function Procedure (props){
         case 'gameMenu':
             return <GameMenu activeChooseField={props.data[5].activeChooseField}/>;
         case 'game':
-            return <Game />;
+            return <Game counterTeam1={props.data[6].counterTeam1} counterTeam2={props.data[6].counterTeam2}/>;
         default:
             return <h1>Invalid status. Check spelling</h1>;
     }
-
 
 }
 
