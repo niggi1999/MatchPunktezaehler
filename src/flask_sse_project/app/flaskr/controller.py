@@ -100,4 +100,4 @@ class Controller(Blueprint):
           {'playMode': 1, 'activeChooseField1': 5, 'activeChooseField2': None},
           {'playMode': 1, 'activeChooseField1': 8, 'activeChooseField2': None},
           {'activeChooseField': 0},
-          {'counterTeam1': 9, 'counterTeam2': 19}], type='updateData')
+          {'counterTeam1': gameState['counter']['Team1'], 'counterTeam2': gameState['counter']['Team2']}], type='updateData')
