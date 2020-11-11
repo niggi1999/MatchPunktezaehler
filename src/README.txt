@@ -160,7 +160,7 @@ sudo reboot
 
 Server und Frontend automatisch starten:
 
-startscript.sh unter /home ablegen
+startscript.sh unter /etc/home/ubuntu ablegen
 
 (Wie oben einrichten)
 
