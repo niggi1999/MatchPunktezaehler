@@ -4,9 +4,6 @@ import asyncio
 class BluetoothController:
     def __init__(self):
         self.device = None
-        #self.loop = asyncio.get_event_loop()
-        #self.loop.run_until_complete(self.findDevice())
-        asyncio.set_event_loop(asyncio.new_event_loop())
         self.findDevice()
 
     def findDevice(self):
@@ -17,6 +14,7 @@ class BluetoothController:
                 self.device = evdev.InputDevice(device.path)
                 print(device.path)
 
+    '''
     def readLoop(self):
         if(self.device):
             print(self.device)
@@ -45,35 +43,42 @@ class BluetoothController:
                             print("unknown")
         else:
             print("No Device found")
+    '''
 
-    async def readAsync(self):
+    async def readBluetooth(self):
         if(self.device):
-            print(self.device)
-            async for event in self.device.async_read_loop():
-                    if (evdev.ecodes.EV_KEY == event.type):
-                        if (evdev.categorize(event).keystate == 0):
-                            scancode = evdev.categorize(event).scancode
-                            print(scancode)
-                            if(scancode == 115):
-                                print("up")
-                                return 'redo'
-                            elif(scancode == 114):
-                                print("down")
-                                return 'undo'
-                            elif(scancode == 163):
-                                print("right")
-                                return 'counter2'
-                            elif(scancode == 165):
-                                print("left")
-                                return 'counter1'
-                            elif(scancode == 164):
-                                print("ok")
-                            else:
-                                print("unknown")
+            #print(self.device)
+            try:
+                async for event in self.device.async_read_loop():  #device disconnect führt zu Fehler
+                        if (evdev.ecodes.EV_KEY == event.type):
+                            if (evdev.categorize(event).keystate == 0):
+                                scancode = evdev.categorize(event).scancode
+                                #print(scancode)
+                                if(scancode == 115):
+                                    print("up")
+                                    return 'up'
+                                elif(scancode == 114):
+                                    print("down")
+                                    return 'down'
+                                elif(scancode == 163):
+                                    print("right")
+                                    return 'right'
+                                elif(scancode == 165):
+                                    print("left")
+                                    return 'left'
+                                elif(scancode == 164):
+                                    print("ok")
+                                else:
+                                    print("unknown")
+            except OSError as error:
+                if (19 == error.errno):
+                    self.device = None
+                    print("device disconnected")
+                    return
         else:
             print("No Device found")
             await asyncio.sleep(2)
-            await self.findDevice()
+            self.findDevice()
 
 
 if __name__ == "__main__":

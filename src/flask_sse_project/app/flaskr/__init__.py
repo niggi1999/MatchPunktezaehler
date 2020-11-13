@@ -11,10 +11,10 @@ from flask_sse import sse
 def construct_controller(sse):
     con = Controller('con', __name__, sse)
 
-    @con.route('/test')
+    @con.route('/updateCounter')
     def test():
         con.updateStream1()
-        return 'Works'
+        return 'Counter updated'
 
     return(con)
 
