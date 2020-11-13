@@ -1,0 +1,41 @@
+apt install pi-bluetooth # bluetooth bluez etc
+reboot
+
+sudo apt  install bluez
+
+systemctl enable bluetooth
+
+modprobe btusb
+
+systemctl start bluetooth
+
+sudo systemctl status bluetooth.service
+
+bluetoothctl 
+(quit  strg und Q)
+
+agent on 
+
+pairable on
+
+scan on
+
+pair FF:FF:38:77:19:CA #mit angepasster nummer
+
+trust FF:FF:38:77:19:CA
+
+eventuell nochmal:
+pair FF:FF:38:77:19:CA
+
+info FF:FF:38:77:19:CA
+
+prüfen ob paired = yes
+
+exit
+
+
+zum testen:
+
+sudo apt install tshark
+
+sudo tshark -i bluetooth0
