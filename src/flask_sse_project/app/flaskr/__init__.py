@@ -16,8 +16,7 @@ def create_controller(sse):
 
     Parameters:
 
-        sse : ServerSentEventsBlueprint
-            The Object which will be used to publish events
+        sse (ServerSentEventsBlueprint): The Object which will be used to publish events
     """
     con = Controller('con', __name__, sse)
 
@@ -36,9 +35,8 @@ def create_app(test_config=None):
 
     Parameters:
 
-        test_config : Config
-            If a test config is provided, uses it for the app. Otherwise the config.DevConfig Object is
-            used as the config.
+        test_config (Config): If a test config is provided, uses it for the app.
+            Otherwise the config.DevConfig Object is used as the config.
     """
     app = Flask(__name__)
     CORS(app)

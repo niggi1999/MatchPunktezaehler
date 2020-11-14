@@ -14,24 +14,17 @@ class Controller(Blueprint):
     A class to connect the game to the Bluetooth input and send Updates to the frontend.
 
     Attributes
-        sse : ServerSentEventsBlueprint
-            The Object for sending Server Sent Events.
-        bluetoothController : BluetoothController
-            The BluetoothController, which returns the pressed buttons.
-        bluetooth Tread : Thread
-            The Thread, which handles the output of the bluetoothController and
+        sse (ServerSentEventsBlueprint): The Object for sending Server Sent Events.
+        bluetoothController (BluetoothController): The BluetoothController, which returns the pressed buttons.
+        bluetooth Tread (Thread): The Thread, which handles the output of the bluetoothController and
             updates the game and SSE stream.
 
     Methods
-        setupBluetoothThread()
-            Configures a new Thread, which handles Bluetooth communication.
-        readBluetooth()
-            Endless Loop in which a pressed button on the Bluetooth device
+        setupBluetoothThread(): Configures a new Thread, which handles Bluetooth communication.
+        readBluetooth(): Endless Loop in which a pressed button on the Bluetooth device
             updates the game and the SSE stream.
-        startGame()
-            Starts the game.
-        updateStream()
-            Updates the SSE stream (Must be called from Flask Request Context).
+        startGame(): Starts the game.
+        updateStream(): Updates the SSE stream (Must be called from Flask Request Context).
     """
     def __init__(self, name, import_Name, sse):
         """
@@ -39,15 +32,10 @@ class Controller(Blueprint):
 
         Parameters:
 
-            name : str
-                The name of the Blueprint.
-
-            import_Name : str
-                The name of the blueprint package, usually ``__name__``.
+            name (str): The name of the Blueprint.
+            import_Name (str): The name of the blueprint package, usually ``__name__``.
                 This helps locate the ``root_path`` for the blueprint.
-
-            sse : ServerSentEventsBlueprint
-                The Object for sending Server Sent Events.
+            sse (ServerSentEventsBlueprint): The Object for sending Server Sent Events.
 
         """
         Blueprint.__init__(self, name, import_Name)
@@ -67,7 +55,6 @@ class Controller(Blueprint):
         with threading.Lock():
             self.bluetoothController = BluetoothController()
         loop.run_until_complete(self.readBluetooth())
-
 
     async def readBluetooth(self):
         """
@@ -111,8 +98,7 @@ class Controller(Blueprint):
 
         Parametes:
 
-            gameName : str
-                The name of the game to be started.
+            gameName (str): The name of the game to be started.
         """
         self.game = GameFactory.create(gameName)
 

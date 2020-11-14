@@ -6,14 +6,13 @@ class BluetoothController:
     A class to create an Interface to a "SmartRemote Consumer Control" device
 
     Attributes:
-        device : evdev.InputDevice
-            The connected Device, None if no device is connected
+
+        device (evdev.InputDevice): The connected Device, None if no device is connected
 
     Methods:
-        findDevice()
-            Searches connected devices for "SmartRemote Consumer Control" and puts it in self.device
-        readBluetooth()
-            Waits for events from the device and returns the pressed button
+
+        findDevice(): Searches connected devices for "SmartRemote Consumer Control" and puts it in self.device
+        readBluetooth(): Waits for events from the device and returns the pressed button
     """
 
     def __init__(self):
@@ -48,12 +47,10 @@ class BluetoothController:
 
         Returns:
 
-            buttonName : str
-                Name of the pressed button. Could be "up", "down", "right", "left" or "ok" if a valid
-                Button was pressed. If no valid Button was pressed is "unknown"
+            buttonName (str): Name of the pressed button. Could be "up", "down", "right",
+                "left" or "ok" if a valid Button was pressed. If no valid Button was pressed is "unknown"
 
-            None
-                If there was a probleme with the device Connection
+            None: If there was a probleme with the device Connection
         """
         if(self.device):
             #print(self.device)
