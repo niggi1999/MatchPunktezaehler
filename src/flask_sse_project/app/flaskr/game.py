@@ -54,7 +54,7 @@ class Game(ABC):
 
     def undo(self):
         if (0 == len(self.__undoStack)):
-            raise ValueError
+            raise ValueError("Nothing to undo")
         else:
             self.__redoStack.append(self.gameState())
 
@@ -66,7 +66,7 @@ class Game(ABC):
 
     def redo(self):
         if (0 == len(self.__redoStack)):
-            raise ValueError
+            raise ValueError("Nothing to redo")
         else:
             self.__undoStack.append(self.gameState())
 
