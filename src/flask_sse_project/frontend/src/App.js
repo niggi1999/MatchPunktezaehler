@@ -8,13 +8,13 @@ constructor(){
     super()
       this.state = {
         data: [
-          {status: 'game'}, //data for Procedure
+          {status: 'nameMenuTeam1'}, //data for Procedure
           {connectedController: 1}, //data for Init
           {activeChooseField: 1}, //data for Player-Menu
           {playMode: 1, activeChooseField1: 5, activeChooseField2: null}, //data for Name Selection Team 1
           {playMode: 1, activeChooseField1: 8, activeChooseField2: null}, //data for Name Selection Team 1
           {activeChooseField: 0}, // data for Game-Menu
-          {counterTeam1: 10, counterTeam2: 15}
+          {counterTeam1: 10, counterTeam2: 15} //data for Game
         ]
 
       };
@@ -57,7 +57,6 @@ constructor(){
   render() {
     return (
       <div className="app">
-        <h1>Test: {this.state.data.counterTeam1}</h1>
         <Procedure data={this.state.data}/>
       </div>
     )

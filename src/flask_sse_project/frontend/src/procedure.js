@@ -8,9 +8,9 @@ import NameMenu from "./nameMenu"
 function Procedure (props){
     switch(props.data[0].status) {
         case 'init':
-            return <Init connectedController={props.data[1].connectedController} />;
+            return <Init connectedController={props.data[1].connectedController}/>;
         case 'playerMenu':
-            return <PlayerMenu activeChooseField={props.data[2].activeChooseField} />;
+            return <PlayerMenu activeChooseField={props.data[2].activeChooseField}/>;
         case 'nameMenuTeam1':
             return <NameMenu playMode={props.data[3].playMode} activeChooseField1={props.data[3].activeChooseField1}
             activeChooseField2={props.data[3].activeChooseField2} teamName="Team 1"/>;

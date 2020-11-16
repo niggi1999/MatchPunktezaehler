@@ -14,8 +14,8 @@ function PlayerMenu (props) {
 
     return(
         <div className="config">
-            <ChooseField activeChooseField={props.activeChooseField} fieldNames={fieldNames}/>
-            <ButtonLine fowardButtonText="Press -> to continue to Player-Menu" fowardButtonActive={fowardButtonActive}
+            <ChooseField activeChooseField1={props.activeChooseField} fieldNames={fieldNames}/>
+            <ButtonLine fowardButtonText="Press -> to continue to Name Selection of Team 1" fowardButtonActive={fowardButtonActive}
             backwardButtonText="Back to Controller Connection" backwardButtonActive={true}/>
         </div>
     )
