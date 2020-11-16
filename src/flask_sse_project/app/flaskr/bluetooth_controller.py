@@ -2,70 +2,139 @@ import evdev
 import asyncio
 
 class BluetoothController:
+    """
+    A class to create an Interface to a "SmartRemote Consumer Control" device
+
+    Attributes:
+
+        device (evdev.InputDevice): The connected Device, None if no device is connected.
+        __observers (List): The observers for the number of connected devices.
+        loop (AbstractEventLoop): The running event loop.
+
+    Methods:
+
+        findDevice(): Searches connected devices for "SmartRemote Consumer Control" and puts it in self.device
+        readBluetooth(): Waits for events from the device and returns the pressed button
+        attach(observer): Attaches a new Observer.
+        remove(observer): Removes a Observer.
+        notify(): Calls updateDeviceCount() for all observers
+        deviceCount(): Returns the number of connected devices.
+    """
+
     def __init__(self):
+        """ Tries to find a device, if not successful device == None"""
         self.device = None
+        self.__observers = []
         self.loop = asyncio.get_event_loop()
         self.loop.run_until_complete(self.findDevice())
 
+    def attach(self, observer):
+        """
+        Attaches a new Observer.
+
+        Calls notify().
+
+        Parameters:
+
+            observer (Controller): The observer to be attached.
+        """
+        self.__observers.append(observer)
+        self.loop.run_until_complete(self.notify())
+
+    def remove(self, observer):
+        """
+        Removes a Observer.
+
+        Parameters:
+
+            observer (Controller): The observer to be removed.
+        """
+        self.__observers.remove(observer)
+
+    async def notify(self):
+        """
+        Calls updateDeviceCount() for all observers
+        """
+        from .controller import Controller
+        for observer in self.__observers:
+            await observer.updateSSE("updateInit")
+
+    def deviceCount(self):
+        """
+        Returns the number of connected devices.
+        """
+        #return len(self.device)
+        if (self.device):
+            return 1
+        else:
+            return 0
+
     async def findDevice(self):
+        """
+        Searches connected devices for "SmartRemote Consumer Control" and puts it in self.device
+
+        If a device is found, prints "Device found" and the path to the device
+        """
         devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
         for device in devices:
-            if (device.name == "SmartRemote Consumer Control"):
-                print("Device found")
+            if ("SmartRemote Consumer Control" == device.name):
                 self.device = evdev.InputDevice(device.path)
+                await self.notify()
+                print("Device found")
+                print(device.path)
 
+    async def readBluetooth(self):
+        """
+        Waits for events from the device and returns the pressed button
 
-    def readLoop(self):
+        If no device is connected, then it sleeps for 2 seconds and after that tries to find a device
+
+        If the device is disconnected while waiting for events, it prints:
+        "device disconnected, trying to reconnect".
+        If the reconnect succeeds prints: "reconnected"
+        If the reconnect fails prints: "Reconnect failed"
+        Returns regardless of the reconnects outcome
+
+        Returns:
+
+            buttonName (str): Name of the pressed button. Could be "up", "down", "right",
+                "left" or "ok" if a valid Button was pressed. If no valid Button was pressed is "unknown"
+
+            None: If there was a probleme with the device Connection
+        """
         if(self.device):
-            print(self.device)
-            for event in self.device.read_loop():
-                if (event.type == evdev.ecodes.EV_KEY):
-                    """ print(evdev.categorize(event).scancode) # Ist Eventcode
-                    print(evdev.categorize(event).keycode)  # Ist übersetzter Eventcode
-                    print(event.type) """
-                    if (evdev.categorize(event).keystate == 0):
-                        scancode = evdev.categorize(event).scancode
-                        if(scancode == 115):
-                            print("up")
-                            return 'redo'
-                        elif(scancode == 114):
-                            print("down")
-                            return 'undo'
-                        elif(scancode == 163):
-                            print("right")
-                            return 'counter2'
-                        elif(scancode == 165):
-                            print("left")
-                            return 'counter1'
-                        elif(scancode == 164):
-                            print("ok")
-                        else:
-                            print("unknown")
-        else:
-            print("No Device found")
+            #print(self.device)
+            try:
+                async for event in self.device.async_read_loop():
+                        if (evdev.ecodes.EV_KEY == event.type):
+                            if (evdev.categorize(event).keystate == 0):
+                                scancode = evdev.categorize(event).scancode
+                                buttonName = "unknown"
+                                if(115 == scancode):
+                                    buttonName = "up"
+                                elif(114 == scancode):
+                                    buttonName ="down"
+                                elif(163 == scancode):
+                                    buttonName ="right"
+                                elif(165 == scancode):
+                                    buttonName ="left"
+                                elif(164 == scancode):
+                                    buttonName = "ok"
 
-    async def readAsync(self):
-        if(self.device):
-            async for event in self.device.async_read_loop():
-                    if (evdev.ecodes.EV_KEY == event.type):
-                        if (evdev.categorize(event).keystate == 0):
-                            scancode = evdev.categorize(event).scancode
-                            if(scancode == 115):
-                                print("up")
-                                return 'redo'
-                            elif(scancode == 114):
-                                print("down")
-                                return 'undo'
-                            elif(scancode == 163):
-                                print("right")
-                                return 'counter2'
-                            elif(scancode == 165):
-                                print("left")
-                                return 'counter1'
-                            elif(scancode == 164):
-                                print("ok")
-                            else:
-                                print("unknown")
+                                print(buttonName)
+                                return buttonName
+            except OSError as error:
+                if (19 == error.errno):
+                    self.device = None
+                    self.loop.run_until_complete(self.notify())
+                    print("device disconnected, trying to reconnect")
+                    await asyncio.sleep(2)
+                    self.findDevice()
+                    if (self.device):
+                        print("reconnected")
+                    else:
+                        print("Reconnect failed")
+                    return
         else:
             print("No Device found")
             await asyncio.sleep(2)
