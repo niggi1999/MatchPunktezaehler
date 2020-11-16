@@ -138,7 +138,7 @@ class BluetoothController:
         else:
             print("No Device found")
             await asyncio.sleep(2)
-            self.findDevice()
+            await self.findDevice()
 
 
 if __name__ == "__main__":
