@@ -24,9 +24,9 @@ class BluetoothController:
     def __init__(self):
         """ Tries to find a device, if not successful device == None"""
         self.device = None
-        self.findDevice()
         self.__observers = []
         self.loop = asyncio.get_event_loop()
+        self.loop.run_until_complete(self.findDevice())
 
     def attach(self, observer):
         """
@@ -69,7 +69,7 @@ class BluetoothController:
         else:
             return 0
 
-    def findDevice(self):
+    async def findDevice(self):
         """
         Searches connected devices for "SmartRemote Consumer Control" and puts it in self.device
 
@@ -79,7 +79,7 @@ class BluetoothController:
         for device in devices:
             if ("SmartRemote Consumer Control" == device.name):
                 self.device = evdev.InputDevice(device.path)
-                self.loop.run_until_complete(self.notify())
+                await self.notify()
                 print("Device found")
                 print(device.path)
 
