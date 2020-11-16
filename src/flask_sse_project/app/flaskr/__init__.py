@@ -12,7 +12,7 @@ def create_controller(sse):
     """
     Factory Method, which creates a new controller with the given sse object
 
-    Defines a blueprint route to update the SSE Stream with a new counter under /updateCounter
+    Defines a blueprint route to update the SSE Stream with a new counter under /update
 
     Parameters:
 
@@ -21,9 +21,14 @@ def create_controller(sse):
     con = Controller('con', __name__, sse)
 
     @con.route('/updateCounter')
-    def test():
+    def updateCounter():
         con.updateStream1()
         return 'Counter updated'
+
+    @con.route('/updateDeviceCount')
+    def updateDeviceCount():
+        con.updateDeviceCount()
+        return 'Device counter updated'
 
     return(con)
 

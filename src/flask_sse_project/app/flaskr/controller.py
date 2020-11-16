@@ -25,6 +25,8 @@ class Controller(Blueprint):
             updates the game and the SSE stream.
         startGame(): Starts the game.
         updateStream(): Updates the SSE stream (Must be called from Flask Request Context).
+        updateSSE(): Sends a GET request to the given path to update the SSE stream.
+        updateDeviceNumber(): Gets the number of connected devices and publishes it to the SSE stream.
     """
     def __init__(self, name, import_Name, sse):
         """
@@ -54,6 +56,7 @@ class Controller(Blueprint):
         asyncio.set_event_loop(loop)
         with threading.Lock():
             self.bluetoothController = BluetoothController()
+            self.bluetoothController.attach(self)
         loop.run_until_complete(self.readBluetooth())
 
     async def readBluetooth(self):
@@ -64,8 +67,7 @@ class Controller(Blueprint):
         Takes the pressed Button from the Bluetooth Controller and interprets it into the
         corresponding action for the game.
         Prints an error message if the requested action is not available in the game .
-        After updating the game sends a GET request to "http://localhost:5000/con/updateCounter" to
-        update the SSE stream.
+        Calls updateSSE() after updating the game.
         """
         while True:
             pressedButton = await self.bluetoothController.readBluetooth()
@@ -86,9 +88,29 @@ class Controller(Blueprint):
             else:
                 continue
 
-            async with httpx.AsyncClient() as client:
-                r = await client.get("http://localhost:5000/con/updateCounter")
-                print(r.text)
+            await self.updateSSE("updateCounter")
+
+    async def updateSSE(self, path):
+        """
+        Sends a GET request to the given path to update the SSE stream.
+
+        Parameters:
+
+            path (str): The path to which the request will be sent.
+                Without the prefix "http://localhost:5000/con/"
+        """
+        async with httpx.AsyncClient() as client:
+            r = await client.get("http://localhost:5000/con/" + path)
+            print(r.text)
+
+
+    def updateDeviceCount(self):
+        """
+        Gets the number of connected devices and publishes it to the SSE stream.
+        """
+        deviceCount = self.bluetoothController.deviceCount()
+        self.sse.publish({'deviceCount': deviceCount}, type='updateDeviceCount')
+
 
     def startGame(self, gameName):
         """
