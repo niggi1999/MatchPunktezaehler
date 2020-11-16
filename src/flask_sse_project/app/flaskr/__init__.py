@@ -20,15 +20,15 @@ def create_controller(sse):
     """
     con = Controller('con', __name__, sse)
 
-    @con.route('/updateCounter')
-    def updateCounter():
-        con.updateStream1()
-        return 'Counter updated'
+    @con.route('/updateGame')
+    def updateGameSite():
+        con.updateGameSite()
+        return 'Game site updated'
 
-    @con.route('/updateDeviceCount')
-    def updateDeviceCount():
-        con.updateDeviceCount()
-        return 'Device counter updated'
+    @con.route('/updateInitSite')
+    def updateInitSite():
+        con.updateInitSite()
+        return 'Init site updated'
 
     return(con)
 

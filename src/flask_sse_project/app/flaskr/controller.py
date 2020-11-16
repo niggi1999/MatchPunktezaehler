@@ -88,7 +88,7 @@ class Controller(Blueprint):
             else:
                 continue
 
-            await self.updateSSE("updateCounter")
+            await self.updateSSE("updateGame")
 
     async def updateSSE(self, path):
         """
@@ -103,15 +103,6 @@ class Controller(Blueprint):
             r = await client.get("http://localhost:5000/con/" + path)
             print(r.text)
 
-
-    def updateDeviceCount(self):
-        """
-        Gets the number of connected devices and publishes it to the SSE stream.
-        """
-        deviceCount = self.bluetoothController.deviceCount()
-        self.sse.publish({'deviceCount': deviceCount}, type='updateDeviceCount')
-
-
     def startGame(self, gameName):
         """
         Starts the game.
@@ -124,21 +115,39 @@ class Controller(Blueprint):
         """
         self.game = GameFactory.create(gameName)
 
-    def updateStream(self):
+    def updateInitSite(self):
         """
-        Updates the SSE stream (Must be called from Flask Request Context).
-        """
-        print('updateStream')
-        gameState = self.game.gameState()
-        self.sse.publish({'counterTeam1': gameState['counter']['Team1'], 'counterTeam2': gameState['counter']['Team2'],
-                         'leftSide': random.randint(1,2), 'firstContact': 1, 'firstContactleft': 1}, type='updateData')
+        Gets the number of connected devices and publishes it to the SSE stream.
 
-    def updateStream1(self): #zum testen des frontends
+        Must be called from Flask Request Context
+        """
+        deviceCount = self.bluetoothController.deviceCount()
+        self.sse.publish({'status' : 'init', 'deviceCount': deviceCount}, type='updateDeviceCount')
+
+    def updateFieldSite(self):
+        self.sse.publish({'status' : 'playerMenu', 'activeChooseField': 1})
+
+    def updateColorSite(self):
+        self.sse.publish({'status' : 'namePlayerMenu', 'playMode': 1,
+        'activeChooseField1': 5, 'activeChooseField2': None,
+        'activeChooseField3': 8, 'activeChooseField4': None})
+
+    def updateSelectGameSite(self):
+        self.sse.publish({'status' : 'gameMenu', 'activeChooseField': 'badminton'})
+
+    def updateGameSite(self):
+        """
+        Updates the SSE stream with the current counter.
+
+        Must be called from Flask Request Context.
+        """
         gameState = self.game.gameState()
-        self.sse.publish([{'status': 'game'},
-          {'connectedController': 1},
-          {'activeChooseField': 1},
-          {'playMode': 1, 'activeChooseField1': 5, 'activeChooseField2': None},
-          {'playMode': 1, 'activeChooseField1': 8, 'activeChooseField2': None},
-          {'activeChooseField': 0},
-          {'counterTeam1': gameState['counter']['Team1'], 'counterTeam2': gameState['counter']['Team2']}], type='updateData')
+        deviceCount = self.bluetoothController.deviceCount()
+        self.sse.publish({'status': 'game', 'deviceCount' : deviceCount ,
+            'counterTeam1': gameState['counter']['Team1'],
+            'counterTeam2': gameState['counter']['Team2'],
+            'wonRoundsTeam1' : gameState['wonRounds']['Team1'],
+            'wonRoundsTeam2' : gameState['wonRounds']['Team2'],
+            'wonGamesTeam1': gameState['wonGames']['Team1'],
+            'wonGamesTeam2': gameState['wonGames']['Team2']}
+            , type='updateData')
