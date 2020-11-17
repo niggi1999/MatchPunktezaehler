@@ -6,21 +6,19 @@ import PlayerMenu from "./playerMenu";
 import NameMenu from "./nameMenu"
 
 function Procedure (props){
-    switch(props.data[0].status) {
+    switch(props.data.status) {
         case 'init':
-            return <Init connectedController={props.data[1].connectedController}/>;
+            return <Init connectedController={props.data.connectedController}/>;
         case 'playerMenu':
-            return <PlayerMenu activeChooseField={props.data[2].activeChooseField}/>;
-        case 'nameMenuTeam1':
-            return <NameMenu playMode={props.data[3].playMode} activeChooseField1={props.data[3].activeChooseField1}
-            activeChooseField2={props.data[3].activeChooseField2} teamName="Team 1"/>;
-        case 'nameMenuTeam2':
-            return <NameMenu playMode={props.data[4].playMode} activeChooseField1={props.data[4].activeChooseField1}
-            activeChooseField2={props.data[4].activeChooseField2} teamName="Team 2"/>;
+            return <PlayerMenu activeChooseField={props.data.activeChooseField}/>;
+        case 'nameMenu':
+            return <NameMenu playMode={props.data.playMode} activeChooseField1Team1={props.data.color1Team1}
+            color2Team1={props.data.color1Team2} activeChooseField1Team2={props.data.color1Team2}
+            activeChooseField2Team2={props.data.color2Team2}/>;
         case 'gameMenu':
-            return <GameMenu activeChooseField={props.data[5].activeChooseField}/>;
+            return <GameMenu activeChooseField={props.data.activeChooseField}/>;
         case 'game':
-            return <Game counterTeam1={props.data[6].counterTeam1} counterTeam2={props.data[6].counterTeam2}/>;
+            return <Game counterTeam1={props.data.counterTeam1} counterTeam2={props.data.counterTeam2}/>;
         default:
             return <h1>Invalid status. Check spelling</h1>;
     }

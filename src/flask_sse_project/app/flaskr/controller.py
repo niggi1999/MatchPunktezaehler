@@ -116,24 +116,19 @@ class Controller(Blueprint):
         self.game = GameFactory.create(gameName)
 
     def updateInitSite(self):
-        """
-        Gets the number of connected devices and publishes it to the SSE stream.
-
-        Must be called from Flask Request Context
-        """
         deviceCount = self.bluetoothController.deviceCount()
-        self.sse.publish({'status' : 'init', 'deviceCount': deviceCount}, type='updateDeviceCount')
+        self.sse.publish({'status': "init", 'connectedController': deviceCount}, type='updateData')
 
-    def updateFieldSite(self):
-        self.sse.publish({'status' : 'playerMenu', 'activeChooseField': 1})
+    def updatePlayerMenuSite(self):
+        self.sse.publish({'status': "playerMenu", 'activeChooseField': 1}, type='updateData')
 
-    def updateColorSite(self):
-        self.sse.publish({'status' : 'namePlayerMenu', 'playMode': 1,
+    def updateNameMenuSite(self):
+        self.sse.publish({'status': "nameMenu", 'playMode': 1,
         'activeChooseField1': 5, 'activeChooseField2': None,
-        'activeChooseField3': 8, 'activeChooseField4': None})
+        'activeChooseField3': 8, 'activeChooseField4': None}, type='updateData')
 
-    def updateSelectGameSite(self):
-        self.sse.publish({'status' : 'gameMenu', 'activeChooseField': 'badminton'})
+    def updateGameMenuSite(self):
+        self.sse.publish({'status': "gameMenu", 'activeChooseField': 'badminton'}, type='updateData')
 
     def updateGameSite(self):
         """
@@ -143,7 +138,7 @@ class Controller(Blueprint):
         """
         gameState = self.game.gameState()
         deviceCount = self.bluetoothController.deviceCount()
-        self.sse.publish({'status': 'game', 'deviceCount' : deviceCount ,
+        self.sse.publish({'status': "game", 'connectedController' : deviceCount,
             'counterTeam1': gameState['counter']['Team1'],
             'counterTeam2': gameState['counter']['Team2'],
             'wonRoundsTeam1' : gameState['wonRounds']['Team1'],

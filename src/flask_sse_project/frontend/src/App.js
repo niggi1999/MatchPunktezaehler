@@ -7,26 +7,24 @@ class App extends React.Component {
 constructor(){
     super()
       this.state = {
-        data: [
-          {status: 'nameMenuTeam1'}, //data for Procedure
-          {connectedController: 1}, //data for Init
-          {activeChooseField: 1}, //data for Player-Menu
-          {playMode: 1, activeChooseField1: 5, activeChooseField2: null}, //data for Name Selection Team 1
-          {playMode: 1, activeChooseField1: 8, activeChooseField2: null}, //data for Name Selection Team 1
-          {activeChooseField: 0}, // data for Game-Menu
-          {counterTeam1: 0, counterTeam2: 0}
-        ]
+        data: {status: 'init',
+          connectedController: 1,
+          activeChooseField: 1,
+          playMode: 1, activeChooseField1: 5, activeChooseField2: null,
+          playMode: 1, activeChooseField1: 8, activeChooseField2: null,
+          activeChooseField: 0,
+          counterTeam1: 110, counterTeam2: 120}
+      }
 
-      };
     this.eventSource = new EventSource("http://localhost:5000/events");
-    this.updateState = this.updateState.bind(this)
+    this.updateState = this.updateData.bind(this)
 
   }
   
   componentDidMount() {
 
-      this.eventSource.addEventListener("updateData", e =>
-      this.updateState(JSON.parse(e.data))
+      this.eventSource.addEventListener('updateData', e =>
+      this.updateData(JSON.parse(e.data))
     );
 
   axios.get("http://localhost:5000/",
@@ -47,12 +45,11 @@ constructor(){
         }
       )
   }
-     updateState(newState) {
-        console.log("Server side event recieved at",new Date())
-        this.setState(Object.assign({}, { data: newState }));
-      }
-
-       
+ 
+    updateData(newState) {
+      console.log("Server side event recieved at",new Date())
+      this.setState(Object.assign({}, { data: newState }));
+  }
     
   render() {
     return (
