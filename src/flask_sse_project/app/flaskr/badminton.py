@@ -1,5 +1,16 @@
 #!/usr/bin/env python
 from .game import Game
+from enum import IntEnum
+
+class ServePosition(IntEnum):
+    """
+    Enum Class that represents the servePosition
+    """
+    TEAM1LEFT = 1
+    TEAM1RIGHT = 2
+    TEAM2LEFT = 3
+    TEAM2RIGHT = 4
+    UNKNOWN = 5
 
 class Badminton(Game):
     """
@@ -79,3 +90,34 @@ class Badminton(Game):
             return True
         else:
             return False
+    
+    def servePosition(self):
+        """
+        Gives the current serve Position
+
+        Returns:
+
+            ServePsition Enum
+        """
+        if (0 == len(self._Game__undoStack)):
+            return ServePosition.UNKNOWN
+        else:
+            
+            lastGameState = self._Game__undoStack[-1]
+            lastCounter = lastGameState["counter"]
+
+            isEven = lambda x : ((x % 2) == 0)
+
+            if(self.counter["Team1"] > lastCounter["Team1"]):
+                if(isEven(self.counter["Team1"])):
+                    return ServePosition.TEAM1RIGHT
+                else:
+                    return ServePosition.TEAM1LEFT
+
+            if(self.counter["Team2"] > lastCounter["Team2"]):
+                if(isEven(self.counter["Team2"])):
+                    return ServePosition.TEAM2RIGHT
+                else:
+                    return ServePosition.TEAM2LEFT
+
+        return ServePosition.UNKNOWN

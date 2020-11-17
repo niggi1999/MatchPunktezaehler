@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import unittest
-from flaskr import Badminton, GameFactory, Controller
+from flaskr import Badminton, ServePosition, GameFactory, Controller
 
 class TestBadminton(unittest.TestCase):
     def testBadmintonExists(self):
@@ -145,6 +145,22 @@ class TestBadminton(unittest.TestCase):
         badminton = Badminton()
         with self.assertRaises(ValueError):
             badminton.redo()
+    
+    def testServePosition(self):
+        badminton = Badminton()
+        badminton.counterUp(1)
+        servePosition1 = ServePosition.TEAM1LEFT
+        self.assertEqual(badminton.servePosition(), servePosition1)
+        badminton.counterUp(2)
+        servePosition2 = ServePosition.TEAM2LEFT
+        self.assertEqual(badminton.servePosition(), servePosition2)
+        badminton.counterUp(1)
+        servePosition3 = ServePosition.TEAM1RIGHT
+        self.assertEqual(badminton.servePosition(), servePosition3)
+        badminton.counterUp(2)
+        servePosition4 = ServePosition.TEAM2RIGHT
+        self.assertEqual(badminton.servePosition(), servePosition4)
+        
 
 class TestGameFactoy(unittest.TestCase):
     def testGameFactoryWorks(self):
@@ -163,7 +179,7 @@ class TestApp(unittest.TestCase):
         pass
 
 
-#TODO: Aufschlag, Doppel, Seitenwechsel
+#TODO: Doppel, Seitenwechsel
 
 if __name__ == '__main__':
     unittest.main()

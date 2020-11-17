@@ -119,6 +119,15 @@ class Game(ABC):
         """
         pass
 
+    @abstractmethod
+    def servePosition(self):
+        """
+        Gives the current serve Position
+
+        Must be implemented in subclass.
+        """
+        pass
+
     def gameState(self):
         """
         Returns the current game state.

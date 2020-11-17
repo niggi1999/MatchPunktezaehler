@@ -1,5 +1,5 @@
 from .controller import Controller
-from .badminton import Badminton
+from .badminton import Badminton, ServePosition
 from .gameFactory import GameFactory
 
 from flask import Flask
