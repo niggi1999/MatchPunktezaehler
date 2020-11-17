@@ -13,7 +13,7 @@ function ChooseField (props) {
         
         (props.activeChooseField1 === (index + 1) || props.activeChooseField2 === (index + 1))
             ? (<Button variant="outline-primary" className={props.type === "table" ? "chooseTableElement" : "chooseElement"} active>{element}</Button>)
-            : (<Button variant="outline-primary" className={props.type === "table" ? "chooseTableElement" : "chooseElement"} disabled>{element}</Button>)
+            : (<Button variant="outline-primary" style={{"color": element}} className={props.type === "table" ? "chooseTableElement" : "chooseElement"} disabled>{element}</Button>)
     )
 
     return(

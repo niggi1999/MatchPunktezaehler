@@ -20,15 +20,32 @@ def create_controller(sse):
     """
     con = Controller('con', __name__, sse)
 
-    @con.route('/updateGame')
-    def updateGameSite():
-        con.updateGameSite()
-        return 'Game site updated'
-
     @con.route('/updateInitSite')
     def updateInitSite():
         con.updateInitSite()
         return 'Init site updated'
+
+    @con.route('/updatePlayerMenuSite')
+    def updatePlayerMenuSite():
+        con.updatePlayerMenuSite()
+        return 'PlayerMenu site updated'
+
+    @con.route('/updateNameMenuSite')
+    def updateNameMenuSite():
+        con.updateNameMenuSite()
+        return 'Name Menu site updated'
+
+    @con.route('/updateGameMenuSite')
+    def updateGameMenuSite():
+        con.updateGameMenuSite()
+        return 'Game Menu site updated'
+
+    @con.route('/updateGameSite')
+    def updateGameSite():
+        con.updateGameSite()
+        return 'Game site updated'
+
+    
 
     return(con)
 

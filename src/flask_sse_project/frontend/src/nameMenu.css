@@ -1,0 +1,21 @@
+.config {
+    height: 100%;
+    width: 100%;
+}
+
+.tableField {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+
+}
+
+.teamTables {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}

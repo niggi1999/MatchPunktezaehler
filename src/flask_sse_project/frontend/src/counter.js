@@ -18,12 +18,11 @@ class Counter extends React.Component{
         top: "0",
         left: this.props.isLeft ? '0' : null,
         right: this.props.isRight ? '0' : null,
-        fontSize: "40vh"
     };
 
     return (
         <div style={counterstyle}>
-            <h2>{this.props.counter}</h2>
+            <h2 style={{'fontSize': '400px'}}>{this.props.counter}</h2>
         </div>
     )
     }

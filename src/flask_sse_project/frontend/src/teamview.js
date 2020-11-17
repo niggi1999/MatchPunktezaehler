@@ -1,22 +1,14 @@
 import React from "react";
 import './teamview.css'
 
-class Teamview extends React.Component{
-    constructor() {
-        super();
-        this.state = {
-        };
-    }
-
-    render() {
+function Teamview (props){
     
     return (
         <div className="teamView">
-            <div className="quarterField"></div>
-            <div className="quarterField"></div>
+            <div className="quarterField" style={{'backgroundColor': props.colorHighSite}}></div>
+            <div className="quarterField" style={{'backgroundColor': props.colorDownSite}}></div>
         </div>
     )
-    }
 }
 
 export default Teamview
