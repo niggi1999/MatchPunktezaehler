@@ -124,8 +124,8 @@ class Controller(Blueprint):
 
     def updateNameMenuSite(self):
         self.sse.publish({'status': "nameMenu", 'playMode': 1,
-        'activeChooseField1': 5, 'activeChooseField2': None,
-        'activeChooseField3': 8, 'activeChooseField4': None}, type='updateData')
+        'color1Team1': 3, 'color2Team1': None,
+        'color1Team2': 5, 'color2Team2': None}, type='updateData')
 
     def updateGameMenuSite(self):
         self.sse.publish({'status': "gameMenu", 'activeChooseField': 'badminton'}, type='updateData')
