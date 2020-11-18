@@ -99,11 +99,11 @@ class Badminton(Game):
 
             ServePsition Enum
         """
-        if (0 == len(self._Game__undoStack)):
+        if (0 == len(self._undoStack)):
             return ServePosition.UNKNOWN
         else:
             
-            lastGameState = self._Game__undoStack[-1]
+            lastGameState = self._undoStack[-1]
             lastCounter = lastGameState["counter"]
 
             isEven = lambda x : ((x % 2) == 0)

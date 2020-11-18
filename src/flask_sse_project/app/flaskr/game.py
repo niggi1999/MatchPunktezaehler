@@ -43,7 +43,7 @@ class Game(ABC):
         self.wonRounds = {"Team1" : 0, "Team2" : 0}
         self.wonGames = {"Team1" : 0, "Team2" : 0}
         self.currentMaxPoints = self.maxPointsWithoutOvertime
-        self.__undoStack = []
+        self._undoStack = []
         self.__redoStack = []
 
     def counterUp(self, teamNumber):
@@ -60,7 +60,7 @@ class Game(ABC):
 
             ValueError: If the given team number is not valid.
         """
-        self.__undoStack.append(self.gameState())
+        self._undoStack.append(self.gameState())
         self.__redoStack = []
 
         if (teamNumber not in range(1, 3)):
@@ -150,12 +150,12 @@ class Game(ABC):
 
             ValueError: If there are no events to undo.
         """
-        if (0 == len(self.__undoStack)):
+        if (0 == len(self._undoStack)):
             raise ValueError("Nothing to undo")
         else:
             self.__redoStack.append(self.gameState())
 
-            lastGameState = self.__undoStack.pop()
+            lastGameState = self._undoStack.pop()
             self.counter = lastGameState["counter"]
             self.wonRounds = lastGameState["wonRounds"]
             self.wonGames = lastGameState["wonGames"]
@@ -172,7 +172,7 @@ class Game(ABC):
         if (0 == len(self.__redoStack)):
             raise ValueError("Nothing to redo")
         else:
-            self.__undoStack.append(self.gameState())
+            self._undoStack.append(self.gameState())
 
             nextGameState = self.__redoStack.pop()
             self.counter = nextGameState["counter"]
