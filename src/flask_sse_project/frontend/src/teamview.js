@@ -5,8 +5,8 @@ function Teamview (props){
     
     return (
         <div className="teamView">
-            <div className="quarterField" style={{'backgroundColor': props.colorHighSite}}></div>
-            <div className="quarterField" style={{'backgroundColor': props.colorDownSite}}></div>
+            <div className="quarterField" style={{'backgroundColor': props.colorHighSite, 'opacity': props.opacityHighSite}}></div>
+            <div className="quarterField" style={{'backgroundColor': props.colorDownSite, 'opacity': props.opacityDownSite}}></div>
         </div>
     )
 }

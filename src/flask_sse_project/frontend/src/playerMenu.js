@@ -8,13 +8,13 @@ function PlayerMenu (props) {
 
     let fowardButtonActive = false;
 
-    if(props.activeChooseField) {
+    if(props.data.activeChooseField) {
         fowardButtonActive = true;
     }
 
     return(
         <div className="config">
-            <ChooseField activeChooseField1={props.activeChooseField} fieldNames={fieldNames}/>
+            <ChooseField activeChooseField1={props.data.activeChooseField} fieldNames={fieldNames}/>
             <ButtonLine fowardButtonText="Press -> to continue to Name Selection of Team 1" fowardButtonActive={fowardButtonActive}
             backwardButtonText="Back to Controller Connection" backwardButtonActive={true}/>
         </div>

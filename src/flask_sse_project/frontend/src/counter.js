@@ -9,6 +9,7 @@ class Counter extends React.Component{
     
     const counterstyle = {
         display: "flex",
+        flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
         zIndex: "10",
@@ -22,7 +23,9 @@ class Counter extends React.Component{
 
     return (
         <div style={counterstyle}>
-            <h2 style={{'fontSize': '400px'}}>{this.props.counter}</h2>
+            <h1 style={{'fontSize': '30px', 'fontWeight': 'bolder'}}>Won Games: {this.props.games}</h1>
+            <h1 style={{'fontSize': '30px', 'fontWeight': 'bolder'}}>Won Rounds: {this.props.rounds}</h1>
+            <h1 style={{'fontSize': '400px', 'fontWeight': 'bolder'}}>{this.props.counter}</h1>
         </div>
     )
     }

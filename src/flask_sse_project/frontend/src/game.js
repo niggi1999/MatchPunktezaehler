@@ -7,17 +7,25 @@ function Game(props) {
 
     return (
         <div className="field">
-           <Counter isLeft="1" counter={props.counterTeam1}/>
-           <Counter isRight="1" counter={props.counterTeam2}/>
+            {props.data.team1Left
+            ? <Counter isLeft="1" counter={props.data.counterTeam1} rounds={props.data.roundsTeam1} games={props.data.gamesTeam1}/>
+            : <Counter isLeft="1" counter={props.data.counterTeam2} rounds={props.data.roundsTeam2} games={props.data.gamesTeam2}/>}
+
+            {props.data.team1Left
+            ? <Counter isRight="1" counter={props.data.counterTeam2} rounds={props.data.roundsTeam2} games={props.data.gamesTeam2}/>
+            : <Counter isRight="1" counter={props.data.counterTeam1} rounds={props.data.roundsTeam1} games={props.data.gamesTeam1}/>}
             
-            {props.team1Left 
-            ? <Teamview colorHighSite={props.team1HighColor} colorDownSite={props.team1DownColor}/>
-            : <Teamview colorHighSite={props.team2HighColor} colorDownSite={props.team2DownColor}/>}
+            {props.data.team1Left 
+            ? <Teamview colorHighSite={props.data.team1HighColor} colorDownSite={props.data.team1DownColor}
+             opacityHighSite={props.data.opacityHighSiteTeam1} opacityDownSite={props.data.opacityDownSiteTeam1}/>
+            : <Teamview colorHighSite={props.data.team2HighColor} colorDownSite={props.data.team2DownColor}
+             opacityHighSite={props.data.opacityHighSiteTeam2} opacityDownSite={props.data.opacityDownSiteTeam2}/>}
 
-            {props.team1Left 
-            ? <Teamview colorHighSite={props.team2HighColor} colorDownSite={props.team2DownColor}/>
-            : <Teamview colorHighSite={props.team1HighColor} colorDownSite={props.team1DownColor}/>}
-
+            {props.data.team1Left 
+            ? <Teamview colorHighSite={props.data.team2HighColor} colorDownSite={props.data.team2DownColor}
+             opacityHighSite={props.data.opacityHighSiteTeam2} opacityDownSite={props.data.opacityDownSiteTeam2}/>
+            : <Teamview colorHighSite={props.data.team1HighColor} colorDownSite={props.data.team1DownColor}
+             opacityHighSite={props.data.opacityHighSiteTeam1} opacityDownSite={props.data.opacityDownSiteTeam1}/>}
         </div> 
        )
 }

@@ -14,9 +14,9 @@ function GameMenu (props) {
 
     return(
         <div className="config">
-            <ChooseField activeChooseField1={props.activeChooseField} fieldNames={fieldNames}/>
+            <ChooseField activeChooseField1={props.data.activeChooseField} fieldNames={fieldNames}/>
             <ButtonLine fowardButtonText="Press -> to start the Game" fowardButtonActive={fowardButtonActive}
-            backwardButtonText="Back to Name Selection of Team 2" backwardButtonActive={true}/>
+            backwardButtonText="Back to Name Selection" backwardButtonActive={true}/>
         </div>
     )
 }

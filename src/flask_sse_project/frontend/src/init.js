@@ -10,20 +10,20 @@ function Init (props) {
     let continueButton = <button className="continueButton">Press -> to go to Player Menu</button>;
     let fowardButtonActive = false;
 
-    switch(props.connectedController) {
+    switch(props.data.connectedController) {
         case 0:
-            message = <h1 className="message">There is no connected Controller. Check your Bluetooth-Connection!</h1>;
+            message = <h1 className="message">There is no connected Controller. Check your Bluetooth-Connection</h1>;
             break;
         case 1:
-            message = <h1 className="message">There is one connected Controller!</h1>;
+            message = <h1 className="message">There is one connected Controller</h1>;
             fowardButtonActive = true;
             break;
         case 2:
-            message = <h1 className="message">There are two connected Controllers!</h1>;
+            message = <h1 className="message">There are two connected Controllers</h1>;
             fowardButtonActive = true;
             break;
         default:
-            message = <h1 className="message">Error!</h1>;
+            message = <h1 className="message">Error</h1>;
     }
 
     return (

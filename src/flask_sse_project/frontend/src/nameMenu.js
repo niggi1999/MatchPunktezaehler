@@ -9,18 +9,18 @@ function NameMenu (props) {
 
     let fowardButtonActive = false;
     let message;
-    switch(props.playMode) {
+    switch(props.data.playMode) {
         case 0:
-            message = <h1>Error NameMenu!</h1>;
+            message = <h1>Error NameMenu</h1>;
         case 1:
-            message = <h1>Choose Your Names!</h1>
-            if(props.activeChooseField1Team1 && props.activeChooseField1Team2) {
+            message = <h1>Choose Your Names</h1>
+            if(props.data.color1Team1 && props.data.color1Team2) {
                 fowardButtonActive = true;
             }
             break;
         case 2:
-            message = <h1>Choose Your Names!</h1>
-            if(props.activeChooseField1Team1 && props.activeChooseField2Team1 && props.activeChooseField1Team2 && props.activeChooseField2Team2) {
+            message = <h1>Choose Your Names</h1>
+            if(props.data.color1Team1 && props.data.color1Team2 && props.data.color2Team1 && props.data.color2Team2) {
                 fowardButtonActive = true;
             }
             break;
@@ -35,13 +35,13 @@ function NameMenu (props) {
             <div className="tableField">
                 <div className="teamTables">
                     <h1>Team 1</h1>
-                    <ChooseField activeChooseField1={props.activeChooseField1Team1} activeChooseField2={props.activeChooseField2Team1}
+                    <ChooseField activeChooseField1={props.data.color1Team1} activeChooseField2={props.data.color2Team1}
                     fieldNames={fieldNames} type="table"/>
                 </div>
 
                 <div className="teamTables">
                     <h1>Team 2</h1>
-                    <ChooseField activeChooseField1={props.activeChooseField1Team2} activeChooseField2={props.activeChooseField2Team2}
+                    <ChooseField activeChooseField1={props.data.color1Team2} activeChooseField2={props.data.color2Team2}
                     fieldNames={fieldNames} type="table"/>
                 </div>
             </div>
