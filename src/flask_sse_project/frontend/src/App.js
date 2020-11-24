@@ -54,6 +54,28 @@ constructor(){
   }
     
   render() {
+
+    const logo = {
+      position: "fixed",
+      bottom: "0",
+      fontWeight: "bolder"
+  };
+
+    const logoUmgebung = {
+      display: "flex",
+      justifyContent: "center",
+      zIndex: "11",
+      width: "100%",
+      height: "100%",
+      top: "0",
+      left: "0",
+      position: "absolute"
+    };
+
+    /*<div style={logoUmgebung}>
+    <h1 style={logo}>MatchPunktezähler</h1>
+ </div>*/
+
     return (
       <div className="app">
         <Procedure data={this.state.data}/>
