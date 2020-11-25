@@ -1,5 +1,4 @@
 from flask import Blueprint
-import random #nur Test
 from .bluetooth_controller import BluetoothController
 from .gameFactory import GameFactory
 
@@ -51,12 +50,13 @@ class Controller(Blueprint):
         Configures a new Thread, which handles Bluetooth communication.
 
         Should only be called from a new thread. After setup is complete, readBluetooth() will be called.
+        Not Thread Safe
         """
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        with threading.Lock():
-            self.bluetoothController = BluetoothController()
-            self.bluetoothController.attach(self)
+        #with threading.Lock():
+        self.bluetoothController = BluetoothController()
+        self.bluetoothController.attach(self)
         loop.run_until_complete(self.readBluetooth())
 
     async def readBluetooth(self):
@@ -103,6 +103,10 @@ class Controller(Blueprint):
             r = await client.get("http://localhost:5000/con/" + path)
             print(r.text)
 
+    async def updateDeviceCount(self):
+        if "init" == self.tableModel.site: #TODO: tableModel muss erstellt werden
+            self.updateSSE("updateInit")
+
     def startGame(self, gameName):
         """
         Starts the game.
@@ -117,18 +121,18 @@ class Controller(Blueprint):
 
     def updateInitSite(self):
         deviceCount = self.bluetoothController.deviceCount()
-        self.sse.publish({'status': "init", 'connectedController': deviceCount}, type='updateData')
+        self.sse.publish({'status': "init", 'connectedController': deviceCount}, type = 'updateData')
 
     def updatePlayerMenuSite(self):
-        self.sse.publish({'status': "playerMenu", 'activeChooseField': 1}, type='updateData')
+        self.sse.publish({'status': "playerMenu", 'activeChooseField': 1}, type = 'updateData')
 
-    def updateNameMenuSite(self):
+    def updateColorMenuSite(self):
         self.sse.publish({'status': "nameMenu", 'playMode': 1,
         'color1Team1': 3, 'color2Team1': None,
-        'color1Team2': 5, 'color2Team2': None}, type='updateData')
+        'color1Team2': 5, 'color2Team2': None}, type = 'updateData')
 
     def updateGameMenuSite(self):
-        self.sse.publish({'status': "gameMenu", 'activeChooseField': 'badminton'}, type='updateData')
+        self.sse.publish({'status': "gameMenu", 'activeChooseField': 'badminton'}, type = 'updateData')
 
     def updateGameSite(self):
         """
@@ -141,8 +145,9 @@ class Controller(Blueprint):
         self.sse.publish({'status': "game", 'connectedController' : deviceCount,
             'counterTeam1': gameState['counter']['Team1'],
             'counterTeam2': gameState['counter']['Team2'],
+            'lastChanged' : gameState['lastChanged'],
             'wonRoundsTeam1' : gameState['wonRounds']['Team1'],
             'wonRoundsTeam2' : gameState['wonRounds']['Team2'],
             'wonGamesTeam1': gameState['wonGames']['Team1'],
             'wonGamesTeam2': gameState['wonGames']['Team2']}
-            , type='updateData')
+            , type = 'updateData')

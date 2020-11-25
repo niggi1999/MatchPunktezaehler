@@ -57,7 +57,7 @@ class BluetoothController:
         """
         from .controller import Controller
         for observer in self.__observers:
-            await observer.updateSSE("updateInit")
+            await observer.updateDeviceCount()
 
     def deviceCount(self):
         """

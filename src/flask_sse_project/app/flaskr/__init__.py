@@ -1,6 +1,7 @@
 from .controller import Controller
 from .badminton import Badminton, ServePosition
 from .gameFactory import GameFactory
+from .tableModel import TableConfig, TableTestConfig, TableProdConfig, TableModel, TableFactory
 
 from flask import Flask
 
@@ -30,9 +31,9 @@ def create_controller(sse):
         con.updatePlayerMenuSite()
         return 'PlayerMenu site updated'
 
-    @con.route('/updateNameMenuSite')
-    def updateNameMenuSite():
-        con.updateNameMenuSite()
+    @con.route('/updateColorMenuSite')
+    def updateColorMenuSite():
+        con.updateColorMenuSite()
         return 'Name Menu site updated'
 
     @con.route('/updateGameMenuSite')

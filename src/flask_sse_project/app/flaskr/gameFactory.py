@@ -2,8 +2,8 @@
 from .badminton import Badminton
 class GameFactory():
     """ Factory class to create a game Object. """
-    @classmethod
-    def create(cls, specificGameName):
+    @staticmethod
+    def create(specificGameName):
         """
         Creates a new game Object.
 

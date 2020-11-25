@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import unittest
-from flaskr import Badminton, ServePosition, GameFactory, Controller
+from flaskr import Badminton, ServePosition, GameFactory, Controller, TableTestConfig, TableModel, TableFactory
 
 class TestBadminton(unittest.TestCase):
     def testBadmintonExists(self):
@@ -145,7 +145,31 @@ class TestBadminton(unittest.TestCase):
         badminton = Badminton()
         with self.assertRaises(ValueError):
             badminton.redo()
-    
+
+    def testLastChanged(self):
+        badminton = Badminton()
+
+        lastChanged = badminton.gameState()["lastChanged"]
+        self.assertEqual(None, lastChanged)
+
+        badminton.counterUp(1)
+        lastChanged = badminton.gameState()["lastChanged"]
+        self.assertEqual("Team1", lastChanged)
+
+        badminton.counterUp(2)
+        lastChanged = badminton.gameState()["lastChanged"]
+        self.assertEqual("Team2", lastChanged)
+
+        '''
+        badminton.undo()
+        lastChanged = badminton.gameState()["counter"]["lastChanged"]
+        self.assertEqual("Team2", lastChanged)
+
+        badminton.redo()
+        lastChanged = badminton.gameState()["counter"]["lastChanged"]
+        self.assertEqual("Team2", lastChanged)
+        '''
+
     def testServePosition(self):
         badminton = Badminton()
         badminton.counterUp(1)
@@ -160,7 +184,7 @@ class TestBadminton(unittest.TestCase):
         badminton.counterUp(2)
         servePosition4 = ServePosition.TEAM2RIGHT
         self.assertEqual(badminton.servePosition(), servePosition4)
-        
+
 
 class TestGameFactoy(unittest.TestCase):
     def testGameFactoryWorks(self):
@@ -178,8 +202,122 @@ class TestApp(unittest.TestCase):
     def testAppConfig(self):
         pass
 
+class TestTableConfig(unittest.TestCase):
+    def testGetNextSite(self):
+        self.assertEqual(TableTestConfig.getNextSite("gameMenu"), "game")
+        self.assertEqual(TableTestConfig.getNextSite("game"), None)
 
-#TODO: Doppel, Seitenwechsel
+    def testGetPreviousSite(self):
+        self.assertEqual(TableTestConfig.getPreviousSite("playerMenu"), "init")
+        self.assertEqual(TableTestConfig.getPreviousSite("init"), None)
+
+    def testRowsAndColumns(self):
+        initConfig = TableTestConfig.getRowsAndColumns("init")
+        self.assertDictEqual(initConfig, {"rows" : 1, "columns" : 1})
+
+        colorMenuConfig = TableTestConfig.getRowsAndColumns("colorMenu")
+        testConfig = {"rows" : 6, "columns" : 2,\
+                           "rowContents" : ("Orange", "Red", "Purple", "Blue", "Green", "Black")}
+        self.assertDictEqual(colorMenuConfig, testConfig)
+
+    def testGetFirstSite(self):
+        firstSite = TableTestConfig.getFirstSite()
+        self.assertEqual(firstSite, "init")
+
+    def testGetStartCursor(self):
+        startCursor = TableTestConfig.getStartCursor()
+        testStartCursor = {"row" : 1, "column" : 1}
+        self.assertDictEqual(startCursor, testStartCursor)
+
+class TestTableFactory(unittest.TestCase):
+    def testFirstSite(self):
+        tableFactory = TableFactory(TableTestConfig)
+        self.assertEqual(tableFactory.currentSite, "init")
+
+class TestTableModel(unittest.TestCase):
+    def testDimensions(self):
+        tableModel = TableModel(TableTestConfig, "colorMenu")
+        testConfig = {"rows" : 6, "columns" : 2}
+        self.assertDictEqual(testConfig, tableModel.dimensions)
+
+        tableModel._TableModel__newSite("colorMenu", "doubles")
+        testConfig = {"rows" : 6, "columns" : 4}
+        self.assertDictEqual(testConfig, tableModel.dimensions)
+
+
+    def testStartCursor(self):
+        tableModel = TableModel(TableTestConfig, "colorMenu")
+        startCursor = TableTestConfig.getStartCursor()
+        self.assertDictEqual(tableModel.cursor, startCursor)
+
+    def testGoDown(self):
+        tableModel = TableModel(TableTestConfig, "colorMenu")
+        goDownWorked = tableModel.goDown()
+        self.assertEqual(goDownWorked, True)
+        self.assertEqual(tableModel.cursor["row"], 2)
+
+        for i in range(4):
+            tableModel.goDown()
+        self.assertEqual(tableModel.cursor["row"], 6)
+
+        goDownWorked = tableModel.goDown()
+        self.assertEqual(goDownWorked, False)
+        self.assertEqual(tableModel.cursor["row"], 6)
+
+    def testGoUp(self):
+        tableModel = TableModel(TableTestConfig, "colorMenu")
+        goUpWorked = tableModel.goUp()
+        self.assertEqual(goUpWorked, False)
+        self.assertEqual(tableModel.cursor["row"], 1)
+
+        tableModel.goDown()
+        goUpWorked = tableModel.goUp()
+        self.assertEqual(goUpWorked, True)
+        self.assertEqual(tableModel.cursor["row"], 1)
+
+    def testGoRight(self):
+        tableModel = TableModel(TableTestConfig, "colorMenu")
+        goRightWorked = tableModel.goRight()
+        self.assertEqual(goRightWorked, True)
+        self.assertEqual(tableModel.cursor["column"], 2)
+
+        goRightWorked = tableModel.goRight()
+        self.assertEqual(goRightWorked, False)
+        self.assertEqual(tableModel.cursor["column"], 2)
+
+    def testGoLeft(self):
+        tableModel = TableModel(TableTestConfig, "colorMenu")
+        goLeftWorked = tableModel.goLeft()
+        self.assertEqual(goLeftWorked, False)
+        self.assertEqual(tableModel.cursor["column"], 1)
+
+        tableModel.goRight()
+        goLeftWorked = tableModel.goLeft()
+        self.assertEqual(goLeftWorked, True)
+        self.assertEqual(tableModel.cursor["column"], 1)
+
+    def testSelectButton(self):
+        tableModel = TableModel(TableTestConfig, "colorMenu")
+        selectWorked = tableModel.selectCurrentButton()
+        self.assertEqual(selectWorked, True)
+        selectedFields = [{"row" : 1, "column" : 1}]
+        self.assertListEqual(tableModel.selectedButtons, selectedFields)
+
+        tableModel.goDown()
+        tableModel.selectCurrentButton()
+        selectedFields = [{"row" : 2, "column" : 1}]
+        self.assertListEqual(tableModel.selectedButtons, selectedFields)
+
+        tableModel.goRight()
+        tableModel.selectCurrentButton()
+        selectedFields = [{"row" : 2, "column" : 2}]
+        self.assertListEqual(tableModel.selectedButtons, selectedFields)
+
+        tableModel.goLeft()
+        tableModel.goUp()
+        tableModel.selectCurrentButton()
+        selectedFields = [{"row" : 2, "column" : 2}, {"row" : 1, "column" : 1}]
+        self.assertListEqual(tableModel.selectedButtons, selectedFields)
 
 if __name__ == '__main__':
     unittest.main()
