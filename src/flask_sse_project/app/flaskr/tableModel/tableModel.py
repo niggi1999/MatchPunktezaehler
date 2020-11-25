@@ -70,3 +70,5 @@ class TableModel():
         self.selectedButtons[:] = filterfalse(elementInSameRowOrColumn, self.selectedButtons)
                             #[:] Notation to change elements of list and not
                             # change attribute to filterfalse object reference
+
+    #def nextSite(self):
