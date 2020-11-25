@@ -41,7 +41,7 @@ class Controller(Blueprint):
         """
         Blueprint.__init__(self, name, import_Name)
         self.sse = sse
-        self.startGame('badminton')
+        self.startGame('badminton') #badminton als default behalten
         self.bluetoothTread = threading.Thread(target = self.setupBluetoothThread, daemon = True)
         self.bluetoothTread.start()
 
@@ -70,6 +70,7 @@ class Controller(Blueprint):
         Calls updateSSE() after updating the game.
         """
         while True:
+            #Folgendes in Methode unterbringen
             pressedButton = await self.bluetoothController.readBluetooth()
             if ('left' == pressedButton):
                 self.game.counterUp(teamNumber = 1)
@@ -88,7 +89,7 @@ class Controller(Blueprint):
             else:
                 continue
 
-            await self.updateSSE("updateGame")
+            await self.updateSSE("updateGameSite")
 
     async def updateSSE(self, path):
         """
@@ -104,8 +105,9 @@ class Controller(Blueprint):
             print(r.text)
 
     async def updateDeviceCount(self):
-        if "init" == self.tableModel.site: #TODO: tableModel muss erstellt werden
-            self.updateSSE("updateInit")
+        pass
+        #if "init" == self.tableModel.site: #TODO: tableModel muss erstellt werden
+            #self.updateSSE("updateInit")
 
     def startGame(self, gameName):
         """

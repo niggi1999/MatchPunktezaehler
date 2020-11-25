@@ -103,46 +103,48 @@ class BluetoothController:
             None: If there was a probleme with the device Connection
         """
         if(self.device):
-            #print(self.device)
             try:
-                async for event in self.device.async_read_loop():
-                        if (evdev.ecodes.EV_KEY == event.type):
-                            if (evdev.categorize(event).keystate == 0):
-                                scancode = evdev.categorize(event).scancode
-                                buttonName = "unknown"
-                                if(115 == scancode):
-                                    buttonName = "up"
-                                elif(114 == scancode):
-                                    buttonName ="down"
-                                elif(163 == scancode):
-                                    buttonName ="right"
-                                elif(165 == scancode):
-                                    buttonName ="left"
-                                elif(164 == scancode):
-                                    buttonName = "ok"
-
-                                print(buttonName)
-                                return buttonName
+                return await self.__pressedButton()
             except OSError as error:
                 if (19 == error.errno):
-                    self.device = None
-                    self.loop.run_until_complete(self.notify())
-                    print("device disconnected, trying to reconnect")
-                    await asyncio.sleep(2)
-                    self.findDevice()
-                    if (self.device):
-                        print("reconnected")
-                    else:
-                        print("Reconnect failed")
-                    return
+                    self.__handleDisconnect()
         else:
             print("No Device found")
             await asyncio.sleep(2)
             await self.findDevice()
 
+    async def __pressedButton(self):
+        async for event in self.device.async_read_loop():
+                if (evdev.ecodes.EV_KEY == event.type):
+                    if (evdev.categorize(event).keystate == 0):
+                        scancode = evdev.categorize(event).scancode
+                        buttonName = "unknown"
+                        if(115 == scancode):
+                            buttonName = "up"
+                        elif(114 == scancode):
+                            buttonName ="down"
+                        elif(163 == scancode):
+                            buttonName ="right"
+                        elif(165 == scancode):
+                            buttonName ="left"
+                        elif(164 == scancode):
+                            buttonName = "ok"
+                        print(buttonName)
+                        return buttonName
+
+    async def __handleDisconnect(self):
+        self.device = None
+        self.loop.run_until_complete(self.notify())
+        print("device disconnected, trying to reconnect")
+        await asyncio.sleep(2)
+        self.findDevice()
+        if (self.device):
+            print("reconnected")
+        else:
+            print("Reconnect failed")
+
 
 if __name__ == "__main__":
     bluetoothController = BluetoothController()
-    #bluetoothController.readLoop()
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(bluetoothController.readAsync())
+    loop.run_until_complete(bluetoothController.readBluetooth())
