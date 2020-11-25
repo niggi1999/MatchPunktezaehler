@@ -177,8 +177,9 @@ class TestBadminton(unittest.TestCase):
     def testServePosition(self):
         badminton = Badminton()
         servePositionCorrect = False
-        if(badminton.servePosition() == ServePosition.TEAM1RIGHT): servePositionCorrect = True
-        if(badminton.servePosition() == ServePosition.TEAM2RIGHT): servePositionCorrect = True
+        firstServe = badminton.servePosition()
+        if(firstServe == ServePosition.TEAM1RIGHT): servePositionCorrect = True
+        if(firstServe == ServePosition.TEAM2RIGHT): servePositionCorrect = True
         self.assertEqual(servePositionCorrect, True)
         badminton.counterUp(1)
         servePosition1 = ServePosition.TEAM1LEFT
