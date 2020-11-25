@@ -145,7 +145,8 @@ class Game(ABC):
                      "lastChanged" : self.lastChanged,\
                      "wonRounds" : {"Team1" : self.wonRounds["Team1"], "Team2" : self.wonRounds["Team2"]},\
                      "wonGames" : {"Team1" : self.wonGames["Team1"], "Team2" : self.wonGames["Team2"]},\
-                     "currentMaxPoints" : self.currentMaxPoints}
+                     "currentMaxPoints" : self.currentMaxPoints,\
+                     "sidesChanged" : self.sidesChanged}
         return gameState
 
     def undo(self):
@@ -166,6 +167,7 @@ class Game(ABC):
             self.wonRounds = lastGameState["wonRounds"]
             self.wonGames = lastGameState["wonGames"]
             self.currentMaxPoints = lastGameState["currentMaxPoints"]
+            self.sidesChanged = lastGameState["sidesChanged"]
 
     def redo(self):
         """
@@ -185,3 +187,4 @@ class Game(ABC):
             self.wonRounds = nextGameState["wonRounds"]
             self.wonGames = nextGameState["wonGames"]
             self.currentMaxPoints = nextGameState["currentMaxPoints"]
+            self.sidesChanged = nextGameState["sidesChanged"]
