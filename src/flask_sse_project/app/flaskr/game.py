@@ -44,6 +44,7 @@ class Game(ABC):
         self.wonRounds = {"Team1" : 0, "Team2" : 0}
         self.wonGames = {"Team1" : 0, "Team2" : 0}
         self.currentMaxPoints = self.maxPointsWithoutOvertime
+        self.sidesChanged = False
         self._undoStack = []
         self._redoStack = []
 
@@ -85,6 +86,7 @@ class Game(ABC):
         self.counter["Team1"] = 0
         self.counter["Team2"] = 0
         self.wonRounds["Team{}".format(winningTeamNumber)] += 1
+        self.sidesChanged = not self.sidesChanged
         if (self.isGameOver()):
             self.newGame(winningTeamNumber)
 

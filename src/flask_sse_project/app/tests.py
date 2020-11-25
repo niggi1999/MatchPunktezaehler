@@ -172,6 +172,10 @@ class TestBadminton(unittest.TestCase):
 
     def testServePosition(self):
         badminton = Badminton()
+        servePositionCorrect = False
+        if(badminton.servePosition() == ServePosition.TEAM1RIGHT): servePositionCorrect = True
+        if(badminton.servePosition() == ServePosition.TEAM2RIGHT): servePositionCorrect = True
+        self.assertEqual(servePositionCorrect, True)
         badminton.counterUp(1)
         servePosition1 = ServePosition.TEAM1LEFT
         self.assertEqual(badminton.servePosition(), servePosition1)
@@ -184,6 +188,27 @@ class TestBadminton(unittest.TestCase):
         badminton.counterUp(2)
         servePosition4 = ServePosition.TEAM2RIGHT
         self.assertEqual(badminton.servePosition(), servePosition4)
+
+    def testSideChange(self):
+        badminton = Badminton()
+        self.assertEqual(badminton.sidesChanged, False)
+        i = 0
+        while(i<21):
+            badminton.counterUp(1)
+            i = i+1
+        self.assertEqual(badminton.sidesChanged, True)
+        i = 0
+        while(i<21):
+            badminton.counterUp(2)
+            i = i+1
+        self.assertEqual(badminton.sidesChanged, False)
+        i = 0
+        while(i<42):
+            badminton.counterUp(1)
+            i = i+1
+        self.assertEqual(badminton.sidesChanged, False)
+
+
 
 
 class TestGameFactoy(unittest.TestCase):
