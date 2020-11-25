@@ -50,7 +50,8 @@ class TableModel():
         else:
             return False
 
-    def __getAssociatedString(self, direction):
+    @staticmethod
+    def __getAssociatedString(direction):
         rowOrColumn = None
         if "vertically" == direction:
             rowOrColumn = "row"
@@ -59,12 +60,12 @@ class TableModel():
         return rowOrColumn
 
     def selectCurrentButton(self) -> bool:
-        self.__deleteSelectedOnSameRowOrColumnAsCursor()
+        self.__deleteSelectedButtonOnSameRowOrColumnAsCursor()
         self.selectedButtons.append(deepcopy(self.cursor))
         print(self.selectedButtons)
         return True
 
-    def __deleteSelectedOnSameRowOrColumnAsCursor(self):
+    def __deleteSelectedButtonOnSameRowOrColumnAsCursor(self):
         elementInSameRowOrColumn = lambda element : (element["row"] == self.cursor["row"]) or\
                                                     (element["column"] == self.cursor["column"])
         self.selectedButtons[:] = filterfalse(elementInSameRowOrColumn, self.selectedButtons)

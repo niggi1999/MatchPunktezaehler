@@ -1,6 +1,10 @@
 #!/usr/bin/env python
+from subprocess import Popen
 import unittest
-from flaskr import Badminton, ServePosition, GameFactory, Controller, TableTestConfig, TableModel, TableFactory
+from unittest.mock import patch
+from flaskr import Badminton, ServePosition, GameFactory, Controller, TableTestConfig,\
+                   TableModel, TableFactory, BluetoothController, create_controller
+from flask_sse import ServerSentEventsBlueprint
 
 class TestBadminton(unittest.TestCase):
     def testBadmintonExists(self):
@@ -220,12 +224,46 @@ class TestGameFactoy(unittest.TestCase):
         self.assertDictEqual(badminton.counter, testCounter)
 
 class TestController(unittest.TestCase):
-    def testControllerStartWorks(self):
-        pass
+    '''
+    @patch("flask_sse.ServerSentEventsBlueprint", autospec = True)
+    def testControllerStartWorks(self, mockSse):
+        class MockBluetoothController(BluetoothController):
+            def __init__(self, testController):
+                super().__init__()
+                self.testController = testController
+                self.counter = 0
+            async def readBluetooth(self):
+                yield "left" #Call counter
+                self.counter += 1
+                self.counter += 1
+                self.counter += 1
+            async def waitForThreadEnd(self):
+                while 3 > self.counter:
+                    pass
+
+        testBluetoothController = MockBluetoothController(self)
+        controller = create_controller(mockSse, testBluetoothController)
+        await testBluetoothController.waitForThreadEnd()
+        controller.game.get
+        controller.assertEqual()
+        '''
 
 class TestApp(unittest.TestCase):
+    '''
     def testAppConfig(self):
         pass
+
+    @patch.object(BluetoothController, "readBluetooth", autospec = True)
+    def testSSEOutput(self, mockReadBluetooth):
+        async def sideEffectReadBluetooth(self):
+            yield "left"
+            self.assertEqual()
+            yield "left"
+        mockReadBluetooth.side_effect = sideEffectReadBluetooth
+        server = Popen(["gunicorn", '"flaskr:create_app()"', "--worker-class" "gevent", "--bind 127.0.0.1:5000"])
+
+        server.kill()
+    '''
 
 class TestTableConfig(unittest.TestCase):
     def testGetNextSite(self):

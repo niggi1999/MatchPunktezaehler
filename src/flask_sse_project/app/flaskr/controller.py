@@ -5,8 +5,6 @@ from .gameFactory import GameFactory
 import asyncio
 import threading
 import httpx
-#from asgiref.sync import sync_to_async
-#import concurrent.futures
 
 class Controller(Blueprint):
     """
@@ -27,7 +25,7 @@ class Controller(Blueprint):
         updateSSE(): Sends a GET request to the given path to update the SSE stream.
         updateDeviceNumber(): Gets the number of connected devices and publishes it to the SSE stream.
     """
-    def __init__(self, name, import_Name, sse):
+    def __init__(self, name, import_Name, sse, bluetoothController):
         """
         Starts the game and initiates a daemon thread, which handles the bluetooth communication.
 
@@ -42,10 +40,11 @@ class Controller(Blueprint):
         Blueprint.__init__(self, name, import_Name)
         self.sse = sse
         self.startGame('badminton') #badminton als default behalten
-        self.bluetoothTread = threading.Thread(target = self.setupBluetoothThread, daemon = True)
+        self.bluetoothTread = threading.Thread(target = self.setupBluetoothThread,\
+                                               args = (bluetoothController,), daemon = True)
         self.bluetoothTread.start()
 
-    def setupBluetoothThread(self):
+    def setupBluetoothThread(self, bluetoothController):
         """
         Configures a new Thread, which handles Bluetooth communication.
 
@@ -55,7 +54,7 @@ class Controller(Blueprint):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         #with threading.Lock():
-        self.bluetoothController = BluetoothController()
+        self.bluetoothController = bluetoothController
         self.bluetoothController.attach(self)
         loop.run_until_complete(self.readBluetooth())
 
