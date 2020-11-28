@@ -44,9 +44,8 @@ class TableConfig(ABCMeta):
     @classmethod
     def getStartCursor(cls):
         return deepcopy(cls._startCursor)
-
 class TableTestConfig(TableConfig):
-    _succession = ("init", "playerMenu", "colorMenu", "gameMenu", "game")
+    _succession = ("init", "playerMenu", "colorMenu", "gameMenu")
     _columnsPlayerMenu = ("singles", "doubles")
     _rowsColorMenu = ("Orange", "Red", "Purple", "Blue", "Green", "Black")
     _startCursor = {"row" : 1, "column" : 1}
@@ -54,10 +53,12 @@ class TableTestConfig(TableConfig):
         "init" : {"rows" : 1, "columns" : 1},
         "playerMenu" : {"rows" : 1, "columns" : 2, "columnContents" : _columnsPlayerMenu},
         "colorMenu" : {"rows" : 6, "columns" : 2, "rowContents" : _rowsColorMenu},
+        "colorMenuDoubles" : {"rows" : 6, "columns" : 4, "rowContents" : _rowsColorMenu},
         "gameMenu" : {"rows" : 1, "columns" : 1}
     }
 
 class TableProdConfig(TableConfig):
+    _succession = ("init", "playerMenu", "colorMenu", "gameMenu")
     _succession = ("init", "playerMenu", "colorMenu", "gameMenu", "game")
     _columnsPlayerMenu = ("singles", "doubles")
     _rowsColorMenu = ("Orange", "Red", "Purple", "Blue", "Green", "Black")
@@ -66,5 +67,6 @@ class TableProdConfig(TableConfig):
         "init" : {"rows" : 1, "columns" : 1},
         "playerMenu" : {"rows" : 1, "columns" : 2, "columnContents" : _columnsPlayerMenu},
         "colorMenu" : {"rows" : 6, "columns" : 2, "rowContents" : _rowsColorMenu},
+        "colorMenuDoubles" : {"rows" : 6, "columns" : 4, "rowContents" : _rowsColorMenu},
         "gameMenu" : {"rows" : 1, "columns" : 1}
     }

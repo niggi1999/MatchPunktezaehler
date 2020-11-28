@@ -110,8 +110,7 @@ class BluetoothController:
                     self.__handleDisconnect()
         else:
             print("No Device found")
-            await asyncio.sleep(2)
-            await self.findDevice()
+            self.__tryToConnectAfterTwoSeconds()
 
     async def __pressedButton(self):
         async for event in self.device.async_read_loop():
@@ -136,12 +135,15 @@ class BluetoothController:
         self.device = None
         self.loop.run_until_complete(self.notify())
         print("device disconnected, trying to reconnect")
-        await asyncio.sleep(2)
-        self.findDevice()
+        self.__tryToConnectAfterTwoSeconds()
         if (self.device):
             print("reconnected")
         else:
             print("Reconnect failed")
+
+    async def __tryToConnectAfterTwoSeconds(self):
+        await asyncio.sleep(2)
+        self.findDevice()
 
 
 if __name__ == "__main__":

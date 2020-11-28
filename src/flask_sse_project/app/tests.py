@@ -3,7 +3,7 @@ from subprocess import Popen
 import unittest
 from unittest.mock import patch
 from flaskr import Badminton, ServePosition, GameFactory, Controller, TableTestConfig,\
-                   TableModel, TableFactory, BluetoothController, create_controller
+                   TableModel, TableFactory, BluetoothController, create_controller, SiteModel
 from flask_sse import ServerSentEventsBlueprint
 
 class TestBadminton(unittest.TestCase):
@@ -268,8 +268,8 @@ class TestApp(unittest.TestCase):
 
 class TestTableConfig(unittest.TestCase):
     def testGetNextSite(self):
-        self.assertEqual(TableTestConfig.getNextSite("gameMenu"), "game")
-        self.assertEqual(TableTestConfig.getNextSite("game"), None)
+        self.assertEqual(TableTestConfig.getNextSite("gameMenu"), None)
+        self.assertEqual(TableTestConfig.getNextSite("colorMenu"), "gameMenu")
 
     def testGetPreviousSite(self):
         self.assertEqual(TableTestConfig.getPreviousSite("playerMenu"), "init")
@@ -294,28 +294,27 @@ class TestTableConfig(unittest.TestCase):
         self.assertDictEqual(startCursor, testStartCursor)
 
 class TestTableFactory(unittest.TestCase):
-    def testFirstSite(self):
-        tableFactory = TableFactory(TableTestConfig)
-        self.assertEqual(tableFactory.currentSite, "init")
+    def testCreate(self):
+        tableModel = TableFactory.create("init")
+        self.assertEqual(tableModel.getCurrentSite(), "init")
 
 class TestTableModel(unittest.TestCase):
     def testDimensions(self):
-        tableModel = TableModel(TableTestConfig, "colorMenu")
+        tableModel = TableFactory.create("colorMenu", TableTestConfig)
         testConfig = {"rows" : 6, "columns" : 2}
         self.assertDictEqual(testConfig, tableModel.dimensions)
 
-        tableModel._TableModel__newSite("colorMenu", "doubles")
+        tableModel = TableFactory.create("colorMenuDoubles", TableTestConfig)
         testConfig = {"rows" : 6, "columns" : 4}
         self.assertDictEqual(testConfig, tableModel.dimensions)
 
-
     def testStartCursor(self):
-        tableModel = TableModel(TableTestConfig, "colorMenu")
+        tableModel = TableFactory.create("colorMenu", TableTestConfig)
         startCursor = TableTestConfig.getStartCursor()
         self.assertDictEqual(tableModel.cursor, startCursor)
 
     def testGoDown(self):
-        tableModel = TableModel(TableTestConfig, "colorMenu")
+        tableModel = TableFactory.create("colorMenu", TableTestConfig)
         goDownWorked = tableModel.goDown()
         self.assertEqual(goDownWorked, True)
         self.assertEqual(tableModel.cursor["row"], 2)
@@ -329,7 +328,7 @@ class TestTableModel(unittest.TestCase):
         self.assertEqual(tableModel.cursor["row"], 6)
 
     def testGoUp(self):
-        tableModel = TableModel(TableTestConfig, "colorMenu")
+        tableModel = TableFactory.create("colorMenu", TableTestConfig)
         goUpWorked = tableModel.goUp()
         self.assertEqual(goUpWorked, False)
         self.assertEqual(tableModel.cursor["row"], 1)
@@ -340,7 +339,7 @@ class TestTableModel(unittest.TestCase):
         self.assertEqual(tableModel.cursor["row"], 1)
 
     def testGoRight(self):
-        tableModel = TableModel(TableTestConfig, "colorMenu")
+        tableModel = TableFactory.create("colorMenu", TableTestConfig)
         goRightWorked = tableModel.goRight()
         self.assertEqual(goRightWorked, True)
         self.assertEqual(tableModel.cursor["column"], 2)
@@ -350,7 +349,7 @@ class TestTableModel(unittest.TestCase):
         self.assertEqual(tableModel.cursor["column"], 2)
 
     def testGoLeft(self):
-        tableModel = TableModel(TableTestConfig, "colorMenu")
+        tableModel = TableFactory.create("colorMenu", TableTestConfig)
         goLeftWorked = tableModel.goLeft()
         self.assertEqual(goLeftWorked, False)
         self.assertEqual(tableModel.cursor["column"], 1)
@@ -361,9 +360,8 @@ class TestTableModel(unittest.TestCase):
         self.assertEqual(tableModel.cursor["column"], 1)
 
     def testSelectButton(self):
-        tableModel = TableModel(TableTestConfig, "colorMenu")
-        selectWorked = tableModel.selectCurrentButton()
-        self.assertEqual(selectWorked, True)
+        tableModel = TableFactory.create("colorMenu", TableTestConfig)
+        tableModel.selectCurrentButton()
         selectedFields = [{"row" : 1, "column" : 1}]
         self.assertListEqual(tableModel.selectedButtons, selectedFields)
 
@@ -382,6 +380,46 @@ class TestTableModel(unittest.TestCase):
         tableModel.selectCurrentButton()
         selectedFields = [{"row" : 2, "column" : 2}, {"row" : 1, "column" : 1}]
         self.assertListEqual(tableModel.selectedButtons, selectedFields)
+
+    def testCurrentSite(self):
+        tableModel = TableFactory.create("gameMenu", TableTestConfig)
+        currentSite = tableModel.getCurrentSite()
+        self.assertEqual(currentSite, "gameMenu")
+
+    def testNewSite(self):
+        tableModel = TableFactory.create("gameMenu", TableTestConfig)
+        newSiteWorked = tableModel.newSite("init")
+        self.assertEqual(newSiteWorked, True)
+        self.assertEqual(tableModel.getCurrentSite(), "init")
+
+        newSiteWorked = tableModel.newSite("nothing")
+        self.assertEqual(newSiteWorked, False)
+        self.assertEqual(tableModel.getCurrentSite(), "init")
+
+    #TODO: In SiteModel verschieben
+    '''
+    def testSiteForward(self):
+        tableModel = TableFactory.create("colorMenu", TableTestConfig)
+        siteForwardWorked = tableModel.siteForward()
+        self.assertEqual(siteForwardWorked, True)
+        self.assertEqual(tableModel.getCurrentSite(), "gameMenu")
+
+        siteForwardWorked = tableModel.siteForward()
+        self.assertEqual(siteForwardWorked, False)
+
+    def testSiteBackward(self):
+        tableModel = TableFactory.create("playerMenu", TableTestConfig)
+        siteBackwardWorked = tableModel.siteBackward()
+        self.assertEqual(siteBackwardWorked, True)
+        self.assertEqual(tableModel.getCurrentSite(), "init")
+
+        siteBackwardWorked = tableModel.siteBackward()
+        self.assertEqual(siteBackwardWorked, False)
+    '''
+
+class TestSiteModel(unittest.TestCase):
+    def test(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()

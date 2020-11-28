@@ -69,7 +69,7 @@ class Controller(Blueprint):
         Calls updateSSE() after updating the game.
         """
         while True:
-            #Folgendes in Methode unterbringen
+            #TODO: Folgendes in Methode unterbringen
             pressedButton = await self.bluetoothController.readBluetooth()
             if ('left' == pressedButton):
                 self.game.counterUp(teamNumber = 1)
@@ -90,7 +90,8 @@ class Controller(Blueprint):
 
             await self.updateSSE("updateGameSite")
 
-    async def updateSSE(self, path):
+    @staticmethod
+    async def updateSSE(path):
         """
         Sends a GET request to the given path to update the SSE stream.
 
