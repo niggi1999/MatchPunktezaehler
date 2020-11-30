@@ -4,7 +4,6 @@ import ChooseField from "./chooseField"
 
 
 function PlayerMenu (props) {
-    const fieldNames = ["1vs1", "2vs2"];
 
     let fowardButtonActive = false;
 
@@ -14,9 +13,9 @@ function PlayerMenu (props) {
 
     return(
         <div className="config">
-            <ChooseField activeChooseField1={props.data.activeChooseField} fieldNames={fieldNames}/>
+            <ChooseField activeChooseField1={props.data.activeChooseField} fieldNames={props.data.fieldNames} cursorElement={props.data.cursorElement} tableActive={true}/>
             <ButtonLine fowardButtonText="Press -> to continue to Name Selection of Team 1" fowardButtonActive={fowardButtonActive}
-            backwardButtonText="Back to Controller Connection" backwardButtonActive={true}/>
+            backwardButtonText="Back to Controller Connection" backwardButtonActive={true} cursorElement={props.data.cursorElement}/>
         </div>
     )
 }

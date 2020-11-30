@@ -25,7 +25,9 @@ class Counter extends React.Component{
         <div style={counterstyle}>
             <h1 style={{'fontSize': '30px', 'fontWeight': 'bolder'}}>Won Games: {this.props.games}</h1>
             <h1 style={{'fontSize': '30px', 'fontWeight': 'bolder'}}>Won Rounds: {this.props.rounds}</h1>
+            <h1 style={{'fontSize': '30px', 'fontWeight': 'bolder', 'opacity': 0}}>LeerZeile</h1>
             <h1 style={{'fontSize': '400px', 'fontWeight': 'bolder'}}>{this.props.counter}</h1>
+            <h1 style={{'fontSize': '30px', 'fontWeight': 'bolder', 'opacity': 0}}>LeerZeile</h1>
             <h1 style={{'fontSize': '30px', 'fontWeight': 'bolder', 'opacity': 0}}>Won Games: {this.props.games}</h1>
             <h1 style={{'fontSize': '30px', 'fontWeight': 'bolder', 'opacity': 0}}>Won Rounds: {this.props.rounds}</h1>
         </div>

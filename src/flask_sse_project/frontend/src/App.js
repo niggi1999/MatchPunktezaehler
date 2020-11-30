@@ -7,15 +7,25 @@ class App extends React.Component {
 constructor(){
     super()
       this.state = {
-        data: {status: 'game',
-          connectedController: 1,
-          activeChooseField: 1,
-          playMode: 1, activeChooseField1: 5, activeChooseField2: null,
-          playMode: 1, activeChooseField1: 8, activeChooseField2: null,
-          activeChooseField: 0,
-          counterTeam1: 11, counterTeam2: 12, roundsTeam1: 2, roundsTeam2: 1, gamesTeam1:7, gamesTeam2: 6,
-          team1HighColor: 'Green', team1DownColor: 'Orange', team2HighColor: 'Blue', team2DownColor: 'Red', team1Left: 1,
-          opacityHighSiteTeam1: 0.5, opacityDownSiteTeam1: 0.5, opacityHighSiteTeam2: 0.5, opacityDownSiteTeam2: 0.5}
+        data: {status: 'game', //always needed
+          cursorElement: "1vs1", //always needed
+
+          connectedController: 1, //for initSite
+          
+          activeChooseField: 1, //for PlayerMenuSite
+          fieldNames: ["1vs1", "2vs2"], //for PlayerMenuSite
+
+          playMode: 1, color1Team1: 5, color2Team1: null, //for nameMenuSite
+          playMode: 1, color1Team2: 6, color2Team2: null, //for nameMenuSite
+          //fieldNames: ["Orange", "Red", "Purple", "Blue", "Green", "Black"], //for nameMenuSite
+          table1Active: true, table2Active: false,
+
+          //activeChooseField: 1, //for GameMenuSite
+          //fieldNames: ["Badminton", "Volleyball", "Tennis"], //for GameMenuSite
+
+          counterTeam1: 11, counterTeam2: 12, roundsTeam1: 2, roundsTeam2: 1, gamesTeam1:7, gamesTeam2: 6, //for GameSite
+          team1HighColor: 'Green', team1DownColor: 'Orange', team2HighColor: 'Blue', team2DownColor: 'Red', team1Left:1, //for GameSite
+          opacityHighSiteTeam1: 0.2, opacityDownSiteTeam1: 1, opacityHighSiteTeam2: 0.2, opacityDownSiteTeam2: 0.2} //for GameSite
       }
 
     this.eventSource = new EventSource("http://localhost:5000/events");

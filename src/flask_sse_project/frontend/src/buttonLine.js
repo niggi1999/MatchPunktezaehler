@@ -6,17 +6,37 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 function ButtonLine(props) {
 
+    let cursorActive = {
+        borderStyle: "solid",
+        borderWidth: "10px",
+        borderColor: "red"
+    };
+    let backwardButtonStyle = null;
+    let forwardButtonStyle = null;
+
+
+    switch(props.cursorElement) {
+        case "forwardButton":
+            forwardButtonStyle = cursorActive;
+            break;
+        case "backwardButton":
+            backwardButtonStyle = cursorActive;
+            break;
+        default:
+            break;
+    }
+
     let fowardButton = null;
     if(props.fowardButtonActive) {
-        fowardButton = <Button variant="outline-primary" size="lg" active>{props.fowardButtonText}</Button>
+        fowardButton = <Button style={forwardButtonStyle} variant="outline-primary" size="lg" active>{props.fowardButtonText}</Button>
     }
     else {
-        fowardButton = <Button variant="outline-primary" size="lg" disabled>{props.fowardButtonText}</Button>
+        fowardButton = <Button style={forwardButtonStyle} variant="outline-primary" size="lg" disabled>{props.fowardButtonText}</Button>
     }
 
     let backwardButton = null;
     if(props.backwardButtonActive) {
-        backwardButton = <Button variant="outline-primary" size="lg" active>{props.backwardButtonText}</Button>;
+        backwardButton = <Button style={backwardButtonStyle} variant="outline-primary" size="lg" active>{props.backwardButtonText}</Button>;
     }
     else {
         backwardButton = <div></div>;

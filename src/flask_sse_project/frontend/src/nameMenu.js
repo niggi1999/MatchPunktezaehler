@@ -5,7 +5,6 @@ import "./nameMenu.css"
 
 
 function NameMenu (props) {
-    const fieldNames = ["Orange", "Red", "Purple", "Blue", "Green", "Black"];
 
     let fowardButtonActive = false;
     let message;
@@ -36,17 +35,17 @@ function NameMenu (props) {
                 <div className="teamTables">
                     <h1>Team 1</h1>
                     <ChooseField activeChooseField1={props.data.color1Team1} activeChooseField2={props.data.color2Team1}
-                    fieldNames={fieldNames} type="table"/>
+                    fieldNames={props.data.fieldNames} cursorElement={props.data.cursorElement} tableActive={props.data.table1Active} type="table"/>
                 </div>
 
                 <div className="teamTables">
                     <h1>Team 2</h1>
                     <ChooseField activeChooseField1={props.data.color1Team2} activeChooseField2={props.data.color2Team2}
-                    fieldNames={fieldNames} type="table"/>
+                    fieldNames={props.data.fieldNames} cursorElement={props.data.cursorElement} tableActive={props.data.table2Active} type="table"/>
                 </div>
             </div>
             <ButtonLine fowardButtonText={continueButtonMessage} fowardButtonActive={fowardButtonActive}
-            backwardButtonText={backButtonMessage} backwardButtonActive={true}/>
+            backwardButtonText={backButtonMessage} backwardButtonActive={true} cursorElement={props.data.cursorElement}/>
         </div>
     )
 }

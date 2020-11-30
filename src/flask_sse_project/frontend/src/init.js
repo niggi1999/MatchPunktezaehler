@@ -30,7 +30,7 @@ function Init (props) {
     <div className="config">
         {message}
         <ButtonLine fowardButtonText="Press -> to continue to Player-Menu" fowardButtonActive={fowardButtonActive}
-         backwardsButtonText="" backwardsButtonActive={false}/>
+         backwardsButtonText="" backwardsButtonActive={false} fowardButtonCursor={true} backwardButtonCursor={true}/>
     </div>
     )
 }

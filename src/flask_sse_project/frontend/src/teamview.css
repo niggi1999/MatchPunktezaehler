@@ -7,6 +7,10 @@
 
 .quarterField {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    font-size: 200px;
     flex-grow: 1;
     border-style: solid;
     border-width: 2px;
