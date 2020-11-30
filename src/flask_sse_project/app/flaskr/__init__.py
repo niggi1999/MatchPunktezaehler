@@ -1,6 +1,8 @@
 from .controller import Controller
 from .badminton import Badminton, ServePosition
 from .gameFactory import GameFactory
+from .tableModel import TableConfig, TableTestConfig, TableProdConfig, TableModel, TableFactory, SiteModel
+from .bluetooth_controller import BluetoothController
 
 from flask import Flask
 
@@ -8,7 +10,7 @@ from flask_cors import CORS
 from flask_sse import sse
 
 
-def create_controller(sse):
+def create_controller(sse, testBluetoothController = BluetoothController()):
     """
     Factory Method, which creates a new controller with the given sse object
 
@@ -18,7 +20,7 @@ def create_controller(sse):
 
         sse (ServerSentEventsBlueprint): The Object which will be used to publish events
     """
-    con = Controller('con', __name__, sse)
+    con = Controller('con', __name__, sse, testBluetoothController)
 
     @con.route('/updateInitSite')
     def updateInitSite():
@@ -30,9 +32,9 @@ def create_controller(sse):
         con.updatePlayerMenuSite()
         return 'PlayerMenu site updated'
 
-    @con.route('/updateNameMenuSite')
-    def updateNameMenuSite():
-        con.updateNameMenuSite()
+    @con.route('/updateColorMenuSite')
+    def updateColorMenuSite():
+        con.updateColorMenuSite()
         return 'Name Menu site updated'
 
     @con.route('/updateGameMenuSite')

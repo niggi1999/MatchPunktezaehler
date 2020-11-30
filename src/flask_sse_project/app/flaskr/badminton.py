@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from .game import Game
 from enum import IntEnum
+from random import randint
 
 class ServePosition(IntEnum):
     """
@@ -100,7 +101,10 @@ class Badminton(Game):
             ServePsition Enum
         """
         if (0 == len(self._undoStack)):
-            return ServePosition.UNKNOWN
+            randomNumber = randint(1,2)
+            if(randomNumber == 1): return ServePosition.TEAM1RIGHT
+            elif(randomNumber == 2): return ServePosition.TEAM2RIGHT
+            else: return ServePosition.UNKNOWN
         else:
             
             lastGameState = self._undoStack[-1]
@@ -121,3 +125,4 @@ class Badminton(Game):
                     return ServePosition.TEAM2LEFT
 
         return ServePosition.UNKNOWN
+    

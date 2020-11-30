@@ -7,7 +7,7 @@ class Game(ABC):
 
     When subclassed the class attributes and the methods isRoundOver() isGameOver() must be overridden.
 
-    Class Attibutes:
+    Class Attributes:
 
         maxPointsWithoutOvertime (int): The maximum number of points, when it doesn't come to an overtime.
         absoluteMaxPoints (int): The maximum number of points, when the overtime has its maximum duration.
@@ -40,11 +40,13 @@ class Game(ABC):
         Initialises the objects attributes.
         """
         self.counter = {"Team1" : 0, "Team2" : 0}
+        self.lastChanged = None
         self.wonRounds = {"Team1" : 0, "Team2" : 0}
         self.wonGames = {"Team1" : 0, "Team2" : 0}
         self.currentMaxPoints = self.maxPointsWithoutOvertime
+        self.sidesChanged = False
         self._undoStack = []
-        self.__redoStack = []
+        self._redoStack = []
 
     def counterUp(self, teamNumber):
         """
@@ -61,11 +63,13 @@ class Game(ABC):
             ValueError: If the given team number is not valid.
         """
         self._undoStack.append(self.gameState())
-        self.__redoStack = []
+        self._redoStack = []
 
         if (teamNumber not in range(1, 3)):
             raise ValueError('Team Number "{}" invalid'.format(teamNumber))
-        self.counter["Team{}".format(teamNumber)] += 1
+        winningTeam = "Team{}".format(teamNumber)
+        self.counter[winningTeam] += 1
+        self.lastChanged = winningTeam
         if (self.isRoundOver()):
             self.newRound(teamNumber)
 
@@ -82,6 +86,7 @@ class Game(ABC):
         self.counter["Team1"] = 0
         self.counter["Team2"] = 0
         self.wonRounds["Team{}".format(winningTeamNumber)] += 1
+        self.sidesChanged = not self.sidesChanged
         if (self.isGameOver()):
             self.newGame(winningTeamNumber)
 
@@ -137,9 +142,11 @@ class Game(ABC):
             gameState (dict): Contains the current counter, wonRound, wonGames and currentMaxPoints.
         """
         gameState = {"counter" : {"Team1" : self.counter["Team1"], "Team2" : self.counter["Team2"]},\
+                     "lastChanged" : self.lastChanged,\
                      "wonRounds" : {"Team1" : self.wonRounds["Team1"], "Team2" : self.wonRounds["Team2"]},\
                      "wonGames" : {"Team1" : self.wonGames["Team1"], "Team2" : self.wonGames["Team2"]},\
-                     "currentMaxPoints" : self.currentMaxPoints}
+                     "currentMaxPoints" : self.currentMaxPoints,\
+                     "sidesChanged" : self.sidesChanged}
         return gameState
 
     def undo(self):
@@ -153,13 +160,14 @@ class Game(ABC):
         if (0 == len(self._undoStack)):
             raise ValueError("Nothing to undo")
         else:
-            self.__redoStack.append(self.gameState())
+            self._redoStack.append(self.gameState())
 
             lastGameState = self._undoStack.pop()
             self.counter = lastGameState["counter"]
             self.wonRounds = lastGameState["wonRounds"]
             self.wonGames = lastGameState["wonGames"]
             self.currentMaxPoints = lastGameState["currentMaxPoints"]
+            self.sidesChanged = lastGameState["sidesChanged"]
 
     def redo(self):
         """
@@ -169,13 +177,14 @@ class Game(ABC):
 
             ValueError: If there are no events to redo.
         """
-        if (0 == len(self.__redoStack)):
+        if (0 == len(self._redoStack)):
             raise ValueError("Nothing to redo")
         else:
             self._undoStack.append(self.gameState())
 
-            nextGameState = self.__redoStack.pop()
+            nextGameState = self._redoStack.pop()
             self.counter = nextGameState["counter"]
             self.wonRounds = nextGameState["wonRounds"]
             self.wonGames = nextGameState["wonGames"]
             self.currentMaxPoints = nextGameState["currentMaxPoints"]
+            self.sidesChanged = nextGameState["sidesChanged"]
