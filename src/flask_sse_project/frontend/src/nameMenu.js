@@ -25,6 +25,19 @@ function NameMenu (props) {
             break;
     }
 
+    let table1Active = false;
+    let table2Active = false;
+    switch(props.data.tableActive) {
+        case 1:
+            table1Active = true;
+            break;
+        case 2:
+            table2Active = true;
+            break;
+        default:
+            return <h1>TableActive Value Wrong</h1>
+    }
+
     let continueButtonMessage = "Press -> to continue to Game Menu";
     let backButtonMessage = "Back to Player-Menu";
 
@@ -35,13 +48,13 @@ function NameMenu (props) {
                 <div className="teamTables">
                     <h1>Team 1</h1>
                     <ChooseField activeChooseField1={props.data.color1Team1} activeChooseField2={props.data.color2Team1}
-                    fieldNames={props.data.fieldNames} cursorElement={props.data.cursorElement} tableActive={props.data.table1Active} type="table"/>
+                    fieldNames={props.data.fieldNames} cursorElement={props.data.cursorElement} tableActive={table1Active} type="table"/>
                 </div>
 
                 <div className="teamTables">
                     <h1>Team 2</h1>
                     <ChooseField activeChooseField1={props.data.color1Team2} activeChooseField2={props.data.color2Team2}
-                    fieldNames={props.data.fieldNames} cursorElement={props.data.cursorElement} tableActive={props.data.table2Active} type="table"/>
+                    fieldNames={props.data.fieldNames} cursorElement={props.data.cursorElement} tableActive={table2Active} type="table"/>
                 </div>
             </div>
             <ButtonLine fowardButtonText={continueButtonMessage} fowardButtonActive={fowardButtonActive}
