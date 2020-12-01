@@ -1,5 +1,5 @@
 from .tableModel import TableModel
-from .tableConfig import TableProdConfig
+from .config import TableProdConfig
 
 class TableFactory():
     @staticmethod

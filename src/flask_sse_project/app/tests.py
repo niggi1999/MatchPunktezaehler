@@ -3,8 +3,11 @@ from subprocess import Popen
 import unittest
 from unittest.mock import patch
 from flaskr import Badminton, ServePosition, GameFactory, Controller, TableTestConfig,\
-                   TableModel, TableFactory, BluetoothController, create_controller, SiteModel
+                   TableModel, TableFactory, BluetoothController, create_controller, SiteModel,\
+                   SiteTestConfig
 from flask_sse import ServerSentEventsBlueprint
+
+from copy import deepcopy
 
 class TestBadminton(unittest.TestCase):
     def testBadmintonExists(self):
@@ -29,7 +32,7 @@ class TestBadminton(unittest.TestCase):
     def testRoundEndsTeam1(self):
         badminton = Badminton()
         maxPoints = 21
-        for i in range(maxPoints):
+        for _ in range(maxPoints):
             badminton.counterUp(1)
 
         testWonRounds = {"Team1" : 1, "Team2" : 0}
@@ -40,7 +43,7 @@ class TestBadminton(unittest.TestCase):
     def testRoundEndsTeam2(self):
         badminton = Badminton()
         maxPoints = 21
-        for i in range(maxPoints):
+        for _ in range(maxPoints):
             badminton.counterUp(2)
 
         testWonRounds = {"Team1" : 0, "Team2" : 1}
@@ -51,12 +54,12 @@ class TestBadminton(unittest.TestCase):
     def testCounterEqualAt20(self):
         badminton = Badminton()
         pointsTillOvertime = 20
-        for i in range(pointsTillOvertime):
+        for _ in range(pointsTillOvertime):
             badminton.counterUp(1)
             badminton.counterUp(2)
 
         pointsToWin = 2
-        for i in range(pointsToWin):
+        for _ in range(pointsToWin):
             badminton.counterUp(2)
 
         testWonRounds = {"Team1" : 0, "Team2" : 1}
@@ -67,7 +70,7 @@ class TestBadminton(unittest.TestCase):
     def testEndsWithAbsoluteEnd(self):
         badminton = Badminton()
         pointsTillAbsoluteEnd = 30
-        for i in range(pointsTillAbsoluteEnd):
+        for _ in range(pointsTillAbsoluteEnd):
             badminton.counterUp(1)
             badminton.counterUp(2)
 
@@ -79,7 +82,7 @@ class TestBadminton(unittest.TestCase):
     def testGameEndsAfter2WonRounds(self):
         badminton = Badminton()
         pointsForWonGame = 21 * 2
-        for i in range(pointsForWonGame - 1):
+        for _ in range(pointsForWonGame - 1):
             badminton.counterUp(1)
 
         testWonGames = {"Team1" : 0, "Team2" : 0}
@@ -101,18 +104,18 @@ class TestBadminton(unittest.TestCase):
     def testUndo(self):
         badminton = Badminton()
         pointsForWonGameAndRound = 21 * 3
-        for i in range(pointsForWonGameAndRound):
+        for _ in range(pointsForWonGameAndRound):
             badminton.counterUp(1)
         pointsTillOvertime = 20
-        for i in range(pointsTillOvertime):
+        for _ in range(pointsTillOvertime):
             badminton.counterUp(1)
             badminton.counterUp(2)
 
         counterUpBy2 = 2
-        for i in range(counterUpBy2):
+        for _ in range(counterUpBy2):
             badminton.counterUp(1)
         counterDownBy2 = 2
-        for i in range(counterDownBy2):
+        for _ in range(counterDownBy2):
             badminton.undo()
 
         testWonGames = {"Team1" : 1, "Team2" : 0}
@@ -133,13 +136,13 @@ class TestBadminton(unittest.TestCase):
         badminton = Badminton()
 
         counterUpBy2 = 2
-        for i in range(counterUpBy2):
+        for _ in range(counterUpBy2):
             badminton.counterUp(1)
         undo2 = 2
-        for i in range(undo2):
+        for _ in range(undo2):
             badminton.undo()
         redo2 = 2
-        for i in range(redo2):
+        for _ in range(redo2):
             badminton.redo()
 
         testCounter = {"Team1" : 2, "Team2" : 0}
@@ -213,9 +216,6 @@ class TestBadminton(unittest.TestCase):
             i = i+1
         self.assertEqual(badminton.sidesChanged, False)
 
-
-
-
 class TestGameFactoy(unittest.TestCase):
     def testGameFactoryWorks(self):
         badminton = GameFactory.create("badminton")
@@ -267,21 +267,24 @@ class TestApp(unittest.TestCase):
     '''
 
 class TestTableConfig(unittest.TestCase):
-    def testGetNextSite(self):
-        self.assertEqual(TableTestConfig.getNextSite("gameMenu"), None)
-        self.assertEqual(TableTestConfig.getNextSite("colorMenu"), "gameMenu")
+    def testGetNextElement(self):
+        self.assertEqual(TableTestConfig.getNextElement("gameMenu", "succession"), None)
+        self.assertEqual(TableTestConfig.getNextElement("colorMenu", "succession"), "gameMenu")
 
-    def testGetPreviousSite(self):
-        self.assertEqual(TableTestConfig.getPreviousSite("playerMenu"), "init")
-        self.assertEqual(TableTestConfig.getPreviousSite("init"), None)
+    def testGetPreviousElement(self):
+        self.assertEqual(TableTestConfig.getPreviousElement("playerMenu", "succession"), "init")
+        self.assertEqual(TableTestConfig.getPreviousElement("init", "succession"), None)
 
     def testRowsAndColumns(self):
         initConfig = TableTestConfig.getRowsAndColumns("init")
-        self.assertDictEqual(initConfig, {"rows" : 1, "columns" : 1})
+        self.assertDictEqual(initConfig, {"rows" : 1, "columns" : 1,\
+                                          "rowContents" : ("deviceCountTEST",),\
+                                          "columnContents" : ("deviceCount",)})
 
         colorMenuConfig = TableTestConfig.getRowsAndColumns("colorMenu")
         testConfig = {"rows" : 6, "columns" : 2,\
-                           "rowContents" : ("Orange", "Red", "Purple", "Blue", "Green", "Black")}
+                           "rowContents" : ("orange", "red", "purple", "blue", "green", "black"),
+                           "columnContents" : ("team1", "team2")}
         self.assertDictEqual(colorMenuConfig, testConfig)
 
     def testGetFirstSite(self):
@@ -295,7 +298,7 @@ class TestTableConfig(unittest.TestCase):
 
 class TestTableFactory(unittest.TestCase):
     def testCreate(self):
-        tableModel = TableFactory.create("init")
+        tableModel = TableFactory.create("init", TableTestConfig)
         self.assertEqual(tableModel.getCurrentSite(), "init")
 
 class TestTableModel(unittest.TestCase):
@@ -319,7 +322,7 @@ class TestTableModel(unittest.TestCase):
         self.assertEqual(goDownWorked, True)
         self.assertEqual(tableModel.cursor["row"], 2)
 
-        for i in range(4):
+        for _ in range(4):
             tableModel.goDown()
         self.assertEqual(tableModel.cursor["row"], 6)
 
@@ -386,40 +389,204 @@ class TestTableModel(unittest.TestCase):
         currentSite = tableModel.getCurrentSite()
         self.assertEqual(currentSite, "gameMenu")
 
-    def testNewSite(self):
+    def testNewTable(self):
         tableModel = TableFactory.create("gameMenu", TableTestConfig)
-        newSiteWorked = tableModel.newSite("init")
-        self.assertEqual(newSiteWorked, True)
+        newTableWorked = tableModel.newTable("init")
+        self.assertEqual(newTableWorked, True)
         self.assertEqual(tableModel.getCurrentSite(), "init")
 
-        newSiteWorked = tableModel.newSite("nothing")
-        self.assertEqual(newSiteWorked, False)
+        newTableWorked = tableModel.newTable("nothing")
+        self.assertEqual(newTableWorked, False)
         self.assertEqual(tableModel.getCurrentSite(), "init")
 
-    #TODO: In SiteModel verschieben
-    '''
-    def testSiteForward(self):
+    def testGetCursorVerbose(self):
+        tableModel = TableFactory.create("init", TableTestConfig)
+        cursor = tableModel.getCursorVerbose()
+        self.assertEqual(cursor, "deviceCountdeviceCountTEST")
+
+    def testGetSelectedButtonsVerbose(self):
         tableModel = TableFactory.create("colorMenu", TableTestConfig)
-        siteForwardWorked = tableModel.siteForward()
-        self.assertEqual(siteForwardWorked, True)
-        self.assertEqual(tableModel.getCurrentSite(), "gameMenu")
-
-        siteForwardWorked = tableModel.siteForward()
-        self.assertEqual(siteForwardWorked, False)
-
-    def testSiteBackward(self):
-        tableModel = TableFactory.create("playerMenu", TableTestConfig)
-        siteBackwardWorked = tableModel.siteBackward()
-        self.assertEqual(siteBackwardWorked, True)
-        self.assertEqual(tableModel.getCurrentSite(), "init")
-
-        siteBackwardWorked = tableModel.siteBackward()
-        self.assertEqual(siteBackwardWorked, False)
-    '''
+        tableModel.selectCurrentButton()
+        selectedButtons = tableModel.getSelectedButtonsVerbose()
+        self.assertListEqual(selectedButtons, ["team1orange"])
 
 class TestSiteModel(unittest.TestCase):
-    def test(self):
-        pass
+    def testSiteForward(self):
+        siteModel = SiteModel(SiteTestConfig)
+        numberOfSiteTransitions = 3
+        previousSite = "init"
+        for _ in range(numberOfSiteTransitions):
+            siteForwardWorked = siteModel._SiteModel__siteForward()
+            self.assertEqual(siteForwardWorked, True)
+            currentSite = TableTestConfig.getNextElement(previousSite, "succession")
+            self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), currentSite)
+            previousSite = currentSite
+
+        siteForwardWorked = siteModel._SiteModel__siteForward()
+        self.assertEqual(siteForwardWorked, False)
+        self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), "gameMenu")
+
+    def testSiteBackward(self):
+        siteModel = SiteModel(SiteTestConfig)
+        siteBackwardWorked = siteModel._SiteModel__siteBackward()
+        self.assertEqual(siteBackwardWorked, False)
+        self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), "init")
+
+        siteModel._SiteModel__siteForward()
+        siteBackwardWorked = siteModel._SiteModel__siteBackward()
+        self.assertEqual(siteBackwardWorked, True)
+        self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), "init")
+
+    def testGetActiveElement(self):
+        siteModel = SiteModel(SiteTestConfig)
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "nextButton")
+
+        firstSiteStartElementBeforeChange = SiteTestConfig.getAttribute("_firstSiteStartElement")
+        SiteTestConfig.setAttribute("_firstSiteStartElement", "table")
+        siteModel = SiteModel(SiteTestConfig)
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "deviceCountdeviceCountTEST")
+        SiteTestConfig.setAttribute("_firstSiteStartElement", firstSiteStartElementBeforeChange)
+
+    def testRight(self):
+        startElementNewSiteBeforeChange = SiteTestConfig.getAttribute("_startElementNewSite")
+        SiteTestConfig.setAttribute("_startElementNewSite", "previousButton")
+
+        siteModel = SiteModel(SiteTestConfig, "playerMenu")
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "previousButton")
+
+        rightWorked = siteModel.right()
+        self.assertEqual(rightWorked, True)
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "singlesmode")
+
+        rightWorked = siteModel.right()
+        self.assertEqual(rightWorked, True)
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "doublesmode")
+
+        rightWorked = siteModel.right()
+        self.assertEqual(rightWorked, True)
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "nextButton")
+
+        rightWorked = siteModel.right()
+        self.assertEqual(rightWorked, False)
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "nextButton")
+
+        SiteTestConfig.setAttribute("_startElementNewSite", startElementNewSiteBeforeChange)
+
+    def testLeft(self):
+        siteModel = SiteModel(SiteTestConfig, "playerMenu")
+        jumpsToNextButton = 4
+        for _ in range(jumpsToNextButton):
+            siteModel.right()
+
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "nextButton")
+
+        rightWorked = siteModel.left()
+        self.assertEqual(rightWorked, True)
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "doublesmode")
+
+        rightWorked = siteModel.left()
+        self.assertEqual(rightWorked, True)
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "singlesmode")
+
+        rightWorked = siteModel.left()
+        self.assertEqual(rightWorked, True)
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "previousButton")
+
+        rightWorked = siteModel.left()
+        self.assertEqual(rightWorked, False)
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "previousButton")
+
+    def testLeftOnFirstSite(self):
+        siteModel = SiteModel(SiteTestConfig)
+        moveWorked = siteModel.left()
+        self.assertEqual(moveWorked, False)
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "nextButton")
+
+    def testDown(self):
+        siteModel = SiteModel(SiteTestConfig, "colorMenu")
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "team1orange")
+
+        moveWorked = siteModel.down()
+        self.assertEqual(moveWorked, True)
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "team1red")
+
+        jumpsToEnd = 4
+        for _ in range(jumpsToEnd):
+            moveWorked = siteModel.down()
+            self.assertEqual(moveWorked, True)
+
+        moveWorked = siteModel.down()
+        self.assertEqual(moveWorked, False)
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "team1black")
+
+    def testUp(self):
+        siteModel = SiteModel(SiteTestConfig, "colorMenu")
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "team1orange")
+
+        moveWorked = siteModel.up()
+        self.assertEqual(moveWorked, False)
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "team1orange")
+
+        jumpsToEnd = 6
+        for _ in range(jumpsToEnd):
+            siteModel.down()
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "team1black")
+
+        moveWorked = siteModel.up()
+        self.assertEqual(moveWorked, True)
+        activeElement = siteModel.getActiveElement()
+        self.assertEqual(activeElement, "team1green")
+
+    def testGoToSameSiteTwice(self):
+        siteModel = SiteModel(SiteTestConfig, "colorMenu")
+        self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), "colorMenu")
+        siteModel._SiteModel__tableModel.selectCurrentButton()
+        selectedButtons = siteModel._SiteModel__getSelectedButtonCurrentSite()
+
+        siteModel._SiteModel__siteForward()
+        self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), "gameMenu")
+        siteModel._SiteModel__siteBackward()
+        self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), "colorMenu")
+        selectedButtonsAfterSwitch = siteModel._SiteModel__getSelectedButtonCurrentSite()
+        self.assertListEqual(selectedButtons, selectedButtonsAfterSwitch)
+
+    def testOk(self):
+        siteModel = SiteModel(SiteTestConfig, "colorMenu")
+        siteModel.left()
+        self.assertEqual(siteModel.getActiveElement(), "previousButton")
+        siteModel.ok()
+        self.assertEqual(siteModel._SiteModel__site, "playerMenu")
+
+        siteModel = SiteModel(SiteTestConfig, "colorMenu")
+        jumpsTillNextButton = 2
+        for _ in range(jumpsTillNextButton):
+            siteModel.right()
+        self.assertEqual(siteModel.getActiveElement(), "nextButton")
+        siteModel.ok()
+        self.assertEqual(siteModel._SiteModel__site, "gameMenu")
+
+        siteModel = SiteModel(SiteTestConfig, "colorMenu")
+        siteModel.ok()
+        self.assertListEqual(siteModel.getSelectedButtonCurrentSiteVerbose(), ["team1orange"])
 
 if __name__ == '__main__':
     unittest.main()

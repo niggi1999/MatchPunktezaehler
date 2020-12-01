@@ -5,42 +5,46 @@ class TableModel():
     def __init__(self, site, configClass):
         self.__configClass = configClass
         self.__startCursor = self.__configClass.getStartCursor()
-        self.newSite(site)
+        self.newTable(site)
 
-    def newSite(self, site) -> bool:
+    def newTable(self, site, selectedButtons = []) -> bool:
         setDimensionsWorked = self.__setDimensions(site)
         if setDimensionsWorked:
             self.__site = site
             self.cursor = deepcopy(self.__startCursor)
-            self.selectedButtons = []
+            self.selectedButtons = selectedButtons
         return setDimensionsWorked
 
     def __setDimensions(self, site) -> bool:
         rowsAndColumns = self.__configClass.getRowsAndColumns(site)
         if rowsAndColumns:
             self.dimensions = {"rows" : rowsAndColumns["rows"], "columns" : rowsAndColumns["columns"]}
+            self.__rowContents = rowsAndColumns["rowContents"]
+            self.__columnContents = rowsAndColumns["columnContents"]
             return True
         return False
 
     def getCurrentSite(self):
         return deepcopy(self.__site)
 
-    #TODO: In SiteModel verschieben
-    '''
-    def siteForward(self) -> bool:
-        nextSite = self.__configClass.getNextSite(self.__site)
-        if nextSite:
-            self.newSite(nextSite)
-            return True
-        return False
+    def getCursorVerbose(self) -> str:
+        rowContent = self.__getContent("row", self.cursor)
+        columnContent = self.__getContent("column", self.cursor)
+        return (columnContent + rowContent)
 
-    def siteBackward(self) -> bool:
-        previousSite = self.__configClass.getPreviousSite(self.__site)
-        if previousSite:
-            self.newSite(previousSite)
-            return True
-        return False
-    '''
+    def getSelectedButtonsVerbose(self) -> str:
+        selectedButtonsVerbose = []
+        for button in self.selectedButtons:
+            rowContent = self.__getContent("row", button)
+            columnContent = self.__getContent("column", button)
+            selectedButtonsVerbose.append(columnContent + rowContent)
+        return selectedButtonsVerbose
+
+    def __getContent(self, rowOrColumn, tableCoordinatesDict):
+        contents = getattr(self, "_TableModel__" + rowOrColumn + "Contents")
+        content = contents[tableCoordinatesDict[rowOrColumn] - 1]
+        return content
+
 
     def goUp(self) -> bool:
         return self.__decrementCursor("vertically")
@@ -82,7 +86,6 @@ class TableModel():
     def selectCurrentButton(self):
         self.__deleteSelectedButtonOnSameRowOrColumnAsCursor()
         self.selectedButtons.append(deepcopy(self.cursor))
-        print(self.selectedButtons)
 
     def __deleteSelectedButtonOnSameRowOrColumnAsCursor(self):
         elementInSameRowOrColumn = lambda element : (element["row"] == self.cursor["row"]) or\
