@@ -17,7 +17,7 @@ class TableConfig(metaclass=ABCMeta):
     _rowsAndColumns = abstract_attribute()
 
     @classmethod
-    def getNextElement(cls, currentElement, attributeName):#Für Site und Table benutzen
+    def getNextElement(cls, currentElement, attributeName):
         attribute = getattr(cls, "_" + attributeName)
         nextSite = None
         for index, item in enumerate(attribute):

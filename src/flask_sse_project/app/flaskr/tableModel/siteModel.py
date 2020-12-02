@@ -7,10 +7,10 @@ class SiteModel():
     def __init__(self, siteConfig = SiteProdConfig, testSite = None):
         self.__config = siteConfig
         self.__firstSite = self.__config.getFirstSite()
-        if testSite:
-            self.__site = testSite
-        else:
+        if testSite is None:
             self.__site = deepcopy(self.__firstSite)
+        else:
+            self.__site = testSite
         self.__tableModel = TableFactory.create(self.__site, self.__config)
         self.__startElementNewSite = self.__config.getStartElementNewSite()
         self.__firstSiteStartElement = self.__config.getFirstSiteStartElement()
@@ -64,52 +64,45 @@ class SiteModel():
             moveWorked = moveInDirection()
             if moveWorked:
                 return True
-        getNewElement = self.__getSiteMethodAssociatedToHorizontalDirection(direction)
+        getNewElement = self.__getConfigMethodAssociatedToHorizontalDirection(direction)
         nextSiteElement = getNewElement(currentElement = self.__activeSiteElement,\
                                                    attributeName = "siteElements")
-        if nextSiteElement:
+        if nextSiteElement is not None:
             self.__activeSiteElement = nextSiteElement
             return True
         else:
             return False
 
-    def __getSiteMethodAssociatedToHorizontalDirection(self, direction) -> callable:#Durch getattr ersetzen
-        if "right" == direction:
-            return self.__config.getNextElement
-        elif "left" == direction:
-            return self.__config.getPreviousElement
+    def __getConfigMethodAssociatedToHorizontalDirection(self, direction) -> callable:
+        next = dict.fromkeys(["right", "forward"], self.__config.getNextElement)
+        previous = dict.fromkeys(["left", "backward"], self.__config.getPreviousElement)
+        return {**next, **previous}.get(direction)      # **Operator unpacks Dict (Used to merge dicts)
 
-    def __getTableMethodAssociatedToHorizontalDirection(self, direction) -> callable:#Durch getattr ersetzen
-        if "right" == direction:
-            return self.__tableModel.goRight
-        elif "left" == direction:
-            return self.__tableModel.goLeft
+    def __getTableMethodAssociatedToHorizontalDirection(self, direction) -> callable:
+        return {
+            "right" : self.__tableModel.goRight,
+            "left" : self.__tableModel.goLeft
+        }.get(direction)
 
     def ok(self):
-        if "table" == self.__activeSiteElement:
-            self.__tableModel.selectCurrentButton()
-        elif "nextButton" == self.__activeSiteElement:
-            self.__siteForward()
-        elif "previousButton" == self.__activeSiteElement:
-            self.__siteBackward()
+        select = {
+            "table" : self.__tableModel.selectCurrentButton,
+            "nextButton" : self.__siteForward,
+            "previousButton" : self.__siteBackward
+        }.get(self.__activeSiteElement)
+        select()
 
     def __siteForward(self) -> bool:
+        print("SiteForward")
         return self.__newSite("forward")
 
     def __siteBackward(self) -> bool:
+        print("SiteBackward")
         return self.__newSite("backward")
 
     def __newSite(self, direction) -> bool:
-        #if in eigene Methode
-        methodName = ""
-        if "backward" == direction:
-            methodName = "getPreviousElement"
-        elif "forward" == direction:
-            methodName = "getNextElement"
-        else:
-            raise ValueError
-        newSite = getattr(self.__config, methodName)(self.__site, "succession")
-        if newSite:
+        newSite = self.__getConfigMethodAssociatedToHorizontalDirection(direction)(self.__site, "succession")
+        if newSite is not None:
             self.selectedButtonsStore[self.__site] = self.__getSelectedButtonCurrentSite()
             self.__tableModel.newTable(newSite, self.selectedButtonsStore[newSite])
             self.__site = newSite

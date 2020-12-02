@@ -17,7 +17,7 @@ class TableModel():
 
     def __setDimensions(self, site) -> bool:
         rowsAndColumns = self.__configClass.getRowsAndColumns(site)
-        if rowsAndColumns:
+        if rowsAndColumns is not None:
             self.dimensions = {"rows" : rowsAndColumns["rows"], "columns" : rowsAndColumns["columns"]}
             self.__rowContents = rowsAndColumns["rowContents"]
             self.__columnContents = rowsAndColumns["columnContents"]
@@ -44,7 +44,6 @@ class TableModel():
         contents = getattr(self, "_TableModel__" + rowOrColumn + "Contents")
         content = contents[tableCoordinatesDict[rowOrColumn] - 1]
         return content
-
 
     def goUp(self) -> bool:
         return self.__decrementCursor("vertically")
@@ -76,14 +75,13 @@ class TableModel():
 
     @staticmethod
     def __getAssociatedVector(direction):
-        rowOrColumn = None
-        if "vertically" == direction:
-            rowOrColumn = "row"
-        elif "horizontally" == direction:
-            rowOrColumn = "column"
-        return rowOrColumn
+        return {
+            "vertically" : "row",
+            "horizontally" : "column"
+        }.get(direction)
 
     def selectCurrentButton(self):
+        print("Select Current Button")
         self.__deleteSelectedButtonOnSameRowOrColumnAsCursor()
         self.selectedButtons.append(deepcopy(self.cursor))
 

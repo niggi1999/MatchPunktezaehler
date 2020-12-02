@@ -102,7 +102,7 @@ class BluetoothController:
 
             None: If there was a probleme with the device Connection
         """
-        if(self.device):
+        if(self.device is not None):
             try:
                 return await self.__pressedButton()
             except OSError as error:
@@ -136,7 +136,7 @@ class BluetoothController:
         self.loop.run_until_complete(self.notify())
         print("device disconnected, trying to reconnect")
         self.__tryToConnectAfterTwoSeconds()
-        if (self.device):
+        if (self.device is not None):
             print("reconnected")
         else:
             print("Reconnect failed")
