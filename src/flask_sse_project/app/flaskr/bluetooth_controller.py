@@ -79,9 +79,8 @@ class BluetoothController:
         for device in devices:
             if ("SmartRemote Consumer Control" == device.name):
                 self.device = evdev.InputDevice(device.path)
-                await self.notify()
                 print("Device found")
-                print(device.path)
+                await self.notify() #TODO: Notiy only when client connects, Device is found or Device disconnects (Needs frontend Server Proxy)
 
     async def readBluetooth(self):
         """
@@ -133,7 +132,7 @@ class BluetoothController:
 
     async def __handleDisconnect(self):
         self.device = None
-        self.loop.run_until_complete(self.notify())
+        await self.notify()
         print("device disconnected, trying to reconnect")
         await self.__tryToConnectAfterTwoSeconds()
         if (self.device is not None):

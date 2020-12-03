@@ -39,7 +39,7 @@ class Controller(Blueprint):
         """
         Blueprint.__init__(self, name, import_Name)
         self.sse = sse
-        #self.startGame('badminton') #badminton als default behalten
+        self.startGame('badminton') #badminton als default behalten
         self.bluetoothTread = threading.Thread(target = self.setupBluetoothThread,\
                                                args = (bluetoothController,), daemon = True)
         self.bluetoothTread.start()
@@ -106,9 +106,8 @@ class Controller(Blueprint):
             print(r.text)
 
     async def updateDeviceCount(self):
-        pass
         #if "init" == self.tableModel.site: #TODO: tableModel muss erstellt werden
-            #self.updateSSE("updateInit")
+        await self.updateSSE("updateInitSite")
 
     def startGame(self, gameName):
         """
