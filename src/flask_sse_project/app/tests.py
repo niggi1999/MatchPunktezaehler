@@ -586,7 +586,7 @@ class TestSiteModel(unittest.TestCase):
 
         siteModel = SiteModel(SiteTestConfig, "colorMenu")
         siteModel.ok()
-        self.assertListEqual(siteModel.getSelectedButtonCurrentSiteVerbose(), ["team1orange"])
+        self.assertListEqual(siteModel.getSelectedButtonsCurrentSiteVerbose(), ["team1orange"])
 
 if __name__ == '__main__':
     unittest.main()

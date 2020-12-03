@@ -55,7 +55,7 @@ class BluetoothController:
         """
         Calls updateDeviceCount() for all observers
         """
-        from .controller import Controller
+        from .controller import Controller #TODO: Test ob nötig
         for observer in self.__observers:
             await observer.updateDeviceCount()
 
@@ -107,10 +107,10 @@ class BluetoothController:
                 return await self.__pressedButton()
             except OSError as error:
                 if (19 == error.errno):
-                    self.__handleDisconnect()
+                    await self.__handleDisconnect()
         else:
             print("No Device found")
-            self.__tryToConnectAfterTwoSeconds()
+            await self.__tryToConnectAfterTwoSeconds()
 
     async def __pressedButton(self):
         async for event in self.device.async_read_loop():
@@ -135,7 +135,7 @@ class BluetoothController:
         self.device = None
         self.loop.run_until_complete(self.notify())
         print("device disconnected, trying to reconnect")
-        self.__tryToConnectAfterTwoSeconds()
+        await self.__tryToConnectAfterTwoSeconds()
         if (self.device is not None):
             print("reconnected")
         else:
@@ -143,7 +143,7 @@ class BluetoothController:
 
     async def __tryToConnectAfterTwoSeconds(self):
         await asyncio.sleep(2)
-        self.findDevice()
+        await self.findDevice()
 
 
 if __name__ == "__main__":

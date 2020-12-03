@@ -11,7 +11,7 @@ constructor(){
           cursorElement: "Black", //always needed
 
           connectedController: 1, //for initSite
-          
+
           activeChooseField: 1, //for PlayerMenuSite
           //fieldNames: ["1vs1", "2vs2"], //for PlayerMenuSite
 

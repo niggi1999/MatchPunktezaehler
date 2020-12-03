@@ -1,6 +1,7 @@
 from flask import Blueprint
 from .bluetooth_controller import BluetoothController
 from .gameFactory import GameFactory
+from .siteModel import SiteModel
 
 import asyncio
 import threading
@@ -35,11 +36,10 @@ class Controller(Blueprint):
             import_Name (str): The name of the blueprint package, usually ``__name__``.
                 This helps locate the ``root_path`` for the blueprint.
             sse (ServerSentEventsBlueprint): The Object for sending Server Sent Events.
-
         """
         Blueprint.__init__(self, name, import_Name)
         self.sse = sse
-        self.startGame('badminton') #badminton als default behalten
+        #self.startGame('badminton') #badminton als default behalten
         self.bluetoothTread = threading.Thread(target = self.setupBluetoothThread,\
                                                args = (bluetoothController,), daemon = True)
         self.bluetoothTread.start()
@@ -56,6 +56,7 @@ class Controller(Blueprint):
         #with threading.Lock():
         self.bluetoothController = bluetoothController
         self.bluetoothController.attach(self)
+        #self.siteModel = SiteModel()
         loop.run_until_complete(self.readBluetooth())
 
     async def readBluetooth(self):
@@ -123,18 +124,35 @@ class Controller(Blueprint):
 
     def updateInitSite(self):
         deviceCount = self.bluetoothController.deviceCount()
-        self.sse.publish({'status': "init", 'connectedController': deviceCount}, type = 'updateData')
+        self.sse.publish({"status": "init",
+        "cursorElement" : "forwardButton",
+        "connectedController": deviceCount},
+        type = "updateData")
 
     def updatePlayerMenuSite(self):
-        self.sse.publish({'status': "playerMenu", 'activeChooseField': 1}, type = 'updateData')
+        #activeChooseField = {}.get(self.siteModel.getSelectedButtonsCurrentSiteVerbose())
+        self.sse.publish({"status": "playerMenu",
+        "cursorElement" : "forwardButton",
+        "activeChooseField": 1,
+        "fieldNames" : None},
+        type = "updateData")
 
     def updateColorMenuSite(self):
-        self.sse.publish({'status': "nameMenu", 'playMode': 1,
-        'color1Team1': 3, 'color2Team1': None,
-        'color1Team2': 5, 'color2Team2': None}, type = 'updateData')
+        self.sse.publish({"status": "nameMenu",
+        "cursorElement" : "forwardButton",
+        "playMode": 1,
+        "color1Team1": 3, "color2Team1": None,
+        "color1Team2": 5, "color2Team2": None,
+        "fieldNames" : ["Orange", "Red", "Purple", "Blue", "Green", "Black"],
+        "tableActive" : 2},
+        type = "updateData")
 
     def updateGameMenuSite(self):
-        self.sse.publish({'status': "gameMenu", 'activeChooseField': 'badminton'}, type = 'updateData')
+        self.sse.publish({"status": "gameMenu",
+        "cursorElement" : "forwardButton",
+        "activeChooseField": "badminton",
+        "fieldNames" : ["Badminton", "Volleyball", "Tennis"]},
+        type = "updateData")
 
     def updateGameSite(self):
         """
@@ -144,12 +162,22 @@ class Controller(Blueprint):
         """
         gameState = self.game.gameState()
         deviceCount = self.bluetoothController.deviceCount()
-        self.sse.publish({'status': "game", 'connectedController' : deviceCount,
-            'counterTeam1': gameState['counter']['Team1'],
-            'counterTeam2': gameState['counter']['Team2'],
-            'lastChanged' : gameState['lastChanged'],
-            'wonRoundsTeam1' : gameState['wonRounds']['Team1'],
-            'wonRoundsTeam2' : gameState['wonRounds']['Team2'],
-            'wonGamesTeam1': gameState['wonGames']['Team1'],
-            'wonGamesTeam2': gameState['wonGames']['Team2']}
-            , type = 'updateData')
+        self.sse.publish({"status": "game",
+            "connectedController" : deviceCount,
+            "counterTeam1": gameState["counter"]["Team1"],
+            "counterTeam2": gameState["counter"]["Team2"],
+            "lastChanged" : gameState["lastChanged"],
+            "roundsTeam1" : gameState["wonRounds"]["Team1"],
+            "roundsTeam2" : gameState["wonRounds"]["Team2"],
+            "gamesTeam1": gameState["wonGames"]["Team1"],
+            "gamesTeam2": gameState["wonGames"]["Team2"],
+            "team1HighColor" : 'Green',
+            "team1DownColor" : 'Orange',
+            "team2HighColor" : 'Blue',
+            "team2DownColor" : 'Red',
+            "team1Left" : False,
+            "opacityHighSiteTeam1" : 0.2,
+            "opacityDownSiteTeam1" : 1,
+            "opacityHighSiteTeam2" : 0.2,
+            "opacityDownSiteTeam2" : 0.2}
+            , type = "updateData")
