@@ -41,7 +41,7 @@ class BluetoothController:
         self.__observers.append(observer)
         self.loop.run_until_complete(self.notify())
 
-    def remove(self, observer):
+    def detach(self, observer):
         """
         Removes a Observer.
 

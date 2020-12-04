@@ -281,7 +281,7 @@ class TestTableConfig(unittest.TestCase):
                                           "rowContents" : ("deviceCountTEST",),\
                                           "columnContents" : ("deviceCount",)})
 
-        colorMenuConfig = TableTestConfig.getRowsAndColumns("colorMenu")
+        colorMenuConfig = TableTestConfig.getRowsAndColumns("colorMenuSingles")
         testConfig = {"rows" : 6, "columns" : 2,\
                            "rowContents" : ("orange", "red", "purple", "blue", "green", "black"),
                            "columnContents" : ("team1", "team2")}
@@ -303,7 +303,7 @@ class TestTableFactory(unittest.TestCase):
 
 class TestTableModel(unittest.TestCase):
     def testDimensions(self):
-        tableModel = TableFactory.create("colorMenu", TableTestConfig)
+        tableModel = TableFactory.create("colorMenuSingles", TableTestConfig)
         testConfig = {"rows" : 6, "columns" : 2}
         self.assertDictEqual(testConfig, tableModel.dimensions)
 
@@ -312,12 +312,12 @@ class TestTableModel(unittest.TestCase):
         self.assertDictEqual(testConfig, tableModel.dimensions)
 
     def testStartCursor(self):
-        tableModel = TableFactory.create("colorMenu", TableTestConfig)
+        tableModel = TableFactory.create("colorMenuSingles", TableTestConfig)
         startCursor = TableTestConfig.getStartCursor()
         self.assertDictEqual(tableModel.cursor, startCursor)
 
     def testGoDown(self):
-        tableModel = TableFactory.create("colorMenu", TableTestConfig)
+        tableModel = TableFactory.create("colorMenuSingles", TableTestConfig)
         goDownWorked = tableModel.goDown()
         self.assertEqual(goDownWorked, True)
         self.assertEqual(tableModel.cursor["row"], 2)
@@ -331,7 +331,7 @@ class TestTableModel(unittest.TestCase):
         self.assertEqual(tableModel.cursor["row"], 6)
 
     def testGoUp(self):
-        tableModel = TableFactory.create("colorMenu", TableTestConfig)
+        tableModel = TableFactory.create("colorMenuSingles", TableTestConfig)
         goUpWorked = tableModel.goUp()
         self.assertEqual(goUpWorked, False)
         self.assertEqual(tableModel.cursor["row"], 1)
@@ -342,7 +342,7 @@ class TestTableModel(unittest.TestCase):
         self.assertEqual(tableModel.cursor["row"], 1)
 
     def testGoRight(self):
-        tableModel = TableFactory.create("colorMenu", TableTestConfig)
+        tableModel = TableFactory.create("colorMenuSingles", TableTestConfig)
         goRightWorked = tableModel.goRight()
         self.assertEqual(goRightWorked, True)
         self.assertEqual(tableModel.cursor["column"], 2)
@@ -352,7 +352,7 @@ class TestTableModel(unittest.TestCase):
         self.assertEqual(tableModel.cursor["column"], 2)
 
     def testGoLeft(self):
-        tableModel = TableFactory.create("colorMenu", TableTestConfig)
+        tableModel = TableFactory.create("colorMenuSingles", TableTestConfig)
         goLeftWorked = tableModel.goLeft()
         self.assertEqual(goLeftWorked, False)
         self.assertEqual(tableModel.cursor["column"], 1)
@@ -363,7 +363,8 @@ class TestTableModel(unittest.TestCase):
         self.assertEqual(tableModel.cursor["column"], 1)
 
     def testSelectButton(self):
-        tableModel = TableFactory.create("colorMenu", TableTestConfig)
+        tableModel = TableFactory.create("colorMenuSingles", TableTestConfig)
+        self.assertListEqual(tableModel.selectedButtons, [])
         tableModel.selectCurrentButton()
         selectedFields = [{"row" : 1, "column" : 1}]
         self.assertListEqual(tableModel.selectedButtons, selectedFields)
@@ -381,7 +382,7 @@ class TestTableModel(unittest.TestCase):
         tableModel.goLeft()
         tableModel.goUp()
         tableModel.selectCurrentButton()
-        selectedFields = [{"row" : 2, "column" : 2}, {"row" : 1, "column" : 1}]
+        selectedFields = [{"row" : 1, "column" : 1}, {"row" : 2, "column" : 2}] #Also Tests sorting
         self.assertListEqual(tableModel.selectedButtons, selectedFields)
 
     def testCurrentSite(self):
@@ -405,36 +406,38 @@ class TestTableModel(unittest.TestCase):
         self.assertEqual(cursor, "deviceCountdeviceCountTEST")
 
     def testGetSelectedButtonsVerbose(self):
-        tableModel = TableFactory.create("colorMenu", TableTestConfig)
+        tableModel = TableFactory.create("colorMenuSingles", TableTestConfig)
         tableModel.selectCurrentButton()
         selectedButtons = tableModel.getSelectedButtonsVerbose()
         self.assertListEqual(selectedButtons, ["team1orange"])
 
 class TestSiteModel(unittest.TestCase):
     def testSiteForward(self):
-        siteModel = SiteModel(SiteTestConfig)
-        numberOfSiteTransitions = 3
-        previousSite = "init"
-        for _ in range(numberOfSiteTransitions):
-            siteForwardWorked = siteModel._SiteModel__siteForward()
-            self.assertEqual(siteForwardWorked, True)
-            currentSite = TableTestConfig.getNextElement(previousSite, "succession")
-            self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), currentSite)
-            previousSite = currentSite
+        siteModel = SiteModel(SiteTestConfig, "colorMenuSingles")
+        with self.assertRaises(ValueError):
+            siteModel._SiteModel__siteForward()
+        self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), "colorMenuSingles")
 
-        siteForwardWorked = siteModel._SiteModel__siteForward()
-        self.assertEqual(siteForwardWorked, False)
+        siteModel = SiteModel(SiteTestConfig, "colorMenuSingles")
+        jumpsToNextButton = 2
+        for _ in range(jumpsToNextButton):
+            siteModel.ok()
+            siteModel.right()
+            siteModel.down()
+        siteModel.ok()
+        self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), "gameMenu")
+        siteModel.ok()
+        siteModel.right()
         self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), "gameMenu")
 
     def testSiteBackward(self):
         siteModel = SiteModel(SiteTestConfig)
-        siteBackwardWorked = siteModel._SiteModel__siteBackward()
-        self.assertEqual(siteBackwardWorked, False)
+        with self.assertRaises(TypeError):
+            siteModel._SiteModel__siteBackward()
         self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), "init")
 
         siteModel._SiteModel__siteForward()
-        siteBackwardWorked = siteModel._SiteModel__siteBackward()
-        self.assertEqual(siteBackwardWorked, True)
+        siteModel._SiteModel__siteBackward()
         self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), "init")
 
     def testGetActiveElement(self):
@@ -516,7 +519,7 @@ class TestSiteModel(unittest.TestCase):
         self.assertEqual(activeElement, "nextButton")
 
     def testDown(self):
-        siteModel = SiteModel(SiteTestConfig, "colorMenu")
+        siteModel = SiteModel(SiteTestConfig, "colorMenuSingles")
         activeElement = siteModel.getActiveElement()
         self.assertEqual(activeElement, "team1orange")
 
@@ -536,7 +539,7 @@ class TestSiteModel(unittest.TestCase):
         self.assertEqual(activeElement, "team1black")
 
     def testUp(self):
-        siteModel = SiteModel(SiteTestConfig, "colorMenu")
+        siteModel = SiteModel(SiteTestConfig, "colorMenuSingles")
         activeElement = siteModel.getActiveElement()
         self.assertEqual(activeElement, "team1orange")
 
@@ -557,36 +560,53 @@ class TestSiteModel(unittest.TestCase):
         self.assertEqual(activeElement, "team1green")
 
     def testGoToSameSiteTwice(self):
-        siteModel = SiteModel(SiteTestConfig, "colorMenu")
-        self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), "colorMenu")
+        siteModel = SiteModel(SiteTestConfig, "playerMenu")
+        self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), "playerMenu")
         siteModel._SiteModel__tableModel.selectCurrentButton()
-        selectedButtons = siteModel._SiteModel__getSelectedButtonCurrentSite()
+        selectedButtonsBeforeSwitch = siteModel.getSelectedButtonsCurrentSiteVerbose()
 
         siteModel._SiteModel__siteForward()
-        self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), "gameMenu")
+        self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), "colorMenuSingles")
         siteModel._SiteModel__siteBackward()
-        self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), "colorMenu")
-        selectedButtonsAfterSwitch = siteModel._SiteModel__getSelectedButtonCurrentSite()
-        self.assertListEqual(selectedButtons, selectedButtonsAfterSwitch)
+        self.assertEqual(siteModel._SiteModel__tableModel.getCurrentSite(), "playerMenu")
+        selectedButtonsAfterSwitch = siteModel.getSelectedButtonsCurrentSiteVerbose()
+
+        self.assertListEqual(selectedButtonsBeforeSwitch, selectedButtonsAfterSwitch)
 
     def testOk(self):
-        siteModel = SiteModel(SiteTestConfig, "colorMenu")
+        siteModel = SiteModel(SiteTestConfig, "colorMenuSingles")
         siteModel.left()
         self.assertEqual(siteModel.getActiveElement(), "previousButton")
         siteModel.ok()
         self.assertEqual(siteModel._SiteModel__site, "playerMenu")
 
-        siteModel = SiteModel(SiteTestConfig, "colorMenu")
+        siteModel = SiteModel(SiteTestConfig, "colorMenuSingles")
         jumpsTillNextButton = 2
         for _ in range(jumpsTillNextButton):
+            siteModel.ok()
             siteModel.right()
+            siteModel.down()
         self.assertEqual(siteModel.getActiveElement(), "nextButton")
         siteModel.ok()
         self.assertEqual(siteModel._SiteModel__site, "gameMenu")
 
-        siteModel = SiteModel(SiteTestConfig, "colorMenu")
+        siteModel = SiteModel(SiteTestConfig, "colorMenuSingles")
         siteModel.ok()
         self.assertListEqual(siteModel.getSelectedButtonsCurrentSiteVerbose(), ["team1orange"])
+
+    @patch.object(SiteModel, "_SiteModel__notify")
+    def testNotify(self, mockNotify):
+        siteModel = SiteModel(SiteTestConfig, "gameMenu")
+        siteModel.ok()
+        siteModel.right()
+        siteModel.ok()
+        mockNotify.assert_called_once()
+
+    def testColorMenuDoublesWasSelected(self):
+        siteModel = SiteModel(SiteTestConfig, "playerMenu")
+        siteModel._SiteModel__tableModel.selectedButtons = [{"row" : 1, "column" : 2},]
+        siteModel._SiteModel__siteForward()
+        self.assertEqual(siteModel._SiteModel__site, "colorMenuDoubles")
 
 if __name__ == '__main__':
     unittest.main()

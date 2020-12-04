@@ -7,27 +7,38 @@ import asyncio
 class SiteModel():
     def __init__(self, siteConfig = SiteProdConfig, testSite = None):
         self.__config = siteConfig
-        self.__firstSite = self.__config.getFirstSite()
+        self.__setInitialValues()
+        self.__setInitialSite(testSite)
+        self.__setActiveElementNewSite()
+        self.__buildSelectedButtonsStore()
+        self.__tableModel = TableFactory.create(self.__site, self.__config)
+
+    def __setInitialSite(self, testSite):
         if testSite is None:
             self.__site = deepcopy(self.__firstSite)
         else:
             self.__site = testSite
-        self.__tableModel = TableFactory.create(self.__site, self.__config)
+
+    def __setInitialValues(self):
+        self.__firstSite = self.__config.getFirstSite()
         self.__startElementNewSite = self.__config.getStartElementNewSite()
         self.__firstSiteStartElement = self.__config.getFirstSiteStartElement()
         self.__observers = []
         self.__loop = asyncio.get_event_loop()
-        self.__setActiveElementNewSite()
-        self.__buildSelectedButtonsStore()
 
     def __buildSelectedButtonsStore(self):
         self.selectedButtonsStore = {}
         nextSite = self.__firstSite
-        while nextSite:
-            self.selectedButtonsStore[nextSite] = []
-            nextSite = self.__config.getNextElement(nextSite, "succession")
+        while nextSite is not None:
+            if "colorMenu" == nextSite:
+                self.selectedButtonsStore["colorMenuSingles"] = []
+                self.selectedButtonsStore["colorMenuDoubles"] = []
+                nextSite = self.__config.getNextElement("colorMenu", "succession")
+            else:
+                self.selectedButtonsStore[nextSite] = []
+                nextSite = self.__config.getNextElement(nextSite, "succession")
 
-    def __getSelectedButtonCurrentSite(self):
+    def __getSelectedButtonsCurrentSite(self):
         return deepcopy(self.__tableModel.selectedButtons)
 
     def getSelectedButtonsCurrentSiteVerbose(self):
@@ -93,21 +104,46 @@ class SiteModel():
             "nextButton" : self.__siteForward,
             "previousButton" : self.__siteBackward
         }.get(self.__activeSiteElement)
-        select()
+        try:
+            select()
+        except (TypeError, ValueError) as error:
+            print(error)
 
-    def __siteForward(self) -> bool:
+    def __siteForward(self):
         print("SiteForward")
-        #TODO: test if Elements are Selected
-        return self.__newSite("forward")
+        if self.__requiredButtonsOnSiteAreSelected():
+            nextSiteExists = self.__newSite("forward")
+            if not nextSiteExists:
+                self.__loop.run_until_complete(self.__notify())
+        else:
+            raise ValueError("More selected Buttons are required to move forward")
 
-    def __siteBackward(self) -> bool:
+    def __requiredButtonsOnSiteAreSelected(self) -> bool:
+        requiredButtonsCount = self.__config.getRequiredButtonsCount(self.__site)
+        actualButtonsCount = len(self.__tableModel.selectedButtons)
+        return requiredButtonsCount == actualButtonsCount
+
+    def __siteBackward(self):
         print("SiteBackward")
-        return self.__newSite("backward")
+        previousSiteExists = self.__newSite("backward")
+        if not previousSiteExists:
+            raise TypeError("No previous Site")
 
     def __newSite(self, direction) -> bool:
-        newSite = self.__getConfigMethodAssociatedToHorizontalDirection(direction)(self.__site, "succession")
-        if newSite is not None:
-            self.selectedButtonsStore[self.__site] = self.__getSelectedButtonCurrentSite()
+        currentSite = self.__site
+        isInColorMenu = "colorMenuSingles" == self.__site or "colorMenuDoubles" == self.__site
+        if isInColorMenu:
+            currentSite = "colorMenu"
+        newSite = self.__getConfigMethodAssociatedToHorizontalDirection(direction)(currentSite, "succession")
+        if newSite is not None: # TODO: Methode für color Menu ifs
+            self.selectedButtonsStore[self.__site] = self.__getSelectedButtonsCurrentSite()
+            if "colorMenu" == newSite:
+                modeButtonCoordinates = self.selectedButtonsStore["playerMenu"][0]
+                mode = self.__tableModel.getButtonName(modeButtonCoordinates, "playerMenu")
+                if "singlesmode" == mode:
+                    newSite = "colorMenuSingles"
+                elif "doublesmode" == mode:
+                    newSite = "colorMenuDoubles"
             self.__tableModel.newTable(newSite, self.selectedButtonsStore[newSite])
             self.__site = newSite
             self.__setActiveElementNewSite
@@ -120,10 +156,14 @@ class SiteModel():
         else:
             self.__activeSiteElement = self.__startElementNewSite
 
-    '''
-    async def notify(self):
+    def attach(self, observer):
+        self.__observers.append(observer)
+
+    def detach(self, observer):
+        self.__observers.remove(observer)
+
+    async def __notify(self):
         for observer in self.__observers:
-            observer.changeToGame()
-    '''
+            await observer.changeToGame()
 
     #def __firstSite(self):

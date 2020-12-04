@@ -4,12 +4,13 @@ from copy import deepcopy
 
 class TableConfig(metaclass=ABCMeta):
     _succession = abstract_attribute()
+    _requiredButtonsCount = abstract_attribute()
     _rowsInit = abstract_attribute()
     _columnsInit = abstract_attribute()
     _rowsPlayerMenu = abstract_attribute()
     _columnsPlayerMenu = abstract_attribute()
     _rowsColorMenu = abstract_attribute()
-    _columnsColorMenu = abstract_attribute()
+    _columnsColorMenuSingles = abstract_attribute()
     _columnsColorMenuDoubles = abstract_attribute()
     _rowsGameMenu = abstract_attribute()
     _columnsGameMenu = abstract_attribute()
@@ -54,14 +55,19 @@ class TableConfig(metaclass=ABCMeta):
     def getStartCursor(cls):
         return deepcopy(cls._startCursor)
 
+    @classmethod
+    def getRequiredButtonsCount(cls, site):
+        return deepcopy(cls._requiredButtonsCount[site])
+
 class TableTestConfig(TableConfig):
     _succession = ("init", "playerMenu", "colorMenu", "gameMenu")
+    _requiredButtonsCount = {"init" : 0, "playerMenu" : 1, "colorMenuSingles" : 2, "colorMenuDoubles" : 4, "gameMenu" : 1}
     _rowsInit = ("deviceCountTEST",)
     _columnsInit = ("deviceCount",)
     _rowsPlayerMenu = ("mode",)
     _columnsPlayerMenu = ("singles", "doubles")
     _rowsColorMenu = ("orange", "red", "purple", "blue", "green", "black")
-    _columnsColorMenu = ("team1", "team2")
+    _columnsColorMenuSingles = ("team1", "team2")
     _columnsColorMenuDoubles = ("player1", "player2", "player3", "player4")
     _rowsGameMenu = ("badminton",)
     _columnsGameMenu = ("game",)
@@ -71,8 +77,8 @@ class TableTestConfig(TableConfig):
                   "rowContents" : _rowsInit, "columnContents" : _columnsInit},
         "playerMenu" : {"rows" : 1, "columns" : 2,\
                         "rowContents" : _rowsPlayerMenu, "columnContents" : _columnsPlayerMenu},
-        "colorMenu" : {"rows" : 6, "columns" : 2,\
-                       "rowContents" : _rowsColorMenu, "columnContents" : _columnsColorMenu},
+        "colorMenuSingles" : {"rows" : 6, "columns" : 2,\
+                       "rowContents" : _rowsColorMenu, "columnContents" : _columnsColorMenuSingles},
         "colorMenuDoubles" : {"rows" : 6, "columns" : 4,
                               "rowContents" : _rowsColorMenu, "columnContents" : _columnsColorMenuDoubles},
         "gameMenu" : {"rows" : 1, "columns" : 1,\
@@ -81,12 +87,13 @@ class TableTestConfig(TableConfig):
 
 class TableProdConfig(TableConfig):
     _succession = ("init", "playerMenu", "colorMenu", "gameMenu")
+    _requiredButtonsCount = {"init" : 0, "playerMenu" : 1, "colorMenuSingles" : 2, "colorMenuDoubles" : 4, "gameMenu" : 1}
     _rowsInit = ("deviceCount",)
     _columnsInit = ("deviceCount",)
     _rowsPlayerMenu = ("mode",)
     _columnsPlayerMenu = ("singles", "doubles")
     _rowsColorMenu = ("orange", "red", "purple", "blue", "green", "black")
-    _columnsColorMenu = ("team1", "team2")
+    _columnsColorMenuSingles = ("team1", "team2")
     _columnsColorMenuDoubles = ("player1", "player2", "player3", "player4")
     _rowsGameMenu = ("badminton",)
     _columnsGameMenu = ("game",)
@@ -96,8 +103,8 @@ class TableProdConfig(TableConfig):
                   "rowContents" : _rowsInit, "columnContents" : _columnsInit},
         "playerMenu" : {"rows" : 1, "columns" : 2,\
                         "rowContents" : _rowsPlayerMenu, "columnContents" : _columnsPlayerMenu},
-        "colorMenu" : {"rows" : 6, "columns" : 2,\
-                       "rowContents" : _rowsColorMenu, "columnContents" : _columnsColorMenu},
+        "colorMenuSingles" : {"rows" : 6, "columns" : 2,\
+                       "rowContents" : _rowsColorMenu, "columnContents" : _columnsColorMenuSingles},
         "colorMenuDoubles" : {"rows" : 6, "columns" : 4,
                               "rowContents" : _rowsColorMenu, "columnContents" : _columnsColorMenuDoubles},
         "gameMenu" : {"rows" : 1, "columns" : 1,\
@@ -129,7 +136,7 @@ class SiteConfig(metaclass=ABCMeta):
         '''
         Only for testing
         '''
-        return getattr(cls, attributeName)
+        return deepcopy(getattr(cls, attributeName))
 
 class SiteTestConfig(SiteConfig, TableTestConfig):
     _siteElements = ("previousButton", "table", "nextButton")

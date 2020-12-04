@@ -3,5 +3,5 @@ from .config import TableProdConfig
 
 class TableFactory():
     @staticmethod
-    def create(site, configClass = TableProdConfig):
-        return TableModel(site, configClass)
+    def create(site, config = TableProdConfig):
+        return TableModel(site, config)

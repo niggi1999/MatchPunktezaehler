@@ -1,22 +1,26 @@
 from copy import deepcopy
 from itertools import filterfalse
+from typing import List, Type
+
+from .config import TableConfig
 
 class TableModel():
-    def __init__(self, site, configClass):
-        self.__configClass = configClass
-        self.__startCursor = self.__configClass.getStartCursor()
+    def __init__(self, site, config: Type[TableConfig]):
+        self.__config = config
+        self.__startCursor = self.__config.getStartCursor()
         self.newTable(site)
 
-    def newTable(self, site, selectedButtons = []) -> bool:
-        setDimensionsWorked = self.__setDimensions(site)
+    def newTable(self, site, previouslySelectedButtons = None) -> bool: # Default can't be [] (Would be shared
+        setDimensionsWorked = self.__setDimensions(site)                # between calls, Methods are Objects)
         if setDimensionsWorked:
             self.__site = site
             self.cursor = deepcopy(self.__startCursor)
+            selectedButtons = [] if previouslySelectedButtons is None else previouslySelectedButtons
             self.selectedButtons = selectedButtons
         return setDimensionsWorked
 
     def __setDimensions(self, site) -> bool:
-        rowsAndColumns = self.__configClass.getRowsAndColumns(site)
+        rowsAndColumns = self.__config.getRowsAndColumns(site)
         if rowsAndColumns is not None:
             self.dimensions = {"rows" : rowsAndColumns["rows"], "columns" : rowsAndColumns["columns"]}
             self.__rowContents = rowsAndColumns["rowContents"]
@@ -32,7 +36,7 @@ class TableModel():
         columnContent = self.__getContent("column", self.cursor)
         return (columnContent + rowContent)
 
-    def getSelectedButtonsVerbose(self) -> str:
+    def getSelectedButtonsVerbose(self) -> List[str]:
         selectedButtonsVerbose = []
         for button in self.selectedButtons:
             rowContent = self.__getContent("row", button)
@@ -44,6 +48,18 @@ class TableModel():
         contents = getattr(self, "_TableModel__" + rowOrColumn + "Contents")
         content = contents[tableCoordinatesDict[rowOrColumn] - 1]
         return content
+
+    def getButtonName(self, buttonCoordinates, site = None) -> str:
+        if None == site:
+            site = self.__site
+        rowsAndColumns = self.__config.getRowsAndColumns(site)
+        rows = rowsAndColumns["rowContents"]
+        columns = rowsAndColumns["columnContents"]
+        rowIndex = buttonCoordinates["row"] - 1
+        columnIndex = buttonCoordinates["column"] - 1
+        rowName = rows[rowIndex]
+        columnName = columns[columnIndex]
+        return (columnName + rowName)
 
     def goUp(self) -> bool:
         return self.__decrementCursor("vertically")
@@ -81,9 +97,10 @@ class TableModel():
         }.get(direction)
 
     def selectCurrentButton(self):
-        print("Select Current Button")
         self.__deleteSelectedButtonOnSameRowOrColumnAsCursor()
         self.selectedButtons.append(deepcopy(self.cursor))
+        getColumn = lambda button : button["column"]
+        self.selectedButtons.sort(reverse = False, key = getColumn)
 
     def __deleteSelectedButtonOnSameRowOrColumnAsCursor(self):
         elementInSameRowOrColumn = lambda element : (element["row"] == self.cursor["row"]) or\
