@@ -1,29 +1,17 @@
 import React from "react";
 import ButtonLine from "./buttonLine";
+import "./init.css"
 
 
 function LeaveGame (props) {
 
-    let message = "Do you want to leave the Game?"
-
-    const style = {
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: "20",
-        width: "200px",
-        height: "100px",
-        position: "absolute",
-        top: "0",
-        left: "0"
-    };
+    let message = <h1 className="message">Do you want to leave the Game?</h1>
 
     return (
-    <div>
+    <div className="config" >
         {message}
         <ButtonLine fowardButtonText="Leave the Game" fowardButtonActive={true}
-         backwardsButtonText="Cancel" backwardsButtonActive={true} fowardButtonCursor={true} backwardButtonCursor={true}/>
+         backwardButtonText="Cancel" backwardButtonActive={true} cursorElement={props.data.cursorElement}/>
     </div>
     )
 }

@@ -1,13 +1,11 @@
 import React from "react";
 import "./init.css"
 import ButtonLine from "./buttonLine"
-import ChooseField from "./chooseField"
 
 
 function Init (props) {
 
     let message;
-    let continueButton = <button className="continueButton">Press -> to go to Player Menu</button>;
     let fowardButtonActive = false;
 
     switch(props.data.connectedController) {
@@ -29,8 +27,8 @@ function Init (props) {
     return (
     <div className="config">
         {message}
-        <ButtonLine fowardButtonText="Press -> to continue to Player-Menu" fowardButtonActive={fowardButtonActive}
-         backwardsButtonText="" backwardsButtonActive={false} fowardButtonCursor={true} backwardButtonCursor={true}/>
+        <ButtonLine fowardButtonText="Continue to Player-Menu" fowardButtonActive={fowardButtonActive}
+         backwardsButtonText="" backwardButtonActive={false} cursorElement={props.data.cursorElement}/>
     </div>
     )
 }

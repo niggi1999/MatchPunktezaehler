@@ -4,9 +4,9 @@ import ChooseField from "./chooseField"
 
 
 function GameMenu (props) {
-    const fieldNames = ["Badminton", "Tennis", "Volleyball"];
 
     let fowardButtonActive = false;
+    let message = <h1>"Choose the Game you want to play"</h1>;
 
     if(props.activeChooseField) {
         fowardButtonActive = true;
@@ -14,9 +14,10 @@ function GameMenu (props) {
 
     return(
         <div className="config">
-            <ChooseField activeChooseField1={props.data.activeChooseField} fieldNames={fieldNames}/>
-            <ButtonLine fowardButtonText="Press -> to start the Game" fowardButtonActive={fowardButtonActive}
-            backwardButtonText="Back to Name Selection" backwardButtonActive={true}/>
+            {message}
+            <ChooseField activeChooseField1={props.data.activeChooseField} fieldNames={props.data.fieldNames} cursorElement={props.data.cursorElement} tableActive={true}/>
+            <ButtonLine fowardButtonText="Start the Game" fowardButtonActive={fowardButtonActive}
+            backwardButtonText="Back to Name-Menu" backwardButtonActive={true} cursorElement={props.data.cursorElement}/>
         </div>
     )
 }
