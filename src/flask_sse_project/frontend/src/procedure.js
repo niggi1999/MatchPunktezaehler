@@ -3,7 +3,9 @@ import Game from './game';
 import GameMenu from "./gameMenu";
 import Init from './init';
 import PlayerMenu from "./playerMenu";
-import NameMenu from "./nameMenu"
+import NameMenu from "./nameMenu";
+import LeaveGame from "./leaveGame";
+import ChangeSide from './changeSide';
 
 function Procedure (props){
     switch(props.data.status) {
@@ -17,6 +19,10 @@ function Procedure (props){
             return <GameMenu data={props.data}/>;
         case 'game':
             return <Game data={props.data}/>;
+        case 'leaveGame':
+            return <LeaveGame data={props.data}/>;
+        case 'changeSide':
+            return <ChangeSide data={props.data}/>;
         default:
             return <h1>Invalid status. Check spelling</h1>;
     }

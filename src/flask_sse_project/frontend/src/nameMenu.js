@@ -11,6 +11,7 @@ function NameMenu (props) {
     switch(props.data.playMode) {
         case 0:
             message = <h1>Error NameMenu</h1>;
+            break;
         case 1:
             message = <h1>Choose Your Names</h1>
             if(props.data.color1Team1 && props.data.color1Team2) {
@@ -22,6 +23,9 @@ function NameMenu (props) {
             if(props.data.color1Team1 && props.data.color1Team2 && props.data.color2Team1 && props.data.color2Team2) {
                 fowardButtonActive = true;
             }
+            break;
+        default:
+            message = <h1>Error NameMenu</h1>;
             break;
     }
 
@@ -38,7 +42,7 @@ function NameMenu (props) {
             return <h1>TableActive Value Wrong</h1>
     }
 
-    let continueButtonMessage = "Press -> to continue to Game Menu";
+    let continueButtonMessage = "Continue to Game Menu";
     let backButtonMessage = "Back to Player-Menu";
 
     return(

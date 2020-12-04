@@ -1,15 +1,12 @@
 import React from "react";
 import Teamview from './teamview';
 import Counter from './counter';
-import LeaveGame from './leaveGame'
 import './game.css';
 
 function Game(props) {
 
     return (
-        <div>
-            <div className="leave">
-            </div>
+        
             <div className="field">
 
                 {props.data.team1Left
@@ -33,7 +30,6 @@ function Game(props) {
                 opacityHighSite={props.data.opacityHighSiteTeam1} opacityDownSite={props.data.opacityDownSiteTeam1}/>}
 
             </div>
-        </div>
        )
 }
 

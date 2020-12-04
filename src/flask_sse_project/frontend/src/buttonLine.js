@@ -9,10 +9,11 @@ function ButtonLine(props) {
     let cursorActive = {
         borderStyle: "solid",
         borderWidth: "10px",
-        borderColor: "red"
+        borderColor: "red",
+        fontSize: "xx-large"
     };
-    let backwardButtonStyle = null;
-    let forwardButtonStyle = null;
+    let backwardButtonStyle = {fontSize: "xx-large"};
+    let forwardButtonStyle = {fontSize: "xx-large"};
 
 
     switch(props.cursorElement) {

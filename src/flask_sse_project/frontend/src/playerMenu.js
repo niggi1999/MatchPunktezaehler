@@ -14,7 +14,7 @@ function PlayerMenu (props) {
     return(
         <div className="config">
             <ChooseField activeChooseField1={props.data.activeChooseField} fieldNames={props.data.fieldNames} cursorElement={props.data.cursorElement} tableActive={true}/>
-            <ButtonLine fowardButtonText="Press -> to continue to Name Selection of Team 1" fowardButtonActive={fowardButtonActive}
+            <ButtonLine fowardButtonText="Continue to Name-Menu" fowardButtonActive={fowardButtonActive}
             backwardButtonText="Back to Controller Connection" backwardButtonActive={true} cursorElement={props.data.cursorElement}/>
         </div>
     )

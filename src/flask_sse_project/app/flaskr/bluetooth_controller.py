@@ -55,7 +55,7 @@ class BluetoothController:
         """
         Calls updateDeviceCount() for all observers
         """
-        from .controller import Controller #TODO: Test ob nötig
+        #from .controller import Controller #TODO: Test ob nötig
         for observer in self.__observers:
             await observer.updateDeviceCount()
 
