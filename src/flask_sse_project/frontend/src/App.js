@@ -13,6 +13,7 @@ constructor(){
           connectedController: 1, //for initSite
           
           activeChooseField: "1vs1", //for PlayerMenuSite
+
           //fieldNames: ["1vs1", "2vs2"], //for PlayerMenuSite
 
           playMode: 1, color1Team1: "Green", color2Team1: null, //for nameMenuSite
