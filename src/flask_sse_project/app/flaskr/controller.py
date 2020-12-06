@@ -1,7 +1,7 @@
 from flask import Blueprint
 from .bluetooth_controller import BluetoothController
 from .gameFactory import GameFactory
-from .siteModel import SiteModel
+from .siteModel import SiteModel, AbstractModel
 
 import asyncio
 import threading
@@ -39,7 +39,8 @@ class Controller(Blueprint):
         """
         Blueprint.__init__(self, name, import_Name)
         self.sse = sse
-        self.startGame('badminton') #badminton als default behalten
+        #self.startGame('badminton') #badminton als default behalten
+        self.model = SiteModel()
         self.bluetoothTread = threading.Thread(target = self.setupBluetoothThread,\
                                                args = (bluetoothController,), daemon = True)
         self.bluetoothTread.start()
@@ -71,6 +72,7 @@ class Controller(Blueprint):
         """
         while True:
             #TODO: Folgendes in Methode unterbringen
+            #TODO: Jeden Teil des Ifs als eigene Funktion im game unterbringen(Entsprechend der AbtractModel Schnittstelle)
             pressedButton = await self.bluetoothController.readBluetooth()
             if ('left' == pressedButton):
                 self.game.counterUp(teamNumber = 1)
@@ -108,6 +110,10 @@ class Controller(Blueprint):
     async def updateDeviceCount(self):
         #if "init" == self.tableModel.site: #TODO: tableModel muss erstellt werden
         await self.updateSSE("updateInitSite")
+
+    def changeModelToGame(self):
+        gameName = self.model.selectedButtonsStore["gameMenu"][0]
+        self.model = GameFactory.create(gameName)
 
     def startGame(self, gameName):
         """

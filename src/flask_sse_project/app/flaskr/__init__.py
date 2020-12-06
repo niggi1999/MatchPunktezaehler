@@ -1,7 +1,6 @@
 from .controller import Controller
-from .badminton import Badminton, ServePosition
 from .gameFactory import GameFactory
-from .siteModel import TableTestConfig, SiteTestConfig, TableModel, TableFactory, SiteModel
+from .siteModel import TableTestConfig, SiteTestConfig, TableModel, TableFactory, SiteModel, Badminton, ServePosition
 from .bluetooth_controller import BluetoothController
 
 from flask import Flask

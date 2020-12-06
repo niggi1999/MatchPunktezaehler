@@ -1,10 +1,11 @@
 from .tableFactory import TableFactory
 from .config import SiteProdConfig
+from .model import AbstractModel
 
 from copy import deepcopy
 import asyncio
 
-class SiteModel():
+class SiteModel(AbstractModel):
     def __init__(self, siteConfig = SiteProdConfig, testSite = None):
         self.__config = siteConfig
         self.__setInitialValues()
@@ -164,6 +165,6 @@ class SiteModel():
 
     async def __notify(self):
         for observer in self.__observers:
-            await observer.changeToGame()
+            await observer.changeModelToGame()
 
     #def __firstSite(self):
