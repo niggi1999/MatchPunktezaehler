@@ -1,6 +1,6 @@
 from .tableFactory import TableFactory
 from .config import SiteProdConfig
-from .model import AbstractModel
+from .abstractModel import AbstractModel
 
 from copy import deepcopy
 import asyncio

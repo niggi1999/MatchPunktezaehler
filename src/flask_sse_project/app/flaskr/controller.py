@@ -1,7 +1,6 @@
 from flask import Blueprint
 from .bluetooth_controller import BluetoothController
-from .gameFactory import GameFactory
-from .siteModel import SiteModel, AbstractModel
+from .model import SiteModel, AbstractModel, GameFactory
 
 import asyncio
 import threading

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from abc import ABC, abstractmethod
-from .abstractmodel import AbstractModel
+from .abstractModel import AbstractModel
 
 class Game(ABC):
     """
