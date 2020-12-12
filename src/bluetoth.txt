@@ -1,4 +1,4 @@
-apt install pi-bluetooth # bluetooth bluez etc
+iapt install pi-bluetooth # bluetooth bluez etc
 reboot
 
 sudo apt  install bluez
@@ -10,6 +10,10 @@ modprobe btusb
 systemctl start bluetooth
 
 sudo systemctl status bluetooth.service
+
+Damit paired devices gespeichert bleibt:
+sudo chmod -R a+rwx /var/lib/bluetooth
+sudo chown -R ubuntu:root /var/lib/bluetooth
 
 bluetoothctl 
 (quit  strg und Q)
@@ -32,6 +36,10 @@ info FF:FF:38:77:19:CA
 prüfen ob paired = yes
 
 exit
+
+
+in Startskript:
+echo -e "connect FF:FF:38:77:19:CA\nquit" | bluetoothctl
 
 
 zum testen:
