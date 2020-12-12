@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 from .abstractModel import AbstractModel
 
-class Game(ABC):
+class Game(ABC):#TODO: AbstractModel, ABC): #Must inherit in this order to be able to create a MRO
     """
     Abstract class that represents a game.
 
@@ -48,6 +48,27 @@ class Game(ABC):
         self.sidesChanged = False
         self._undoStack = []
         self._redoStack = []
+
+    def right(self):
+        self.counterUp(teamNumber = 2)
+
+    def left(self):
+        self.counterUp(teamNumber = 1)
+
+    def up(self):
+        try:
+            self.redo()
+        except ValueError as error:
+            print(error)
+
+    def down(self):
+        try:
+            self.undo()
+        except ValueError as error:
+            print(error)
+
+    def ok(self):
+        pass
 
     def counterUp(self, teamNumber):
         """

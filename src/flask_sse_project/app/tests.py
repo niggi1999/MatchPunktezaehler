@@ -403,13 +403,14 @@ class TestTableModel(unittest.TestCase):
     def testGetCursorVerbose(self):
         tableModel = TableFactory.create("init", TableTestConfig)
         cursor = tableModel.getCursorVerbose()
-        self.assertEqual(cursor, "deviceCountdeviceCountTEST")
+        self.assertEqual(cursor, "deviceCount deviceCountTEST")
 
     def testGetSelectedButtonsVerbose(self):
         tableModel = TableFactory.create("colorMenuSingles", TableTestConfig)
         tableModel.selectCurrentButton()
         selectedButtons = tableModel.getSelectedButtonsVerbose()
-        self.assertListEqual(selectedButtons, ["team1orange"])
+        listForComparison = [{"row" : "orange", "column" : "team1"}]
+        self.assertListEqual(selectedButtons, listForComparison)
 
 class TestSiteModel(unittest.TestCase):
     def testSiteForward(self):
@@ -449,7 +450,7 @@ class TestSiteModel(unittest.TestCase):
         SiteTestConfig.setAttribute("_firstSiteStartElement", "table")
         siteModel = SiteModel(SiteTestConfig)
         activeElement = siteModel.getActiveElement()
-        self.assertEqual(activeElement, "deviceCountdeviceCountTEST")
+        self.assertEqual(activeElement, "deviceCount deviceCountTEST")
         SiteTestConfig.setAttribute("_firstSiteStartElement", firstSiteStartElementBeforeChange)
 
     def testRight(self):
@@ -463,12 +464,12 @@ class TestSiteModel(unittest.TestCase):
         rightWorked = siteModel.right()
         self.assertEqual(rightWorked, True)
         activeElement = siteModel.getActiveElement()
-        self.assertEqual(activeElement, "singlesmode")
+        self.assertEqual(activeElement, "singles mode")
 
         rightWorked = siteModel.right()
         self.assertEqual(rightWorked, True)
         activeElement = siteModel.getActiveElement()
-        self.assertEqual(activeElement, "doublesmode")
+        self.assertEqual(activeElement, "doubles mode")
 
         rightWorked = siteModel.right()
         self.assertEqual(rightWorked, True)
@@ -494,12 +495,12 @@ class TestSiteModel(unittest.TestCase):
         rightWorked = siteModel.left()
         self.assertEqual(rightWorked, True)
         activeElement = siteModel.getActiveElement()
-        self.assertEqual(activeElement, "doublesmode")
+        self.assertEqual(activeElement, "doubles mode")
 
         rightWorked = siteModel.left()
         self.assertEqual(rightWorked, True)
         activeElement = siteModel.getActiveElement()
-        self.assertEqual(activeElement, "singlesmode")
+        self.assertEqual(activeElement, "singles mode")
 
         rightWorked = siteModel.left()
         self.assertEqual(rightWorked, True)
@@ -521,12 +522,12 @@ class TestSiteModel(unittest.TestCase):
     def testDown(self):
         siteModel = SiteModel(SiteTestConfig, "colorMenuSingles")
         activeElement = siteModel.getActiveElement()
-        self.assertEqual(activeElement, "team1orange")
+        self.assertEqual(activeElement, "team1 orange")
 
         moveWorked = siteModel.down()
         self.assertEqual(moveWorked, True)
         activeElement = siteModel.getActiveElement()
-        self.assertEqual(activeElement, "team1red")
+        self.assertEqual(activeElement, "team1 red")
 
         jumpsToEnd = 4
         for _ in range(jumpsToEnd):
@@ -536,28 +537,28 @@ class TestSiteModel(unittest.TestCase):
         moveWorked = siteModel.down()
         self.assertEqual(moveWorked, False)
         activeElement = siteModel.getActiveElement()
-        self.assertEqual(activeElement, "team1black")
+        self.assertEqual(activeElement, "team1 black")
 
     def testUp(self):
         siteModel = SiteModel(SiteTestConfig, "colorMenuSingles")
         activeElement = siteModel.getActiveElement()
-        self.assertEqual(activeElement, "team1orange")
+        self.assertEqual(activeElement, "team1 orange")
 
         moveWorked = siteModel.up()
         self.assertEqual(moveWorked, False)
         activeElement = siteModel.getActiveElement()
-        self.assertEqual(activeElement, "team1orange")
+        self.assertEqual(activeElement, "team1 orange")
 
         jumpsToEnd = 6
         for _ in range(jumpsToEnd):
             siteModel.down()
         activeElement = siteModel.getActiveElement()
-        self.assertEqual(activeElement, "team1black")
+        self.assertEqual(activeElement, "team1 black")
 
         moveWorked = siteModel.up()
         self.assertEqual(moveWorked, True)
         activeElement = siteModel.getActiveElement()
-        self.assertEqual(activeElement, "team1green")
+        self.assertEqual(activeElement, "team1 green")
 
     def testGoToSameSiteTwice(self):
         siteModel = SiteModel(SiteTestConfig, "playerMenu")
@@ -592,9 +593,10 @@ class TestSiteModel(unittest.TestCase):
 
         siteModel = SiteModel(SiteTestConfig, "colorMenuSingles")
         siteModel.ok()
-        self.assertListEqual(siteModel.getSelectedButtonsCurrentSiteVerbose(), ["team1orange"])
+        listForComparison = [{"row" : "orange", "column" : "team1"}]
+        self.assertListEqual(siteModel.getSelectedButtonsCurrentSiteVerbose(), listForComparison)
 
-    @patch.object(SiteModel, "_SiteModel__notify")
+    @patch.object(SiteModel, "_SiteModel__notifyStartGame")
     def testNotify(self, mockNotify):
         siteModel = SiteModel(SiteTestConfig, "gameMenu")
         siteModel.ok()

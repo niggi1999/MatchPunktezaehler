@@ -1,6 +1,6 @@
 from flask import Blueprint
 from .bluetooth_controller import BluetoothController
-from .model import SiteModel, AbstractModel, GameFactory
+from .model import SiteModel, AbstractModel, GameFactory, SiteProdConfig
 
 import asyncio
 import threading
@@ -39,7 +39,7 @@ class Controller(Blueprint):
         Blueprint.__init__(self, name, import_Name)
         self.sse = sse
         #self.startGame('badminton') #badminton als default behalten
-        self.model = SiteModel()
+        self.model = SiteModel(SiteProdConfig)
         self.bluetoothTread = threading.Thread(target = self.setupBluetoothThread,\
                                                args = (bluetoothController,), daemon = True)
         self.bluetoothTread.start()
@@ -70,27 +70,21 @@ class Controller(Blueprint):
         Calls updateSSE() after updating the game.
         """
         while True:
-            #TODO: Folgendes in Methode unterbringen
-            #TODO: Jeden Teil des Ifs als eigene Funktion im game unterbringen(Entsprechend der AbtractModel Schnittstelle)
             pressedButton = await self.bluetoothController.readBluetooth()
-            if ('left' == pressedButton):
-                self.game.counterUp(teamNumber = 1)
-            elif ('right' == pressedButton):
-                self.game.counterUp(teamNumber = 2)
-            elif ('down' == pressedButton):
-                try:
-                    self.game.undo()
-                except ValueError as error:
-                    print(error)
-            elif ('up' == pressedButton):
-                try:
-                    self.game.redo()
-                except ValueError as error:
-                    print(error)
+            if ("left" == pressedButton):
+                self.model.left()
+            elif ("right" == pressedButton):
+                self.model.right()
+            elif ("down" == pressedButton):
+                self.model.down()
+            elif ("up" == pressedButton):
+                self.model.up()
+            elif ("ok" == pressedButton):
+                self.model.ok()
             else:
                 continue
 
-            await self.updateSSE("updateGameSite")
+            await self.updateSSE("updateSite") #TODO: Nur zum Test, später nur aus SseController heraus, SseController zum Observer von siteModel machen
 
     @staticmethod
     async def updateSSE(path):
@@ -105,10 +99,12 @@ class Controller(Blueprint):
         async with httpx.AsyncClient() as client:
             r = await client.get("http://localhost:5000/con/" + path)
             print(r.text)
+            #TODO: Nur noch ein Pfad nötig? Wenn geupdated wird wird durch Schnittstellenklasse entschieden was gepublished wird.
 
     async def updateDeviceCount(self):
-        #if "init" == self.tableModel.site: #TODO: tableModel muss erstellt werden
-        await self.updateSSE("updateInitSite")
+        if "init" == self.model.getCurrentSite():
+            #TODO: mit model.getData() implementieren
+            await self.updateSSE("updateInitSite")
 
     def changeModelToGame(self):
         gameName = self.model.selectedButtonsStore["gameMenu"][0]
@@ -125,6 +121,10 @@ class Controller(Blueprint):
             gameName (str): The name of the game to be started.
         """
         self.game = GameFactory.create(gameName)
+
+    def updateSite(self):
+        publishMethod = self.model.getPublishMethod()
+        publishMethod(self.sse, self.bluetoothController)
 
     def updateInitSite(self):
         deviceCount = self.bluetoothController.deviceCount()
@@ -147,7 +147,7 @@ class Controller(Blueprint):
         "playMode": 1,
         "color1Team1": 3, "color2Team1": None,
         "color1Team2": 5, "color2Team2": None,
-        "fieldNames" : ["Orange", "Red", "Purple", "Blue", "Green", "Black"],
+        "fieldNames" : SiteProdConfig.getRowsAndColumns("colorMenuSingles")["rowContents"],
         "tableActive" : 2},
         type = "updateData")
 

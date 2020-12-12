@@ -1,12 +1,12 @@
 from .tableFactory import TableFactory
-from .config import SiteProdConfig
 from .abstractModel import AbstractModel
 
 from copy import deepcopy
+from typing import Dict
 import asyncio
 
 class SiteModel(AbstractModel):
-    def __init__(self, siteConfig = SiteProdConfig, testSite = None):
+    def __init__(self, siteConfig, testSite = None):
         self.__config = siteConfig
         self.__setInitialValues()
         self.__setInitialSite(testSite)
@@ -115,7 +115,7 @@ class SiteModel(AbstractModel):
         if self.__requiredButtonsOnSiteAreSelected():
             nextSiteExists = self.__newSite("forward")
             if not nextSiteExists:
-                self.__loop.run_until_complete(self.__notify())
+                self.__loop.run_until_complete(self.__notifyStartGame())
         else:
             raise ValueError("More selected Buttons are required to move forward")
 
@@ -131,25 +131,34 @@ class SiteModel(AbstractModel):
             raise TypeError("No previous Site")
 
     def __newSite(self, direction) -> bool:
-        currentSite = self.__site
-        isInColorMenu = "colorMenuSingles" == self.__site or "colorMenuDoubles" == self.__site
-        if isInColorMenu:
-            currentSite = "colorMenu"
+        currentSite = self.getCurrentSite()
         newSite = self.__getConfigMethodAssociatedToHorizontalDirection(direction)(currentSite, "succession")
-        if newSite is not None: # TODO: Methode für color Menu ifs
+        if newSite is not None:
             self.selectedButtonsStore[self.__site] = self.__getSelectedButtonsCurrentSite()
             if "colorMenu" == newSite:
-                modeButtonCoordinates = self.selectedButtonsStore["playerMenu"][0]
-                mode = self.__tableModel.getButtonName(modeButtonCoordinates, "playerMenu")
-                if "singlesmode" == mode:
-                    newSite = "colorMenuSingles"
-                elif "doublesmode" == mode:
-                    newSite = "colorMenuDoubles"
+                newSite = self.__getParticularSiteForColorMenu()
             self.__tableModel.newTable(newSite, self.selectedButtonsStore[newSite])
             self.__site = newSite
             self.__setActiveElementNewSite
             return True
         return False
+
+    def getCurrentSite(self):
+        currentSite = self.__site
+        isInColorMenu = "colorMenuSingles" == self.__site or "colorMenuDoubles" == self.__site
+        if isInColorMenu:
+            currentSite = "colorMenu"
+        return currentSite
+
+    def __getParticularSiteForColorMenu(self):
+        modeButtonCoordinates = self.selectedButtonsStore["playerMenu"][0]
+        mode = self.__tableModel.getButtonName(modeButtonCoordinates, "playerMenu")
+        site = ""
+        if "singlesmode" == mode:
+            site = "colorMenuSingles"
+        elif "doublesmode" == mode:
+            site = "colorMenuDoubles"
+        return site
 
     def __setActiveElementNewSite(self):
         if self.__firstSite == self.__site:
@@ -163,8 +172,114 @@ class SiteModel(AbstractModel):
     def detach(self, observer):
         self.__observers.remove(observer)
 
-    async def __notify(self):
+    async def __notifyStartGame(self): #TODO: Umbenennen
         for observer in self.__observers:
             await observer.changeModelToGame()
 
-    #def __firstSite(self):
+    #TODO: Zweites notify für update Data
+    async def _notifyUpdate(self):
+        for observer in self.__observers:
+            await observer.updateSSE()
+
+    #Methode die updated Zurückgeben, Methode bekommt sse und bluetooth Controller übergeben
+    #TODO: Alles weiter unten refaktorieren
+    def getPublishMethod(self):
+        publishMethod = getattr(self, "update" + self.__site.capitalize() + "Site")
+        return publishMethod
+
+    def updateInitSite(self, sse, bluetoothController):
+        deviceCount = bluetoothController.deviceCount()
+        sse.publish({"status": "init",
+        "cursorElement" : self.getActiveElement(),
+        "connectedController": deviceCount},
+        type = "updateData")
+
+    def updatePlayerMenuSite(self, sse, bluetoothController):
+        del bluetoothController
+        activeChooseField = self.getSelectedButtonsCurrentSiteVerbose()["column"]
+        activeElement = self.getActiveElement()
+        cursorElement = activeElement.split()[0]
+        columnContents = self.__tableModel.getColumnContents()
+        sse.publish({"status": "playerMenu",
+        "cursorElement" : cursorElement,
+        "activeChooseField": activeChooseField,
+        "fieldNames" : columnContents},
+        type = "updateData")
+
+    def updateColorMenuSite(self, sse, bluetoothController):
+        del bluetoothController
+        playMode = self.selectedButtonsStore["playerMenu"]
+        playModeInteger = playMode[0]["column"]
+        teamColors = self.__getTeamColors()
+        activeElement = self.getActiveElement()
+        cursorElement = activeElement.split()[1]
+        sse.publish({"status": "nameMenu",
+        "cursorElement" : cursorElement,
+        "playMode": playModeInteger,
+        "fieldNames" : self.__tableModel.getRowContents(),
+        "color1Team1": teamColors["color1Team1"], "color2Team1": teamColors["color2Team1"],
+        "color1Team2": teamColors["color1Team2"], "color2Team2": teamColors["color2Team2"],
+        "tableActive" : activeElement["row"]},
+        type = "updateData")
+
+    def __getTeamColors(self) -> Dict[str, str]:
+        color1Team1 = color2Team1 = color1Team2 = color2Team2 = None
+        selectedButtons = self.getSelectedButtonsCurrentSiteVerbose()
+        for button in selectedButtons:
+            columnName = button["column"]
+            if "Team1" == columnName:
+                color1Team1 = color2Team1 = button["row"]
+            elif "Team2" == columnName:
+                color1Team2 = color2Team2 = button["row"]
+            elif "Player1" == columnName:
+                color1Team1 = button["row"]
+            elif "Player2" == columnName:
+                color2Team1 = button["row"]
+            elif "Player3" == columnName:
+                color1Team2 = button["row"]
+            elif "Player4" == columnName:
+                color2Team2 = button["row"]
+        teamColors = {"color1Team1" : color1Team1, "color2Team1" : color2Team1,\
+                      "color1Team2" : color1Team2, "color2Team2" : color2Team2}
+        return teamColors
+
+    def updateGameMenuSite(self, sse, bluetoothController):
+        del bluetoothController
+        activeElement = self.getActiveElement()
+        cursorElement = activeElement.split()[1]
+        activeChooseField = self.getSelectedButtonsCurrentSiteVerbose()["row"]
+        sse.publish({"status": "gameMenu",
+        "cursorElement" : cursorElement,
+        "activeChooseField": activeChooseField,
+        "fieldNames" : self.__tableModel.getRowContents()},
+        type = "updateData")
+
+    ''' #TODO: In Game verschieben
+    def updateGameSite(self):
+        """
+        Updates the SSE stream with the current counter.
+
+        Must be called from Flask Request Context.
+        """
+        gameState = self.game.gameState()
+        deviceCount = self.bluetoothController.deviceCount()
+        self.sse.publish({"status": "game",
+            "connectedController" : deviceCount,
+            "counterTeam1": gameState["counter"]["Team1"],
+            "counterTeam2": gameState["counter"]["Team2"],
+            "lastChanged" : gameState["lastChanged"],
+            "roundsTeam1" : gameState["wonRounds"]["Team1"],
+            "roundsTeam2" : gameState["wonRounds"]["Team2"],
+            "gamesTeam1": gameState["wonGames"]["Team1"],
+            "gamesTeam2": gameState["wonGames"]["Team2"],
+            "team1HighColor" : 'Green',
+            "team1DownColor" : 'Orange',
+            "team2HighColor" : 'Blue',
+            "team2DownColor" : 'Red',
+            "team1Left" : False,
+            "opacityHighSiteTeam1" : 0.2,
+            "opacityDownSiteTeam1" : 1,
+            "opacityHighSiteTeam2" : 0.2,
+            "opacityDownSiteTeam2" : 0.2}
+            , type = "updateData")
+    '''
