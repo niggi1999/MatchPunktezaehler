@@ -1,12 +1,12 @@
 from .tableFactory import TableFactory
-from .config import SiteProdConfig
 from .abstractModel import AbstractModel
 
 from copy import deepcopy
+from typing import Dict, Callable
 import asyncio
 
 class SiteModel(AbstractModel):
-    def __init__(self, siteConfig = SiteProdConfig, testSite = None):
+    def __init__(self, siteConfig, testSite = None):
         self.__config = siteConfig
         self.__setInitialValues()
         self.__setInitialSite(testSite)
@@ -50,6 +50,9 @@ class SiteModel(AbstractModel):
         if "table" == activeElement:
             activeElement = self.__tableModel.getCursorVerbose()
         return activeElement
+
+    def getButtonName(self, buttonCoordinates, site = None) -> str:
+        return self.__tableModel.getButtonName(buttonCoordinates, site)
 
     def up(self) -> bool:
         if "table" == self.__activeSiteElement:
@@ -99,23 +102,23 @@ class SiteModel(AbstractModel):
             "left" : self.__tableModel.goLeft
         }.get(direction)
 
-    def ok(self):
+    async def ok(self):
         select = {
             "table" : self.__tableModel.selectCurrentButton,
             "nextButton" : self.__siteForward,
             "previousButton" : self.__siteBackward
         }.get(self.__activeSiteElement)
         try:
-            select()
+            await select()
         except (TypeError, ValueError) as error:
             print(error)
 
-    def __siteForward(self):
+    async def __siteForward(self):
         print("SiteForward")
         if self.__requiredButtonsOnSiteAreSelected():
             nextSiteExists = self.__newSite("forward")
             if not nextSiteExists:
-                self.__loop.run_until_complete(self.__notify())
+                await self.__notifyStartGame()
         else:
             raise ValueError("More selected Buttons are required to move forward")
 
@@ -124,32 +127,41 @@ class SiteModel(AbstractModel):
         actualButtonsCount = len(self.__tableModel.selectedButtons)
         return requiredButtonsCount == actualButtonsCount
 
-    def __siteBackward(self):
+    async def __siteBackward(self):
         print("SiteBackward")
         previousSiteExists = self.__newSite("backward")
         if not previousSiteExists:
             raise TypeError("No previous Site")
 
     def __newSite(self, direction) -> bool:
+        currentSite = self.getCurrentSite()
+        newSite = self.__getConfigMethodAssociatedToHorizontalDirection(direction)(currentSite, "succession")
+        if newSite is not None:
+            self.selectedButtonsStore[self.__site] = self.__getSelectedButtonsCurrentSite()
+            if "colorMenu" == newSite:
+                newSite = self.__getParticularSiteForColorMenu()
+            self.__tableModel.newTable(newSite, self.selectedButtonsStore[newSite])
+            self.__site = newSite
+            self.__setActiveElementNewSite()
+            return True
+        return False
+
+    def getCurrentSite(self):
         currentSite = self.__site
         isInColorMenu = "colorMenuSingles" == self.__site or "colorMenuDoubles" == self.__site
         if isInColorMenu:
             currentSite = "colorMenu"
-        newSite = self.__getConfigMethodAssociatedToHorizontalDirection(direction)(currentSite, "succession")
-        if newSite is not None: # TODO: Methode für color Menu ifs
-            self.selectedButtonsStore[self.__site] = self.__getSelectedButtonsCurrentSite()
-            if "colorMenu" == newSite:
-                modeButtonCoordinates = self.selectedButtonsStore["playerMenu"][0]
-                mode = self.__tableModel.getButtonName(modeButtonCoordinates, "playerMenu")
-                if "singlesmode" == mode:
-                    newSite = "colorMenuSingles"
-                elif "doublesmode" == mode:
-                    newSite = "colorMenuDoubles"
-            self.__tableModel.newTable(newSite, self.selectedButtonsStore[newSite])
-            self.__site = newSite
-            self.__setActiveElementNewSite
-            return True
-        return False
+        return currentSite
+
+    def __getParticularSiteForColorMenu(self):
+        modeButtonCoordinates = self.selectedButtonsStore["playerMenu"][0]
+        mode = self.__tableModel.getButtonName(modeButtonCoordinates, "playerMenu")
+        site = ""
+        if "singlesmode" == mode:
+            site = "colorMenuSingles"
+        elif "doublesmode" == mode:
+            site = "colorMenuDoubles"
+        return site
 
     def __setActiveElementNewSite(self):
         if self.__firstSite == self.__site:
@@ -163,8 +175,105 @@ class SiteModel(AbstractModel):
     def detach(self, observer):
         self.__observers.remove(observer)
 
-    async def __notify(self):
+    async def __notifyStartGame(self):
         for observer in self.__observers:
             await observer.changeModelToGame()
 
-    #def __firstSite(self):
+    async def _notifyUpdate(self):
+        for observer in self.__observers:
+            await observer.updateSSE()
+
+    #Methode die updated Zurückgeben, Methode bekommt sse und bluetooth Controller übergeben
+    #TODO: Alles weiter unten refaktorieren
+    def getPublishMethod(self) -> Callable:
+        siteCapitalized = self.__site[0].upper() + self.__site[1:]
+        publishMethod = getattr(self, "update" + siteCapitalized + "Site")
+        return publishMethod
+
+    def updateInitSite(self, sse, bluetoothController):
+        deviceCount = bluetoothController.deviceCount()
+        sse.publish({"status": "init",
+        "cursorElement" : self.getActiveElement(),
+        "connectedController": deviceCount},
+        type = "updateData")
+
+    def updatePlayerMenuSite(self, sse, bluetoothController):
+        del bluetoothController
+        selectedButtons = self.getSelectedButtonsCurrentSiteVerbose()
+        activeChooseField = selectedButtons[0]["column"] if selectedButtons else None
+        activeElement = self.getActiveElement()
+        cursorElement = activeElement.split()[0]
+        columnContents = self.__tableModel.getColumnContents()
+        sse.publish({"status": "playerMenu",
+        "cursorElement" : cursorElement,
+        "activeChooseField": activeChooseField,
+        "fieldNames" : columnContents},
+        type = "updateData")
+
+    def updateColorMenuSinglesSite(self, sse, bluetoothController):
+        playModeInteger = 1
+        self.updateColorMenuSite(sse, bluetoothController, playModeInteger)
+
+    def updateColorMenuDoublesSite(self, sse, bluetoothController):
+        playModeInteger = 2
+        self.updateColorMenuSite(sse, bluetoothController, playModeInteger)
+
+    def updateColorMenuSite(self, sse, bluetoothController, playModeInteger):
+        del bluetoothController
+        teamColors = self.__getTeamColors()
+        activeElement = self.getActiveElement()
+        activeElementHasMoreThanOneWord = 1 < len(activeElement.split())
+        columnActiveElement = activeElement.split()[1] if activeElementHasMoreThanOneWord else activeElement
+        rowActiveElement = activeElement.split()[0] if activeElementHasMoreThanOneWord else activeElement
+        if "nextButton" == rowActiveElement:
+            rowActiveElement = 1 * playModeInteger
+        elif "previousButton" == rowActiveElement:
+            rowActiveElement = 2 * playModeInteger
+        else:
+            rowActiveElement = rowActiveElement[-1]
+        print("COLOR1TEAM1")
+        print(teamColors["color1Team1"])
+        print("TABLEACTIVE")
+        print(rowActiveElement)
+        sse.publish({"status": "nameMenu",
+        "cursorElement" : rowActiveElement,
+        "playMode": playModeInteger,
+        "fieldNames" : self.__tableModel.getRowContents(),
+        "color1Team1": teamColors["color1Team1"], "color2Team1": teamColors["color2Team1"],
+        "color1Team2": teamColors["color1Team2"], "color2Team2": teamColors["color2Team2"],
+        "tableActive" : columnActiveElement},
+        type = "updateData")
+
+    def __getTeamColors(self) -> Dict[str, str]:
+        color1Team1 = color2Team1 = color1Team2 = color2Team2 = None
+        selectedButtons = self.getSelectedButtonsCurrentSiteVerbose()
+        for button in selectedButtons:
+            columnName = button["column"]
+            if "Team1" == columnName:
+                color1Team1 = color2Team1 = button["row"]
+            elif "Team2" == columnName:
+                color1Team2 = color2Team2 = button["row"]
+            elif "Player1" == columnName:
+                color1Team1 = button["row"]
+            elif "Player2" == columnName:
+                color2Team1 = button["row"]
+            elif "Player3" == columnName:
+                color1Team2 = button["row"]
+            elif "Player4" == columnName:
+                color2Team2 = button["row"]
+        teamColors = {"color1Team1" : color1Team1, "color2Team1" : color2Team1,\
+                      "color1Team2" : color1Team2, "color2Team2" : color2Team2}
+        return teamColors
+
+    def updateGameMenuSite(self, sse, bluetoothController):
+        del bluetoothController
+        activeElement = self.getActiveElement()
+        activeElementHasMoreThanOneWord = 1 < len(activeElement.split())
+        rowActiveElement = activeElement.split()[0] if activeElementHasMoreThanOneWord else activeElement
+        selectedButtons = self.getSelectedButtonsCurrentSiteVerbose()
+        activeChooseField = selectedButtons[0]["column"] if selectedButtons else None
+        sse.publish({"status": "gameMenu",
+        "cursorElement" : rowActiveElement,
+        "activeChooseField": activeChooseField,
+        "fieldNames" : self.__tableModel.getRowContents()},
+        type = "updateData")

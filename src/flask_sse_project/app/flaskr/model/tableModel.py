@@ -1,6 +1,6 @@
 from copy import deepcopy
 from itertools import filterfalse
-from typing import List, Type
+from typing import List, Dict, Type
 
 from .config import TableConfig
 
@@ -28,20 +28,26 @@ class TableModel():
             return True
         return False
 
+    def getRowContents(self):
+        return deepcopy(self.__rowContents)
+
+    def getColumnContents(self):
+        return deepcopy(self.__columnContents)
+
     def getCurrentSite(self):
         return deepcopy(self.__site)
 
     def getCursorVerbose(self) -> str:
         rowContent = self.__getContent("row", self.cursor)
         columnContent = self.__getContent("column", self.cursor)
-        return (columnContent + rowContent)
+        return (columnContent + " " + rowContent)
 
-    def getSelectedButtonsVerbose(self) -> List[str]:
+    def getSelectedButtonsVerbose(self) -> List[Dict[str, str]]:
         selectedButtonsVerbose = []
         for button in self.selectedButtons:
             rowContent = self.__getContent("row", button)
             columnContent = self.__getContent("column", button)
-            selectedButtonsVerbose.append(columnContent + rowContent)
+            selectedButtonsVerbose.append(deepcopy({"row" : rowContent, "column" : columnContent}))
         return selectedButtonsVerbose
 
     def __getContent(self, rowOrColumn, tableCoordinatesDict):
@@ -96,7 +102,7 @@ class TableModel():
             "horizontally" : "column"
         }.get(direction)
 
-    def selectCurrentButton(self):
+    async def selectCurrentButton(self):
         self.__deleteSelectedButtonOnSameRowOrColumnAsCursor()
         self.selectedButtons.append(deepcopy(self.cursor))
         getColumn = lambda button : button["column"]

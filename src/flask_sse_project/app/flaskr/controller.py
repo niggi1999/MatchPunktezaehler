@@ -1,6 +1,6 @@
 from flask import Blueprint
 from .bluetooth_controller import BluetoothController
-from .model import SiteModel, AbstractModel, GameFactory
+from .model import SiteModel, AbstractModel, GameFactory, SiteProdConfig
 
 import asyncio
 import threading
@@ -37,9 +37,7 @@ class Controller(Blueprint):
             sse (ServerSentEventsBlueprint): The Object for sending Server Sent Events.
         """
         Blueprint.__init__(self, name, import_Name)
-        self.sse = sse
-        #self.startGame('badminton') #badminton als default behalten
-        self.model = SiteModel()
+        self.sse = sse #TODO: In SseConroller verschieben
         self.bluetoothTread = threading.Thread(target = self.setupBluetoothThread,\
                                                args = (bluetoothController,), daemon = True)
         self.bluetoothTread.start()
@@ -54,6 +52,7 @@ class Controller(Blueprint):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         #with threading.Lock():
+        loop.run_until_complete(self.changeModelToFirstSite())
         self.bluetoothController = bluetoothController
         self.bluetoothController.attach(self)
         #self.siteModel = SiteModel()
@@ -70,27 +69,21 @@ class Controller(Blueprint):
         Calls updateSSE() after updating the game.
         """
         while True:
-            #TODO: Folgendes in Methode unterbringen
-            #TODO: Jeden Teil des Ifs als eigene Funktion im game unterbringen(Entsprechend der AbtractModel Schnittstelle)
             pressedButton = await self.bluetoothController.readBluetooth()
-            if ('left' == pressedButton):
-                self.game.counterUp(teamNumber = 1)
-            elif ('right' == pressedButton):
-                self.game.counterUp(teamNumber = 2)
-            elif ('down' == pressedButton):
-                try:
-                    self.game.undo()
-                except ValueError as error:
-                    print(error)
-            elif ('up' == pressedButton):
-                try:
-                    self.game.redo()
-                except ValueError as error:
-                    print(error)
+            if ("left" == pressedButton):
+                self.model.left()
+            elif ("right" == pressedButton):
+                self.model.right()
+            elif ("down" == pressedButton):
+                self.model.down()
+            elif ("up" == pressedButton):
+                self.model.up()
+            elif ("ok" == pressedButton):
+                await self.model.ok()
             else:
                 continue
 
-            await self.updateSSE("updateGameSite")
+            await self.updateSSE("updateSite") #TODO: Nur zum Test, später nur aus SseController heraus, SseController zum Observer von siteModel machen
 
     @staticmethod
     async def updateSSE(path):
@@ -107,12 +100,21 @@ class Controller(Blueprint):
             print(r.text)
 
     async def updateDeviceCount(self):
-        #if "init" == self.tableModel.site: #TODO: tableModel muss erstellt werden
-        await self.updateSSE("updateInitSite")
+        if "init" == self.model.getCurrentSite():
+            await self.updateSSE("updateSite")
 
-    def changeModelToGame(self):
-        gameName = self.model.selectedButtonsStore["gameMenu"][0]
+    async def changeModelToGame(self):
+        gameNameCoordinates = self.model.selectedButtonsStore["gameMenu"][0]
+        gameName = self.model.getButtonName(gameNameCoordinates, "gameMenu")[4:]
         self.model = GameFactory.create(gameName)
+        self.model.attach(self)
+
+    async def changeModelToFirstSite(self):
+        self.model = SiteModel(SiteProdConfig)
+        self.model.attach(self)
+
+    async def changeModelToDialogLeaveGame(self): #TODO: implementieren
+        pass
 
     def startGame(self, gameName):
         """
@@ -126,62 +128,6 @@ class Controller(Blueprint):
         """
         self.game = GameFactory.create(gameName)
 
-    def updateInitSite(self):
-        deviceCount = self.bluetoothController.deviceCount()
-        self.sse.publish({"status": "init",
-        "cursorElement" : "forwardButton",
-        "connectedController": deviceCount},
-        type = "updateData")
-
-    def updatePlayerMenuSite(self):
-        #activeChooseField = {}.get(self.siteModel.getSelectedButtonsCurrentSiteVerbose())
-        self.sse.publish({"status": "playerMenu",
-        "cursorElement" : "forwardButton",
-        "activeChooseField": 1,
-        "fieldNames" : None},
-        type = "updateData")
-
-    def updateColorMenuSite(self):
-        self.sse.publish({"status": "nameMenu",
-        "cursorElement" : "forwardButton",
-        "playMode": 1,
-        "color1Team1": 3, "color2Team1": None,
-        "color1Team2": 5, "color2Team2": None,
-        "fieldNames" : ["Orange", "Red", "Purple", "Blue", "Green", "Black"],
-        "tableActive" : 2},
-        type = "updateData")
-
-    def updateGameMenuSite(self):
-        self.sse.publish({"status": "gameMenu",
-        "cursorElement" : "forwardButton",
-        "activeChooseField": "badminton",
-        "fieldNames" : ["Badminton", "Volleyball", "Tennis"]},
-        type = "updateData")
-
-    def updateGameSite(self):
-        """
-        Updates the SSE stream with the current counter.
-
-        Must be called from Flask Request Context.
-        """
-        gameState = self.game.gameState()
-        deviceCount = self.bluetoothController.deviceCount()
-        self.sse.publish({"status": "game",
-            "connectedController" : deviceCount,
-            "counterTeam1": gameState["counter"]["Team1"],
-            "counterTeam2": gameState["counter"]["Team2"],
-            "lastChanged" : gameState["lastChanged"],
-            "roundsTeam1" : gameState["wonRounds"]["Team1"],
-            "roundsTeam2" : gameState["wonRounds"]["Team2"],
-            "gamesTeam1": gameState["wonGames"]["Team1"],
-            "gamesTeam2": gameState["wonGames"]["Team2"],
-            "team1HighColor" : 'Green',
-            "team1DownColor" : 'Orange',
-            "team2HighColor" : 'Blue',
-            "team2DownColor" : 'Red',
-            "team1Left" : False,
-            "opacityHighSiteTeam1" : 0.2,
-            "opacityDownSiteTeam1" : 1,
-            "opacityHighSiteTeam2" : 0.2,
-            "opacityDownSiteTeam2" : 0.2}
-            , type = "updateData")
+    def updateSite(self):
+        publishMethod = self.model.getPublishMethod()
+        publishMethod(self.sse, self.bluetoothController)
