@@ -102,7 +102,7 @@ class TableModel():
             "horizontally" : "column"
         }.get(direction)
 
-    def selectCurrentButton(self):
+    async def selectCurrentButton(self):
         self.__deleteSelectedButtonOnSameRowOrColumnAsCursor()
         self.selectedButtons.append(deepcopy(self.cursor))
         getColumn = lambda button : button["column"]

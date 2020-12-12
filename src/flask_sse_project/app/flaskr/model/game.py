@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 from .abstractModel import AbstractModel
 
-class Game(ABC):#TODO: AbstractModel, ABC): #Must inherit in this order to be able to create a MRO
+class Game(AbstractModel, ABC): #Must inherit in this order to be able to create a MRO
     """
     Abstract class that represents a game.
 
@@ -48,6 +48,7 @@ class Game(ABC):#TODO: AbstractModel, ABC): #Must inherit in this order to be ab
         self.sidesChanged = False
         self._undoStack = []
         self._redoStack = []
+        self.__observers = []
 
     def right(self):
         self.counterUp(teamNumber = 2)
@@ -210,3 +211,52 @@ class Game(ABC):#TODO: AbstractModel, ABC): #Must inherit in this order to be ab
             self.wonGames = nextGameState["wonGames"]
             self.currentMaxPoints = nextGameState["currentMaxPoints"]
             self.sidesChanged = nextGameState["sidesChanged"]
+
+    def attach(self, observer):
+        self.__observers.append(observer)
+
+    def detach(self, observer):
+        self.__observers.remove(observer)
+
+    async def __notifyNewGame(self):
+        for observer in self.__observers:
+            await observer.changeModelToFirstSite()
+
+    async def _notifyUpdate(self):
+        for observer in self.__observers:
+            await observer.updateSSE()
+
+
+    def getCurrentSite(self):
+        return "game"
+
+    def getPublishMethod(self):
+        return self.updateGameSite
+
+    def updateGameSite(self):
+        """
+        Updates the SSE stream with the current counter.
+
+        Must be called from Flask Request Context.
+        """
+        gameState = self.game.gameState()
+        deviceCount = self.bluetoothController.deviceCount()
+        self.sse.publish({"status": "game",
+            "connectedController" : deviceCount,
+            "counterTeam1": gameState["counter"]["Team1"],
+            "counterTeam2": gameState["counter"]["Team2"],
+            "lastChanged" : gameState["lastChanged"],
+            "roundsTeam1" : gameState["wonRounds"]["Team1"],
+            "roundsTeam2" : gameState["wonRounds"]["Team2"],
+            "gamesTeam1": gameState["wonGames"]["Team1"],
+            "gamesTeam2": gameState["wonGames"]["Team2"],
+            "team1HighColor" : 'Green',
+            "team1DownColor" : 'Orange',
+            "team2HighColor" : 'Blue',
+            "team2DownColor" : 'Red',
+            "team1Left" : False,
+            "opacityHighSiteTeam1" : 0.2,
+            "opacityDownSiteTeam1" : 1,
+            "opacityHighSiteTeam2" : 0.2,
+            "opacityDownSiteTeam2" : 0.2}
+            , type = "updateData")

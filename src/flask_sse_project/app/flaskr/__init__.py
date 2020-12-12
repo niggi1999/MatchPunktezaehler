@@ -26,6 +26,7 @@ def create_controller(sse, testBluetoothController = BluetoothController()):
         con.updateSite() #TODO: Auf SseController ummstellen
         return 'Site updated'
 
+    '''
     @con.route('/updateInitSite')
     def updateInitSite():
         con.updateInitSite()
@@ -50,9 +51,7 @@ def create_controller(sse, testBluetoothController = BluetoothController()):
     def updateGameSite():
         con.updateGameSite()
         return 'Game site updated'
-
-    
-
+    '''
     return(con)
 
 def create_app(test_config=None):

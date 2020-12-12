@@ -99,23 +99,23 @@ class SiteModel(AbstractModel):
             "left" : self.__tableModel.goLeft
         }.get(direction)
 
-    def ok(self):
+    async def ok(self):
         select = {
             "table" : self.__tableModel.selectCurrentButton,
             "nextButton" : self.__siteForward,
             "previousButton" : self.__siteBackward
         }.get(self.__activeSiteElement)
         try:
-            select()
+            await select()
         except (TypeError, ValueError) as error:
             print(error)
 
-    def __siteForward(self):
+    async def __siteForward(self):
         print("SiteForward")
         if self.__requiredButtonsOnSiteAreSelected():
             nextSiteExists = self.__newSite("forward")
             if not nextSiteExists:
-                self.__loop.run_until_complete(self.__notifyStartGame())
+                await self.__notifyStartGame()
         else:
             raise ValueError("More selected Buttons are required to move forward")
 
@@ -139,7 +139,7 @@ class SiteModel(AbstractModel):
                 newSite = self.__getParticularSiteForColorMenu()
             self.__tableModel.newTable(newSite, self.selectedButtonsStore[newSite])
             self.__site = newSite
-            self.__setActiveElementNewSite
+            self.__setActiveElementNewSite()
             return True
         return False
 
@@ -184,7 +184,8 @@ class SiteModel(AbstractModel):
     #Methode die updated Zurückgeben, Methode bekommt sse und bluetooth Controller übergeben
     #TODO: Alles weiter unten refaktorieren
     def getPublishMethod(self):
-        publishMethod = getattr(self, "update" + self.__site.capitalize() + "Site")
+        siteCapitalized = self.__site[0].upper() + self.__site[1:]
+        publishMethod = getattr(self, "update" + siteCapitalized + "Site")
         return publishMethod
 
     def updateInitSite(self, sse, bluetoothController):
@@ -196,7 +197,8 @@ class SiteModel(AbstractModel):
 
     def updatePlayerMenuSite(self, sse, bluetoothController):
         del bluetoothController
-        activeChooseField = self.getSelectedButtonsCurrentSiteVerbose()["column"]
+        selectedButtons = self.getSelectedButtonsCurrentSiteVerbose()
+        activeChooseField = selectedButtons[0]["column"] if selectedButtons else None
         activeElement = self.getActiveElement()
         cursorElement = activeElement.split()[0]
         columnContents = self.__tableModel.getColumnContents()
@@ -206,20 +208,44 @@ class SiteModel(AbstractModel):
         "fieldNames" : columnContents},
         type = "updateData")
 
-    def updateColorMenuSite(self, sse, bluetoothController):
+    def updateColorMenuSinglesSite(self, sse, bluetoothController):
+        playModeInteger = 1
+        self.updateColorMenuSite(sse, bluetoothController, playModeInteger)
+
+    def updateColorMenuDoublesSite(self, sse, bluetoothController):
+        playModeInteger = 2
+        self.updateColorMenuSite(sse, bluetoothController, playModeInteger)
+
+    def updateColorMenuSite(self, sse, bluetoothController, playModeInteger):
         del bluetoothController
-        playMode = self.selectedButtonsStore["playerMenu"]
-        playModeInteger = playMode[0]["column"]
         teamColors = self.__getTeamColors()
         activeElement = self.getActiveElement()
-        cursorElement = activeElement.split()[1]
+        print("ACTIVEELEMENT")
+        print(activeElement)
+        activeElementHasMoreThanOneWord = 1 < len(activeElement.split())
+        print("ACTIVEELEMENTHASMORETHANONEWORD")
+        print(activeElementHasMoreThanOneWord)
+        columnActiveElement = activeElement.split()[1] if activeElementHasMoreThanOneWord else activeElement
+        rowActiveElement = activeElement.split()[0] if activeElementHasMoreThanOneWord else activeElement
+        print("TABLEACTIVEVORHER")
+        print(rowActiveElement)
+        if "nextButton" == rowActiveElement:
+            rowActiveElement = 1 * playModeInteger
+        elif "previousButton" == rowActiveElement:
+            rowActiveElement = 2 * playModeInteger
+        else:
+            rowActiveElement = rowActiveElement[-1]
+        print("COLOR1TEAM1")
+        print(teamColors["color1Team1"])
+        print("TABLEACTIVE")
+        print(rowActiveElement)
         sse.publish({"status": "nameMenu",
-        "cursorElement" : cursorElement,
+        "cursorElement" : rowActiveElement,
         "playMode": playModeInteger,
         "fieldNames" : self.__tableModel.getRowContents(),
         "color1Team1": teamColors["color1Team1"], "color2Team1": teamColors["color2Team1"],
         "color1Team2": teamColors["color1Team2"], "color2Team2": teamColors["color2Team2"],
-        "tableActive" : activeElement["row"]},
+        "tableActive" : columnActiveElement},
         type = "updateData")
 
     def __getTeamColors(self) -> Dict[str, str]:
@@ -246,40 +272,12 @@ class SiteModel(AbstractModel):
     def updateGameMenuSite(self, sse, bluetoothController):
         del bluetoothController
         activeElement = self.getActiveElement()
-        cursorElement = activeElement.split()[1]
-        activeChooseField = self.getSelectedButtonsCurrentSiteVerbose()["row"]
+        activeElementHasMoreThanOneWord = 1 < len(activeElement.split())
+        rowActiveElement = activeElement.split()[0] if activeElementHasMoreThanOneWord else activeElement
+        selectedButtons = self.getSelectedButtonsCurrentSiteVerbose()
+        activeChooseField = selectedButtons[0]["column"] if selectedButtons else None
         sse.publish({"status": "gameMenu",
-        "cursorElement" : cursorElement,
+        "cursorElement" : rowActiveElement,
         "activeChooseField": activeChooseField,
         "fieldNames" : self.__tableModel.getRowContents()},
         type = "updateData")
-
-    ''' #TODO: In Game verschieben
-    def updateGameSite(self):
-        """
-        Updates the SSE stream with the current counter.
-
-        Must be called from Flask Request Context.
-        """
-        gameState = self.game.gameState()
-        deviceCount = self.bluetoothController.deviceCount()
-        self.sse.publish({"status": "game",
-            "connectedController" : deviceCount,
-            "counterTeam1": gameState["counter"]["Team1"],
-            "counterTeam2": gameState["counter"]["Team2"],
-            "lastChanged" : gameState["lastChanged"],
-            "roundsTeam1" : gameState["wonRounds"]["Team1"],
-            "roundsTeam2" : gameState["wonRounds"]["Team2"],
-            "gamesTeam1": gameState["wonGames"]["Team1"],
-            "gamesTeam2": gameState["wonGames"]["Team2"],
-            "team1HighColor" : 'Green',
-            "team1DownColor" : 'Orange',
-            "team2HighColor" : 'Blue',
-            "team2DownColor" : 'Red',
-            "team1Left" : False,
-            "opacityHighSiteTeam1" : 0.2,
-            "opacityDownSiteTeam1" : 1,
-            "opacityHighSiteTeam2" : 0.2,
-            "opacityDownSiteTeam2" : 0.2}
-            , type = "updateData")
-    '''

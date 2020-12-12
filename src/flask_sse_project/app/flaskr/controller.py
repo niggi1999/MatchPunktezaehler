@@ -80,11 +80,13 @@ class Controller(Blueprint):
             elif ("up" == pressedButton):
                 self.model.up()
             elif ("ok" == pressedButton):
-                self.model.ok()
+                await self.model.ok()
             else:
                 continue
 
             await self.updateSSE("updateSite") #TODO: Nur zum Test, später nur aus SseController heraus, SseController zum Observer von siteModel machen
+            print("ACTIVE ELEMENT")
+            print(self.model.getActiveElement())
 
     @staticmethod
     async def updateSSE(path):
@@ -104,7 +106,7 @@ class Controller(Blueprint):
     async def updateDeviceCount(self):
         if "init" == self.model.getCurrentSite():
             #TODO: mit model.getData() implementieren
-            await self.updateSSE("updateInitSite")
+            await self.updateSSE("updateSite")
 
     def changeModelToGame(self):
         gameName = self.model.selectedButtonsStore["gameMenu"][0]
@@ -126,6 +128,7 @@ class Controller(Blueprint):
         publishMethod = self.model.getPublishMethod()
         publishMethod(self.sse, self.bluetoothController)
 
+    '''
     def updateInitSite(self):
         deviceCount = self.bluetoothController.deviceCount()
         self.sse.publish({"status": "init",
@@ -185,3 +188,4 @@ class Controller(Blueprint):
             "opacityHighSiteTeam2" : 0.2,
             "opacityDownSiteTeam2" : 0.2}
             , type = "updateData")
+    '''
