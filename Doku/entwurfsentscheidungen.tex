@@ -1,1 +1,42 @@
 \chapter{Entwurfsentscheidungen}
+\section{Frontend}
+Das Frontend wurde mit dem Javascript Framework React erstellt. Aufgrund der zeitlichen Begrenzung bei der Programmierung der Software, wurde React als Javascript Framework gewählt, da React eine niedrige Einstiegshürde aufweist. 
+
+Die Struktur des Frontends entspricht einer Ablaufkette, welche durch die vom Backend übergebenen Daten gesteuert wird. Diese Ablaufkette ist in der Funktion Procedure implementiert, welche im Listing \ref{procedure} dargestellt wird. 
+
+\begin{lstlisting}[caption={Procedure Funktion des Frontends},captionpos=b]
+import React from "react";
+import Game from './game';
+import GameMenu from "./gameMenu";
+import Init from './init';
+import PlayerMenu from "./playerMenu";
+import NameMenu from "./nameMenu";
+import LeaveGame from "./leaveGame";
+import ChangeSide from './changeSide';
+
+function Procedure (props){
+    switch(props.data.status) {
+        case 'init':
+            return <Init data={props.data}/>;
+        case 'playerMenu':
+            return <PlayerMenu data={props.data}/>;
+        case 'nameMenu':
+            return <NameMenu data={props.data}/>;
+        case 'gameMenu':
+            return <GameMenu data={props.data}/>;
+        case 'game':
+            return <Game data={props.data}/>;
+        case 'leaveGame':
+            return <LeaveGame data={props.data}/>;
+        case 'changeSide':
+            return <ChangeSide data={props.data}/>;
+        default:
+            return <h1>Invalid status. Check spelling</h1>;
+    }
+}
+
+export default Procedure
+\end{lstlisting}
+\label{procedure}
+
+Procedure bekommt beim Aufruf die Daten des Backends übergeben, welche in Abhängigkeit des Status variieren. Der Status ist ein String der vom Backend an das Frontend übergeben wird. Dieser String definiert auf welcher Seite der Benutzeroberfläche sich der Benutzer befindet. In Listing \ref{procedure} in Zeile 11 ist dargestellt, dass die Wahl der Seite durch ein Switch Case der Status Variable erfolgt. Entspricht die Status Variable z.B. dem String \glqq init\grqq{} , so wird die Init-Seite der Benutzeroberfläche dargestellt. Diese Implementierung wird verwendet, da so die Steuerung der Software in der Verantwortung des Backends liegt. Außerdem können auf diese Weise sehr leicht neue Seiten der Benutzeroberfläche hinzugefügt werden, da lediglich das Switch Case erweitert werden muss.
