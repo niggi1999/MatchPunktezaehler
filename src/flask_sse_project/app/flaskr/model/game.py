@@ -68,8 +68,8 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         except ValueError as error:
             print(error)
 
-    def ok(self):
-        pass
+    async def ok(self):
+        await self.__notifyNewGame()
 
     def counterUp(self, teamNumber):
         """
@@ -220,7 +220,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
 
     async def __notifyNewGame(self):
         for observer in self.__observers:
-            await observer.changeModelToFirstSite()
+            await observer.changeModelToDialogLeaveGame()
 
     async def _notifyUpdate(self):
         for observer in self.__observers:
@@ -254,7 +254,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
             "team1DownColor" : 'Orange',
             "team2HighColor" : 'Blue',
             "team2DownColor" : 'Red',
-            "team1Left" : False,
+            "team1Left" : True,
             "opacityHighSiteTeam1" : 0.2,
             "opacityDownSiteTeam1" : 1,
             "opacityHighSiteTeam2" : 0.2,

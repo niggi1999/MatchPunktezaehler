@@ -26,32 +26,6 @@ def create_controller(sse, testBluetoothController = BluetoothController()):
         con.updateSite() #TODO: Auf SseController ummstellen
         return 'Site updated'
 
-    '''
-    @con.route('/updateInitSite')
-    def updateInitSite():
-        con.updateInitSite()
-        return 'Init site updated'
-
-    @con.route('/updatePlayerMenuSite')
-    def updatePlayerMenuSite():
-        con.updatePlayerMenuSite()
-        return 'PlayerMenu site updated'
-
-    @con.route('/updateColorMenuSite')
-    def updateColorMenuSite():
-        con.updateColorMenuSite()
-        return 'Name Menu site updated'
-
-    @con.route('/updateGameMenuSite')
-    def updateGameMenuSite():
-        con.updateGameMenuSite()
-        return 'Game Menu site updated'
-
-    @con.route('/updateGameSite')
-    def updateGameSite():
-        con.updateGameSite()
-        return 'Game site updated'
-    '''
     return(con)
 
 def create_app(test_config=None):

@@ -2,7 +2,7 @@ from .tableFactory import TableFactory
 from .abstractModel import AbstractModel
 
 from copy import deepcopy
-from typing import Dict
+from typing import Dict, Callable
 import asyncio
 
 class SiteModel(AbstractModel):
@@ -50,6 +50,9 @@ class SiteModel(AbstractModel):
         if "table" == activeElement:
             activeElement = self.__tableModel.getCursorVerbose()
         return activeElement
+
+    def getButtonName(self, buttonCoordinates, site = None) -> str:
+        return self.__tableModel.getButtonName(buttonCoordinates, site)
 
     def up(self) -> bool:
         if "table" == self.__activeSiteElement:
@@ -172,18 +175,17 @@ class SiteModel(AbstractModel):
     def detach(self, observer):
         self.__observers.remove(observer)
 
-    async def __notifyStartGame(self): #TODO: Umbenennen
+    async def __notifyStartGame(self):
         for observer in self.__observers:
             await observer.changeModelToGame()
 
-    #TODO: Zweites notify für update Data
     async def _notifyUpdate(self):
         for observer in self.__observers:
             await observer.updateSSE()
 
     #Methode die updated Zurückgeben, Methode bekommt sse und bluetooth Controller übergeben
     #TODO: Alles weiter unten refaktorieren
-    def getPublishMethod(self):
+    def getPublishMethod(self) -> Callable:
         siteCapitalized = self.__site[0].upper() + self.__site[1:]
         publishMethod = getattr(self, "update" + siteCapitalized + "Site")
         return publishMethod
@@ -220,15 +222,9 @@ class SiteModel(AbstractModel):
         del bluetoothController
         teamColors = self.__getTeamColors()
         activeElement = self.getActiveElement()
-        print("ACTIVEELEMENT")
-        print(activeElement)
         activeElementHasMoreThanOneWord = 1 < len(activeElement.split())
-        print("ACTIVEELEMENTHASMORETHANONEWORD")
-        print(activeElementHasMoreThanOneWord)
         columnActiveElement = activeElement.split()[1] if activeElementHasMoreThanOneWord else activeElement
         rowActiveElement = activeElement.split()[0] if activeElementHasMoreThanOneWord else activeElement
-        print("TABLEACTIVEVORHER")
-        print(rowActiveElement)
         if "nextButton" == rowActiveElement:
             rowActiveElement = 1 * playModeInteger
         elif "previousButton" == rowActiveElement:

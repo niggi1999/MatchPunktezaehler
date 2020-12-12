@@ -18,7 +18,7 @@ class AbstractModel(ABC):
         pass
 
     @abstractmethod
-    def ok(self):
+    async def ok(self):
         pass
 
     @abstractmethod
