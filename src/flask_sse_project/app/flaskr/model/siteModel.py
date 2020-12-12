@@ -124,7 +124,7 @@ class SiteModel(AbstractModel):
         actualButtonsCount = len(self.__tableModel.selectedButtons)
         return requiredButtonsCount == actualButtonsCount
 
-    def __siteBackward(self):
+    async def __siteBackward(self):
         print("SiteBackward")
         previousSiteExists = self.__newSite("backward")
         if not previousSiteExists:

@@ -233,15 +233,15 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
     def getPublishMethod(self):
         return self.updateGameSite
 
-    def updateGameSite(self):
+    def updateGameSite(self, sse, bluetoothController):
         """
         Updates the SSE stream with the current counter.
 
         Must be called from Flask Request Context.
         """
-        gameState = self.game.gameState()
-        deviceCount = self.bluetoothController.deviceCount()
-        self.sse.publish({"status": "game",
+        gameState = self.gameState()
+        deviceCount = bluetoothController.deviceCount()
+        sse.publish({"status": "game",
             "connectedController" : deviceCount,
             "counterTeam1": gameState["counter"]["Team1"],
             "counterTeam2": gameState["counter"]["Team2"],
@@ -260,3 +260,4 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
             "opacityHighSiteTeam2" : 0.2,
             "opacityDownSiteTeam2" : 0.2}
             , type = "updateData")
+        #asyncio.sleep(0.5)# TODO: Asynchron machen für aufblinken bei Punkt
