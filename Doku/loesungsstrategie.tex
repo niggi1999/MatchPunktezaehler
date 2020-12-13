@@ -1,1 +1,46 @@
 \chapter{Lösungsstrategie}
+
+\section{Einstieg}
+Die folgende Tabelle stellt die Qualitätsziele für den Matchpunktezähler mit den passenden Architekturansätzen gegenüber, und erleichter den Einstieg in die Lösung.\\[0.0cm]
+\begin{center}
+\begin{tabular}[h]{|l|l|}
+\cline{1-2}
+\textbf{Qualitätsziele} & \textbf{Dem zuträgliche Architekturansätze}\\
+\cline{1-2}
+Möglichkeit für Nachbau &
+\tabitem Verwenden eines Raspberry Pi\\
+& \tabitem Nutzen günstiger Nutzerhardware\\
+& \tabitem Anzeige über Webserver\\
+\cline{1-2}
+Anpassungsmöglichkeiten &
+\tabitem Aufgliederung in Front und Backend\\
+& \tabitem Eingene Klasse für Spielregeln\\
+& \tabitem Eigene Klasse für die Bluetooth-Schnittstelle\\
+\cline{1-2}
+Einheitliche Programmiersprache &
+\tabitem Pythen bietet zahlreiche Plugins\\
+& \tabitem Webserver mit Flask möglich\\
+& \tabitem Bluetooth-Signale interpretierbar\\
+\cline{1-2}
+Gute Portabilität &
+\tabitem Akkubetrieb\\
+& \tabitem verwenden von Bluetooth LE\\
+\cline{1-2} 
+\end{tabular}
+\end{center}
+\section{Aufbau}
+Der Matchpunktezähler ist als Python Programm in Kombination mit Flask als Webframework realisiert. Es besteht aus den folgenden Teilen:
+
+\begin{itemize}
+	\item Implementierung der Spielregeln
+	\item Interpretation der Bluetooth-Signale
+	\item Eine Benutzeroberfläche die von einem Webserver abgerufen wird
+	\item Verbindung des Backends und des Frontends
+\end{itemize}
+
+Die Aufteilung ermöglicht es verschiedene Spiele für den den Matchpunktezähler zu implementieren und die durch eine Auswahl anwählbar zu machen. Außerdem kann die Interpretation der Bluetooth-Signale bei Verwendung von anderer Hardware einfacher angepasst oder ausgetauscht werden.\\
+Bei einer notwendigen Anpassung der Benutzeroberfläche kann dieses Aufgrund der Schnittstelle einfach ausgetauscht werden.
+
+\section{Spielstrategie}
+
+\section{Anbindung}
