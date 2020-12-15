@@ -1,9 +1,7 @@
 .buttonLine {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    /*justify-content: space-between;*/
     align-items: center;
     width: 100vw;
-    padding-left: 10px;
-    padding-right: 10px;
 }
