@@ -92,6 +92,9 @@ class Badminton(Game):
         else:
             return False
     
+    def updateModel(self):
+        self.updateServePosition()
+
     def updateServePosition(self):
         """
         Gives the current serve Position

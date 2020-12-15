@@ -51,6 +51,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         self._undoStack = []
         self._redoStack = []
         self.__observers = []
+        self.updateModel()
 
     def right(self):
         self.counterUp(teamNumber = 2)
@@ -89,12 +90,14 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         """
         self._undoStack.append(self.gameState())
         self._redoStack = []
+        
 
         if (teamNumber not in range(1, 3)):
             raise ValueError('Team Number "{}" invalid'.format(teamNumber))
         winningTeam = "Team{}".format(teamNumber)
         self.counter[winningTeam] += 1
         self.lastChanged = winningTeam
+        self.updateModel()
         if (self.isRoundOver()):
             self.newRound(teamNumber)
 
@@ -112,6 +115,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         self.counter["Team2"] = 0
         self.wonRounds["Team{}".format(winningTeamNumber)] += 1
         self.sidesChanged = not self.sidesChanged
+        self.updateModel()
         if (self.isGameOver()):
             self.newGame(winningTeamNumber)
 
@@ -130,6 +134,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         self.wonRounds["Team1"] = 0
         self.wonRounds["Team2"] = 0
         self.wonGames["Team{}".format(winningTeamNumber)] += 1
+        self.updateModel
 
     @abstractmethod
     def isRoundOver(self):
@@ -146,6 +151,15 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         Checks if the current game is over.
 
         Must be implemented in subclass.
+        """
+        pass
+
+    @abstractmethod
+    def updateModel(self):
+        """
+        Updates information in Model
+
+        Must be implemented in subclass
         """
         pass
 
