@@ -93,6 +93,11 @@ class Badminton(Game):
             return False
     
     def updateModel(self):
+        """
+        Updates the information inside the Model
+        
+        Needs to be called every time a point gets scored or a new game gets started.
+        """
         self.updateServePosition()
         self.updatePlayerPositions()
 
@@ -165,26 +170,26 @@ class Badminton(Game):
         """
         Updates the player position when sides are switched.
         """
-        currentPlayerPositoins = self.playerPositions
+        currentPlayerPositions = self.playerPositions
         newPlayerPositions = {}
 
         if(False == self.sidesChanged):
-            if(1 == currentPlayerPositoins["Team1"]["Player1"] or 2 == currentPlayerPositoins["Team1"]["Player1"]):
-                newPlayerPositions = currentPlayerPositoins
+            if(1 == currentPlayerPositions["Team1"]["Player1"] or 2 == currentPlayerPositions["Team1"]["Player1"]):
+                newPlayerPositions = currentPlayerPositions
             else:
-                newPlayerPositions = {"Team1" : {"Player1" : currentPlayerPositoins["Team1"]["Player1"] - 2,\
-                                                 "Player2" : currentPlayerPositoins["Team1"]["Player2"] - 2},\
-                                      "Team2" : {"Player1" : currentPlayerPositoins["Team2"]["Player1"] + 2,\
-                                                 "Player2" : currentPlayerPositoins["Team2"]["Player2"] + 2}
+                newPlayerPositions = {"Team1" : {"Player1" : currentPlayerPositions["Team1"]["Player1"] - 2,\
+                                                 "Player2" : currentPlayerPositions["Team1"]["Player2"] - 2},\
+                                      "Team2" : {"Player1" : currentPlayerPositions["Team2"]["Player1"] + 2,\
+                                                 "Player2" : currentPlayerPositions["Team2"]["Player2"] + 2}
                                      }
         else:
-            if(3 == currentPlayerPositoins["Team1"]["Player1"] or 4 == currentPlayerPositoins["Team1"]["Player1"]):
-                newPlayerPositions = currentPlayerPositoins
+            if(3 == currentPlayerPositions["Team1"]["Player1"] or 4 == currentPlayerPositions["Team1"]["Player1"]):
+                newPlayerPositions = currentPlayerPositions
             else:
-                newPlayerPositions = {"Team1" : {"Player1" : currentPlayerPositoins["Team1"]["Player1"] + 2,\
-                                                 "Player2" : currentPlayerPositoins["Team1"]["Player2"] + 2},\
-                                      "Team2" : {"Player1" : currentPlayerPositoins["Team2"]["Player1"] - 2,\
-                                                 "Player2" : currentPlayerPositoins["Team2"]["Player2"] - 2}
+                newPlayerPositions = {"Team1" : {"Player1" : currentPlayerPositions["Team1"]["Player1"] + 2,\
+                                                 "Player2" : currentPlayerPositions["Team1"]["Player2"] + 2},\
+                                      "Team2" : {"Player1" : currentPlayerPositions["Team2"]["Player1"] - 2,\
+                                                 "Player2" : currentPlayerPositions["Team2"]["Player2"] - 2}
                                      }
         
         self.playerPositions = newPlayerPositions
@@ -194,5 +199,24 @@ class Badminton(Game):
         """
         Updates player positions when the serving team scores a point.
         """
+        
+        if(len(self._undoStack) > 0):
+            currentPlayerPositions = self.playerPositions
+            newPlayerPositions = {}
+            
+            lastServePosition = self._undoStack[-1]["servePosition"]
+            chounterWentUp = lambda team : self.counter[team] > self._undoStack[-1]["counter"][team]
+            if((ServePosition.TEAM1LEFT == lastServePosition or ServePosition.TEAM1RIGHT == lastServePosition) and chounterWentUp("Team1")):
+                newPlayerPositions = {"Team1" : {"Player1" : currentPlayerPositions["Team1"]["Player2"],\
+                                                 "Player2" : currentPlayerPositions["Team1"]["Player1"]},\
+                                      "Team2" : currentPlayerPositions["Team2"]}
+            elif((ServePosition.TEAM2LEFT == lastServePosition or ServePosition.TEAM2RIGHT == lastServePosition) and chounterWentUp("Team2")):
+                newPlayerPositions = {"Team1" : currentPlayerPositions["Team1"],\
+                                      "Team2" : {"Player1" : currentPlayerPositions["Team2"]["Player2"],\
+                                                 "Player2" : currentPlayerPositions["Team2"]["Player1"]}}
+            else:
+                newPlayerPositions = currentPlayerPositions
+            self.playerPositions = newPlayerPositions
+        
         return
     
