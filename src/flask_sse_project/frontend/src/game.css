@@ -1,26 +1,26 @@
 .header {
-    height: 10%;
-    font: bold;
-    font-size: x-large;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+  height: 10%;
+  font: bold;
+  font-size: x-large;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
   
-  .field {
-    display: flex;
-    flex-direction: row;
-    height: 100vh;
-    width: 100vw;
-    justify-content: center;
-  };
+.field {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100vw;
+  justify-content: center;
+}
 
+.leave {
+  height: inherit;
+  width: inherit;
+  z-index: 30;
+  top: 0;
+  left: 0;
+  position: absolute;
+}
 
-  .leave {
-    height: inherit;
-    width: inherit;
-    z-index: 30;
-    top: 0;
-    left: 0;
-    position: absolute;
-  };

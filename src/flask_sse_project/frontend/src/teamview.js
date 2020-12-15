@@ -9,7 +9,7 @@ function Teamview (props){
                 <h1 style={{'fontSize': '200px', 'opacity': props.opacityHighSite === 1 ? '1' : '0'}}>+</h1>
             </div>
             <div className="quarterField" style={{'backgroundColor': props.colorDownSite, 'opacity': props.opacityDownSite}}>
-                <h1 style={{'fontSize': '200px', 'opacity': props.opacityDownSite === 1 ? '1' : '0'}}>+</h1>
+                <h1 style={{'fontSize': '200px', 'opacity': props.opacityDownSite === 1 ? '1' : '0', alignSelf: 'center'}}>+</h1>
             </div>
         </div>
     )

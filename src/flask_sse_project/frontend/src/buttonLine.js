@@ -12,8 +12,8 @@ function ButtonLine(props) {
         borderColor: "red",
         fontSize: "xx-large"
     };
-    let backwardButtonStyle = {fontSize: "xx-large"};
-    let forwardButtonStyle = {fontSize: "xx-large"};
+    let backwardButtonStyle = {fontSize: "xx-large", position: "absolute", left: "0"};
+    let forwardButtonStyle = {fontSize: "xx-large", position: "absolute", right: "0"};
 
 
     switch(props.cursorElement) {

@@ -11,7 +11,7 @@ function ChooseField (props) {
     } 
 
     let cssElementList = props.fieldNames.map(element => 
-        (props.activeChooseField1 === element || props.activeChooseField2 === element
+        (props.activeChooseField1 === element
             ? 
             {
                 backgroundColor: "#007bff",
