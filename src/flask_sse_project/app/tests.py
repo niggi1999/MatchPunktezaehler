@@ -245,7 +245,7 @@ class TestBadminton(unittest.TestCase):
         self.assertEqual(currentPositions1["Team1"]["Player1"], 3)
         self.assertEqual(currentPositions1["Team1"]["Player2"], 4)
         self.assertEqual(currentPositions1["Team2"]["Player1"], 1)
-        self.assertEqual(currentPositions1["Team2"]["Player2"], 4)
+        self.assertEqual(currentPositions1["Team2"]["Player2"], 2)
 
 
 

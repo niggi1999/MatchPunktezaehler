@@ -94,16 +94,17 @@ class Badminton(Game):
     
     def updateModel(self):
         self.updateServePosition()
+        self.updatePlayerPositions()
 
     def updateServePosition(self):
         """
-        Gives the current serve Position
+        Updates and gives the current serve Position
 
         Returns:
 
-            ServePsition Enum
+            ServePosition Enum
         """
-        if (0 == self.servePosition):
+        if (ServePosition.UNKNOWN == self.servePosition or 0 == len(self._undoStack)):
             randomNumber = randint(1,2)
             if(randomNumber == 1): 
                 self.servePosition = ServePosition.TEAM1RIGHT
@@ -139,4 +140,59 @@ class Badminton(Game):
 
         self.servePosition = ServePosition.UNKNOWN
         return ServePosition.UNKNOWN
+
+    def updatePlayerPositions(self):
+        """
+        Updates the current player positions
+        
+        The player positions inside the playfield are represented by integers.
+        The meaning of these numbers are as follows:
+
+           |Monitor|
+         _____________
+        |      |      |
+        |  1   |  4   |
+        |______|______|
+        |      |      |
+        |  2   |  3   |
+        |______|______|
+        """
+        self.updatePlayerPositionsSideChanged()
+        self.updatePlayerPositionsServeAndScore()
+        return
+    
+    def updatePlayerPositionsSideChanged(self):
+        """
+        Updates the player position when sides are switched.
+        """
+        currentPlayerPositoins = self.playerPositions
+        newPlayerPositions = {}
+
+        if(False == self.sidesChanged):
+            if(1 == currentPlayerPositoins["Team1"]["Player1"] or 2 == currentPlayerPositoins["Team1"]["Player1"]):
+                newPlayerPositions = currentPlayerPositoins
+            else:
+                newPlayerPositions = {"Team1" : {"Player1" : currentPlayerPositoins["Team1"]["Player1"] - 2,\
+                                                 "Player2" : currentPlayerPositoins["Team1"]["Player2"] - 2},\
+                                      "Team2" : {"Player1" : currentPlayerPositoins["Team2"]["Player1"] + 2,\
+                                                 "Player2" : currentPlayerPositoins["Team2"]["Player2"] + 2}
+                                     }
+        else:
+            if(3 == currentPlayerPositoins["Team1"]["Player1"] or 4 == currentPlayerPositoins["Team1"]["Player1"]):
+                newPlayerPositions = currentPlayerPositoins
+            else:
+                newPlayerPositions = {"Team1" : {"Player1" : currentPlayerPositoins["Team1"]["Player1"] + 2,\
+                                                 "Player2" : currentPlayerPositoins["Team1"]["Player2"] + 2},\
+                                      "Team2" : {"Player1" : currentPlayerPositoins["Team2"]["Player1"] - 2,\
+                                                 "Player2" : currentPlayerPositoins["Team2"]["Player2"] - 2}
+                                     }
+        
+        self.playerPositions = newPlayerPositions
+        return
+
+    def updatePlayerPositionsServeAndScore(self):
+        """
+        Updates player positions when the serving team scores a point.
+        """
+        return
     
