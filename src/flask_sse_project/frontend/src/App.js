@@ -7,7 +7,7 @@ class App extends React.Component {
 constructor(){
     super()
       this.state = {
-        data: {status: 'nameMenu', //always needed
+        data: {status: 'game', //always needed
           cursorElement: "Green", //always needed
 
           connectedController: 1, //for initSite
