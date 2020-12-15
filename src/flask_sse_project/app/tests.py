@@ -220,7 +220,8 @@ class TestBadminton(unittest.TestCase):
     def testPlayerPositionWithinTeam(self):
         badminton = Badminton()
         firstPlayerPositions = badminton.playerPositions
-        badminton.counterUp(1)
+        if(ServePosition.TEAM2RIGHT == badminton.servePosition):
+            badminton.counterUp(1)
         self.assertEqual(badminton.playerPositions, firstPlayerPositions)
         badminton.counterUp(1)
         currentPositions1 = badminton.playerPositions
@@ -235,11 +236,16 @@ class TestBadminton(unittest.TestCase):
 
     def testPlayerPositionSideChanged(self):
         badminton = Badminton()
+        if(ServePosition.TEAM1RIGHT == badminton.servePosition):
+            badminton.counterUp(2)
         pointsToWin = 21
         for _ in range(pointsToWin):
             badminton.counterUp(1)
         currentPositions1 = badminton.playerPositions
-        self.assertEqual(current)
+        self.assertEqual(currentPositions1["Team1"]["Player1"], 3)
+        self.assertEqual(currentPositions1["Team1"]["Player2"], 4)
+        self.assertEqual(currentPositions1["Team2"]["Player1"], 1)
+        self.assertEqual(currentPositions1["Team2"]["Player2"], 4)
 
 
 

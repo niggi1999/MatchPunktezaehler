@@ -39,11 +39,6 @@ class Badminton(Game):
     absoluteMaxPoints = 30
     roundsInAGame = 2
 
-    def newGame(self, winningTeamNumber):
-        super().newGame(winningTeamNumber)
-        self.servePosition = 0
-        self.updateServePosition()
-
     def isRoundOver(self):
         """
         Checks if the current round is over.
