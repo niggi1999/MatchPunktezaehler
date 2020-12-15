@@ -92,7 +92,7 @@ class Badminton(Game):
         else:
             return False
     
-    def servePosition(self):
+    def updateServePosition(self):
         """
         Gives the current serve Position
 

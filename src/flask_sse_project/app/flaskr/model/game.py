@@ -46,6 +46,8 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         self.wonGames = {"Team1" : 0, "Team2" : 0}
         self.currentMaxPoints = self.maxPointsWithoutOvertime
         self.sidesChanged = False
+        self.playerPositions = {"Team1" : {"Player1" : 1, "Player2": 2}, "Team2" : {"Player1" : 3, "Player2": 4}}
+        self.servePosition = 5
         self._undoStack = []
         self._redoStack = []
         self.__observers = []
@@ -148,7 +150,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         pass
 
     @abstractmethod
-    def servePosition(self):
+    def updateServePosition(self):
         """
         Gives the current serve Position
 
@@ -169,7 +171,9 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
                      "wonRounds" : {"Team1" : self.wonRounds["Team1"], "Team2" : self.wonRounds["Team2"]},\
                      "wonGames" : {"Team1" : self.wonGames["Team1"], "Team2" : self.wonGames["Team2"]},\
                      "currentMaxPoints" : self.currentMaxPoints,\
-                     "sidesChanged" : self.sidesChanged}
+                     "sidesChanged" : self.sidesChanged,\
+                     "playerPositions" : self.playerPositions,\
+                     "servePosition" : self.servePosition}
         return gameState
 
     def undo(self):
@@ -191,10 +195,12 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
             self.wonGames = lastGameState["wonGames"]
             self.currentMaxPoints = lastGameState["currentMaxPoints"]
             self.sidesChanged = lastGameState["sidesChanged"]
+            self.playerPositions = lastGameState["playerPositions"]
+            self.servePosition = lastGameState["servePosition"]
 
     def redo(self):
         """
-        Redoes the last event.
+
 
         Raises:
 
@@ -211,6 +217,8 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
             self.wonGames = nextGameState["wonGames"]
             self.currentMaxPoints = nextGameState["currentMaxPoints"]
             self.sidesChanged = nextGameState["sidesChanged"]
+            self.playerPositions = nextGameState["playerPositions"]
+            self.servePosition = nextGameState["servePosition"]
 
     def attach(self, observer):
         self.__observers.append(observer)
