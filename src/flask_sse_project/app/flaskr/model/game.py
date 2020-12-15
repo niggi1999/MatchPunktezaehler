@@ -47,7 +47,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         self.currentMaxPoints = self.maxPointsWithoutOvertime
         self.sidesChanged = False
         self.playerPositions = {"Team1" : {"Player1" : 1, "Player2": 2}, "Team2" : {"Player1" : 3, "Player2": 4}}
-        self.servePosition = 5
+        self.servePosition = 0
         self._undoStack = []
         self._redoStack = []
         self.__observers = []

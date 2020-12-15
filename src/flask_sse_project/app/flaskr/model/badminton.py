@@ -11,7 +11,7 @@ class ServePosition(IntEnum):
     TEAM1RIGHT = 2
     TEAM2LEFT = 3
     TEAM2RIGHT = 4
-    UNKNOWN = 5
+    UNKNOWN = 0
 
 class Badminton(Game):
     """
@@ -38,6 +38,11 @@ class Badminton(Game):
     maxPointsWithoutOvertime = 21
     absoluteMaxPoints = 30
     roundsInAGame = 2
+
+    def newGame(self, winningTeamNumber):
+        super().newGame(winningTeamNumber)
+        self.servePosition = 0
+        self.updateServePosition()
 
     def isRoundOver(self):
         """
@@ -100,11 +105,17 @@ class Badminton(Game):
 
             ServePsition Enum
         """
-        if (0 == len(self._undoStack)):
+        if (0 == self.servePosition):
             randomNumber = randint(1,2)
-            if(randomNumber == 1): return ServePosition.TEAM1RIGHT
-            elif(randomNumber == 2): return ServePosition.TEAM2RIGHT
-            else: return ServePosition.UNKNOWN
+            if(randomNumber == 1): 
+                self.servePosition = ServePosition.TEAM1RIGHT
+                return ServePosition.TEAM1RIGHT
+            elif(randomNumber == 2): 
+                self.servePosition = ServePosition.TEAM2RIGHT
+                return ServePosition.TEAM2RIGHT
+            else: 
+                self.servePosition = ServePosition.UNKNOWN
+                return ServePosition.UNKNOWN
         else:
             
             lastGameState = self._undoStack[-1]
@@ -114,15 +125,20 @@ class Badminton(Game):
 
             if(self.counter["Team1"] > lastCounter["Team1"]):
                 if(isEven(self.counter["Team1"])):
+                    self.servePosition = ServePosition.TEAM1RIGHT
                     return ServePosition.TEAM1RIGHT
                 else:
+                    self.servePosition = ServePosition.TEAM1LEFT
                     return ServePosition.TEAM1LEFT
-
+                    
             if(self.counter["Team2"] > lastCounter["Team2"]):
                 if(isEven(self.counter["Team2"])):
+                    self.servePosition = ServePosition.TEAM2RIGHT
                     return ServePosition.TEAM2RIGHT
                 else:
+                    self.servePosition = ServePosition.TEAM2LEFT
                     return ServePosition.TEAM2LEFT
 
+        self.servePosition = ServePosition.UNKNOWN
         return ServePosition.UNKNOWN
     
