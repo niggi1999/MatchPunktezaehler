@@ -46,8 +46,8 @@ function NameMenu (props) {
         case 4:
             table4Active = true;
             break;
-        default:
-            return <h1>TableActive Value Wrong</h1>
+        //default:
+         //   return <h1>TableActive Value Wrong</h1>
     }
 
     let continueButtonMessage = "Continue to Game Menu";
