@@ -109,7 +109,9 @@ class Badminton(Game):
 
             ServePosition Enum
         """
-        if (ServePosition.UNKNOWN == self.servePosition or 0 == len(self._undoStack)):
+        gameIsWonBy = lambda team : self.wonGames[team] > self._undoStack[-1]["wonGames"][team]
+
+        if ((ServePosition.UNKNOWN == self.servePosition) or (0 == len(self._undoStack)) or gameIsWonBy("Team1") or gameIsWonBy("Team2")):
             randomNumber = randint(1,2)
             if(randomNumber == 1): 
                 self.servePosition = ServePosition.TEAM1RIGHT
@@ -121,13 +123,11 @@ class Badminton(Game):
                 self.servePosition = ServePosition.UNKNOWN
                 return ServePosition.UNKNOWN
         else:
-            
-            lastGameState = self._undoStack[-1]
-            lastCounter = lastGameState["counter"]
-
             isEven = lambda x : ((x % 2) == 0)
+            counterWentUp = lambda team : self.counter[team] > self._undoStack[-1]["counter"][team]
+            roundIsWonBy = lambda team : self.wonRounds[team] > self._undoStack[-1]["wonRounds"][team]
 
-            if(self.counter["Team1"] > lastCounter["Team1"]):
+            if(counterWentUp("Team1") or roundIsWonBy("Team1")):
                 if(isEven(self.counter["Team1"])):
                     self.servePosition = ServePosition.TEAM1RIGHT
                     return ServePosition.TEAM1RIGHT
@@ -135,7 +135,7 @@ class Badminton(Game):
                     self.servePosition = ServePosition.TEAM1LEFT
                     return ServePosition.TEAM1LEFT
                     
-            if(self.counter["Team2"] > lastCounter["Team2"]):
+            if(counterWentUp("Team2") or roundIsWonBy("Team2")):
                 if(isEven(self.counter["Team2"])):
                     self.servePosition = ServePosition.TEAM2RIGHT
                     return ServePosition.TEAM2RIGHT
@@ -205,12 +205,12 @@ class Badminton(Game):
             newPlayerPositions = {}
             
             lastServePosition = self._undoStack[-1]["servePosition"]
-            chounterWentUp = lambda team : self.counter[team] > self._undoStack[-1]["counter"][team]
-            if((ServePosition.TEAM1LEFT == lastServePosition or ServePosition.TEAM1RIGHT == lastServePosition) and chounterWentUp("Team1")):
+            counterWentUp = lambda team : self.counter[team] > self._undoStack[-1]["counter"][team]
+            if((ServePosition.TEAM1LEFT == lastServePosition or ServePosition.TEAM1RIGHT == lastServePosition) and counterWentUp("Team1")):
                 newPlayerPositions = {"Team1" : {"Player1" : currentPlayerPositions["Team1"]["Player2"],\
                                                  "Player2" : currentPlayerPositions["Team1"]["Player1"]},\
                                       "Team2" : currentPlayerPositions["Team2"]}
-            elif((ServePosition.TEAM2LEFT == lastServePosition or ServePosition.TEAM2RIGHT == lastServePosition) and chounterWentUp("Team2")):
+            elif((ServePosition.TEAM2LEFT == lastServePosition or ServePosition.TEAM2RIGHT == lastServePosition) and counterWentUp("Team2")):
                 newPlayerPositions = {"Team1" : currentPlayerPositions["Team1"],\
                                       "Team2" : {"Player1" : currentPlayerPositions["Team2"]["Player2"],\
                                                  "Player2" : currentPlayerPositions["Team2"]["Player1"]}}

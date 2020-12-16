@@ -197,6 +197,12 @@ class TestBadminton(unittest.TestCase):
         badminton.counterUp(2)
         servePosition4 = ServePosition.TEAM2RIGHT
         self.assertEqual(badminton.updateServePosition(), servePosition4)
+        for _ in range(19):
+            badminton.counterUp(1)
+        self.assertEqual(badminton.updateServePosition(), ServePosition.TEAM1RIGHT)
+        for _ in range(21):
+            badminton.counterUp(2)
+        self.assertEqual(badminton.updateServePosition(), ServePosition.TEAM2RIGHT)
 
     def testSideChange(self):
         badminton = Badminton()
