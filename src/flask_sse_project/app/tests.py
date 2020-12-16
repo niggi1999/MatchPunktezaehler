@@ -181,22 +181,22 @@ class TestBadminton(unittest.TestCase):
     def testServePosition(self):
         badminton = Badminton()
         servePositionCorrect = False
-        firstServe = badminton.servePosition()
+        firstServe = badminton.updateServePosition()
         if(firstServe == ServePosition.TEAM1RIGHT): servePositionCorrect = True
         if(firstServe == ServePosition.TEAM2RIGHT): servePositionCorrect = True
         self.assertEqual(servePositionCorrect, True)
         badminton.counterUp(1)
         servePosition1 = ServePosition.TEAM1LEFT
-        self.assertEqual(badminton.servePosition(), servePosition1)
+        self.assertEqual(badminton.updateServePosition(), servePosition1)
         badminton.counterUp(2)
         servePosition2 = ServePosition.TEAM2LEFT
-        self.assertEqual(badminton.servePosition(), servePosition2)
+        self.assertEqual(badminton.updateServePosition(), servePosition2)
         badminton.counterUp(1)
         servePosition3 = ServePosition.TEAM1RIGHT
-        self.assertEqual(badminton.servePosition(), servePosition3)
+        self.assertEqual(badminton.updateServePosition(), servePosition3)
         badminton.counterUp(2)
         servePosition4 = ServePosition.TEAM2RIGHT
-        self.assertEqual(badminton.servePosition(), servePosition4)
+        self.assertEqual(badminton.updateServePosition(), servePosition4)
 
     def testSideChange(self):
         badminton = Badminton()
@@ -209,13 +209,45 @@ class TestBadminton(unittest.TestCase):
         i = 0
         while(i<21):
             badminton.counterUp(2)
-            i = i+1
+            i= i+1
         self.assertEqual(badminton.sidesChanged, False)
         i = 0
         while(i<42):
             badminton.counterUp(1)
             i = i+1
         self.assertEqual(badminton.sidesChanged, False)
+
+    def testPlayerPositionWithinTeam(self):
+        badminton = Badminton()
+        firstPlayerPositions = badminton.playerPositions
+        if(ServePosition.TEAM2RIGHT == badminton.servePosition):
+            badminton.counterUp(1)
+        self.assertEqual(badminton.playerPositions, firstPlayerPositions)
+        badminton.counterUp(1)
+        currentPositions1 = badminton.playerPositions
+        self.assertEqual(currentPositions1["Team1"]["Player1"], firstPlayerPositions["Team1"]["Player2"])
+        self.assertEqual(currentPositions1["Team1"]["Player2"], firstPlayerPositions["Team1"]["Player1"])
+        badminton.counterUp(2)
+        self.assertEqual(badminton.playerPositions, currentPositions1)
+        badminton.counterUp(2)
+        currentPositions2 = badminton.playerPositions
+        self.assertEqual(currentPositions2["Team2"]["Player1"], currentPositions1["Team2"]["Player2"])
+        self.assertEqual(currentPositions2["Team2"]["Player2"], currentPositions1["Team2"]["Player1"])
+
+    def testPlayerPositionSideChanged(self):
+        badminton = Badminton()
+        if(ServePosition.TEAM1RIGHT == badminton.servePosition):
+            badminton.counterUp(2)
+        pointsToWin = 21
+        for _ in range(pointsToWin):
+            badminton.counterUp(1)
+        currentPositions1 = badminton.playerPositions
+        self.assertEqual(currentPositions1["Team1"]["Player1"], 3)
+        self.assertEqual(currentPositions1["Team1"]["Player2"], 4)
+        self.assertEqual(currentPositions1["Team2"]["Player1"], 1)
+        self.assertEqual(currentPositions1["Team2"]["Player2"], 2)
+
+
 
 class TestGameFactoy(unittest.TestCase):
     def testGameFactoryWorks(self):
