@@ -203,6 +203,8 @@ class SiteModel(AbstractModel):
         activeChooseField = selectedButtons[0]["column"] if selectedButtons else None
         activeElement = self.getActiveElement()
         cursorElement = activeElement.split()[0]
+        print("CURSOR")
+        print(cursorElement)  #TODO: backwardButton/forwardButton
         columnContents = self.__tableModel.getColumnContents()
         sse.publish({"status": "playerMenu",
         "cursorElement" : cursorElement,
@@ -231,17 +233,28 @@ class SiteModel(AbstractModel):
             rowActiveElement = 2 * playModeInteger
         else:
             rowActiveElement = rowActiveElement[-1]
+        try:
+            rowActiveElement = int(rowActiveElement)
+        except:
+            pass
         print("COLOR1TEAM1")
         print(teamColors["color1Team1"])
         print("TABLEACTIVE")
         print(rowActiveElement)
+        print("CURSOR")
+        print(columnActiveElement)
+        print("FIELD NAME")
+        print(self.__tableModel.getRowContents())
+        print("TEAM COLORS")
+        print(teamColors)
+        print({"status": "nameMenu", "cursorElement" : "orange", "playMode": playModeInteger, "fieldNames" : self.__tableModel.getRowContents(), "color1Team1": teamColors["color1Team1"], "color2Team1": teamColors["color2Team1"], "color1Team2": teamColors["color1Team2"], "color2Team2": teamColors["color2Team2"], "tableActive" : rowActiveElement})
         sse.publish({"status": "nameMenu",
-        "cursorElement" : rowActiveElement,
+        "cursorElement" : columnActiveElement,
         "playMode": playModeInteger,
         "fieldNames" : self.__tableModel.getRowContents(),
         "color1Team1": teamColors["color1Team1"], "color2Team1": teamColors["color2Team1"],
         "color1Team2": teamColors["color1Team2"], "color2Team2": teamColors["color2Team2"],
-        "tableActive" : columnActiveElement},
+        "tableActive" : rowActiveElement}, #TODO: Tauschen
         type = "updateData")
 
     def __getTeamColors(self) -> Dict[str, str]:
@@ -269,9 +282,9 @@ class SiteModel(AbstractModel):
         del bluetoothController
         activeElement = self.getActiveElement()
         activeElementHasMoreThanOneWord = 1 < len(activeElement.split())
-        rowActiveElement = activeElement.split()[0] if activeElementHasMoreThanOneWord else activeElement
+        rowActiveElement = activeElement.split()[1] if activeElementHasMoreThanOneWord else activeElement
         selectedButtons = self.getSelectedButtonsCurrentSiteVerbose()
-        activeChooseField = selectedButtons[0]["column"] if selectedButtons else None
+        activeChooseField = selectedButtons[0]["row"] if selectedButtons else None
         sse.publish({"status": "gameMenu",
         "cursorElement" : rowActiveElement,
         "activeChooseField": activeChooseField,

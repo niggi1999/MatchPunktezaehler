@@ -65,6 +65,7 @@ constructor(){
     updateData(newState) {
       console.log("Server side event recieved at",new Date())
       this.setState(Object.assign({}, { data: newState }));
+      console.log(newState)
   }
     
   render() {

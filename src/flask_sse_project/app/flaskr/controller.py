@@ -98,6 +98,7 @@ class Controller(Blueprint):
         async with httpx.AsyncClient() as client:
             r = await client.get("http://localhost:5000/con/" + path)
             print(r.text)
+            print("")
 
     async def updateDeviceCount(self):
         if "init" == self.model.getCurrentSite():
