@@ -219,4 +219,10 @@ class Badminton(Game):
             self.playerPositions = newPlayerPositions
         
         return
-    
+
+    def getAbsoluteServePosition(self):
+        """
+        Gives the absolute serve position
+        """
+        absoluteServePosition = 0
+        return absoluteServePosition
