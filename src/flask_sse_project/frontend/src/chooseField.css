@@ -17,24 +17,40 @@
 }
 
 .chooseElement {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 100%;
     width: 25%;
     font-size: xx-large;
     margin-left: 20px;
     margin-right: 20px;
+    border-color: #007bff;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 5px;
+    align-self: center;
 }
 
 .chooseTableElement {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 5%;
     width: 80%;
     font-size: x-large;
     margin-left: 20px;
     margin-right: 20px;
+    margin-bottom: 5px;
+    border-color: #007bff;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 5px;
 }
 
 .cursorElement {
     border-style: solid;
-    border-width: 10px;
+    border-width: 5px;
     border-color: red;
     font-size: xx-large
 }
