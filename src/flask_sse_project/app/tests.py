@@ -260,11 +260,11 @@ class TestBadminton(unittest.TestCase):
         badminton = Badminton()
         if(ServePosition.TEAM1RIGHT == badminton.servePosition):
             badminton.counterUp(2)
-        for _ in range(2):
+        for _ in range(21):
             badminton.counterUp(1)
-        self.assertEqual(badminton.getAbsoluteServePosition(), 1)
+        self.assertEqual(badminton.getAbsoluteServePosition(), 4)
         badminton.counterUp(1)
-        self.assertEqual(badminton.getAbsoluteServePosition(), 2)
+        self.assertEqual(badminton.getAbsoluteServePosition(), 3)
 
 
 

@@ -223,6 +223,36 @@ class Badminton(Game):
     def getAbsoluteServePosition(self):
         """
         Gives the absolute serve position
+
+        The serve position inside the playfield is represented by integers.
+        The meaning of these numbers are as follows:
+
+           |Monitor|
+         _____________
+        |      |      |
+        |  1   |  4   |
+        |______|______|
+        |      |      |
+        |  2   |  3   |
+        |______|______|
         """
-        absoluteServePosition = 0
-        return absoluteServePosition
+        if(self.sidesChanged):
+            if(ServePosition.TEAM1LEFT == self.servePosition):
+                return 3
+            elif(ServePosition.TEAM1RIGHT == self.servePosition):
+                return 4
+            elif(ServePosition.TEAM2LEFT == self.servePosition):
+                return 1
+            elif(ServePosition.TEAM2RIGHT == self.servePosition):
+                return 2
+        else:
+            if(ServePosition.TEAM1LEFT == self.servePosition):
+                return 1
+            elif(ServePosition.TEAM1RIGHT == self.servePosition):
+                return 2
+            elif(ServePosition.TEAM2LEFT == self.servePosition):
+                return 3
+            elif(ServePosition.TEAM2RIGHT == self.servePosition):
+                return 4
+
+        return 0
