@@ -7,17 +7,17 @@ class App extends React.Component {
 constructor(){
     super()
       this.state = {
-        data: {status: 'game', //always needed
+        data: {status: 'nameMenu', //always needed
           cursorElement: "Orange", //always needed
 
           //connectedController: 1, //for initSite
           
           //activeChooseField: "1vs1", //for PlayerMenuSite
-          fieldNames: ["1vs1", "2vs2"], //for PlayerMenuSite
+          //fieldNames: ["1vs1", "2vs2"], //for PlayerMenuSite
 
           playMode: 2, color1Team1: "Green", color2Team1: null, //for nameMenuSite
           color1Team2: null, color2Team2: null, //for nameMenuSite
-          //fieldNames: ["Orange", "Red", "Purple", "Blue", "Green", "Black"], //for nameMenuSite
+          fieldNames: ["Orange", "Red", "Purple", "Blue", "Green", "Black"], //for nameMenuSite
           tableActive: 2,
 
           //activeChooseField: "Badminton", //for GameMenuSite
