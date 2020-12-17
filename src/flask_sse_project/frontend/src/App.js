@@ -7,7 +7,7 @@ class App extends React.Component {
 constructor(){
     super()
       this.state = {
-        data: {status: 'playerMenu', //always needed
+        data: {status: 'game', //always needed
           cursorElement: "Orange", //always needed
 
           //connectedController: 1, //for initSite
@@ -24,8 +24,8 @@ constructor(){
           //fieldNames: ["Badminton", "Volleyball", "Tennis"], //for GameMenuSite
 
           counterTeam1: 11, counterTeam2: 12, roundsTeam1: 1, roundsTeam2: 1, gamesTeam1:7, gamesTeam2: 6, //for GameSite
-          team1HighColor: 'Green', team1DownColor: 'Orange', team2HighColor: 'Blue', team2DownColor: 'Red', team1Left: true, //for GameSite
-          opacityHighSiteTeam1: 0.2, opacityDownSiteTeam1: 1, opacityHighSiteTeam2: 0.2, opacityDownSiteTeam2: 0.2, //for GameSite
+          leftSideHighColor: 'Green', leftSideDownColor: 'Orange', rightSideHighColor: 'Blue', rightSideDownColor: 'Red', team1Left: false, //for GameSite
+          leftSideHighColorOpacity: 0.2, leftSideDownColorOpacity: 1, rightSideHighColorOpacity: 0.2, rightSideDownColorOpacity: 0.2, //for GameSite
 
           //team: 1, // for changeSide
       }
