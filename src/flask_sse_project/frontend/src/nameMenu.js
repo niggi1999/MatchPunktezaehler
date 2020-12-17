@@ -18,7 +18,7 @@ function NameMenu (props) {
             message = <h1>Error NameMenu</h1>;
             break;
         case 1:
-            message = <h1>Choose Your Names</h1>
+            message = <h1>Choose your Names</h1>
             if(props.data.color1Team1 && props.data.color1Team2) {
                 fowardButtonActive = true;
             }
@@ -34,7 +34,7 @@ function NameMenu (props) {
             }
             break;
         case 2:
-            message = <h1>Choose Your Names</h1>
+            message = <h1>Choose your Names</h1>
             if(props.data.color1Team1 && props.data.color1Team2 && props.data.color2Team1 && props.data.color2Team2) {
                 fowardButtonActive = true;
             }
