@@ -11,6 +11,8 @@ Einmal ausführen:
     in Ordner frontend
     	npm install
 	npm install bootstrap react-bootstrap
+	
+	für autostart: npm run build
 
 
 Immer ausführen:
@@ -23,13 +25,11 @@ Immer ausführen:
     drittes Terminal
         In frontend directory
 	        npm start (dauert lange)
-
+		oder wenn vorher npm build gemacht wurde :
+			sudo serve -s -n build -l 3000
 Browser:
     http://localhost:3000/
-
-
-
-
+ 	bzw. IP des Raspberrys:3000 z.B. 192.168.4.1 
 
 
 Raspberry:
@@ -47,9 +47,8 @@ Raspberry:
 
     zweites Terminal
         In frontend directory
-    	    npm start
-
-
+	    vorher: npm run build
+	    sudo serve -s -n build -l 3000
 
     Auf Raspberry redis-server mit sudo apt-get install redis-server installieren
 
@@ -152,6 +151,9 @@ iface wlan0 inet static
 
 AP aktivieren:
 sudo systemctl start isc-dhcp-server
+
+sudo systemctl unmask hostapd
+sudo systemctl enable hostapd
 sudo systemctl start hostapd
 sudo reboot
 
@@ -160,14 +162,12 @@ sudo reboot
 
 Server und Frontend automatisch starten:
 
-startscript.sh unter /etc/home/ubuntu ablegen
-
-(Wie oben einrichten)
-
+in Matchcounter/src
+chmod +777 startscript.sh
 sudo crontab -e
 
 folgendes hinzufügen:
-@reboot cd /home/ubuntu/ && ./startscript.sh
+@reboot cd /home/pi/MatchPunktezaehler/src(phad zu startscript.sh) && ./startscript.sh
 
 
  
