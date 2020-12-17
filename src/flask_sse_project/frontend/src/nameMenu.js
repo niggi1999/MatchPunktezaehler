@@ -68,7 +68,7 @@ function NameMenu (props) {
             {message}
             <div className="tableField">
                 <div className="teamTables">
-                    <h1 style={{fontSize: "75px"}}>Team 1</h1>
+                    <h1 style={{fontSize: "50px"}}>Team 1</h1>
                         <div className="tables">
                             <ChooseField activeChooseField1={props.data.color1Team1} fieldNames={props.data.fieldNames} 
                             cursorElement={props.data.cursorElement} tableActive={table1Active} type="table"/>
@@ -79,7 +79,7 @@ function NameMenu (props) {
                         </div>
                 </div>
                 <div className="teamTables">
-                    <h1 style={{fontSize: "75px"}}>Team 2</h1>
+                    <h1 style={{fontSize: "50px"}}>Team 2</h1>
                     <div className="tables">
                             <ChooseField activeChooseField1={props.data.color1Team2} fieldNames={props.data.fieldNames}
                             cursorElement={props.data.cursorElement} tableActive={table3Active} type="table"/>
