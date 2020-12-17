@@ -1,3 +1,19 @@
-\chapter{Risiken}
+\chapter{Risiken und technische Schulden}
 
-Beispieleintrag für ein Glossarverweis: \gls{Architekturdokumentation}.
+\section{Risiko: Implementierung von Bluetooth}
+Es liegt keinerlei Wissen über die Implementierung von Bluetooth bzw. Bluetooth LE für Python vor. Für die Realisierung muss auf Bibliotheken oder Usercode zurückgegriffen werden. Diese könnten in manchen Fällen veraltet sein oder sich für unseren Anwendungsfall als nicht geeignet herausstellen.
+\subsection*{Eventualfallplanung}
+Einige Operationen können über die Konsole ausgeführt werden oder in einem separaten C++ Programm stattfinden.
+
+\section{Risiko: Nutzung von Eingabegeräten}
+Die Signale eines Bluetooth-Eingabegerätes sollen ausgelesen und interpretiert werden. Diese könnten je nach verwendetem Gerät sich als unterschiedlich heraus stellen.
+\subsection*{Eventualfallplanung}
+Bei erfolgreicher Auslesung eines Eingabegerätes kann sich auf diesen Typen fokussiert werden.
+
+\section{Risiko: Arbeit mit veralteter Hardware}
+Für eine möglichst kostengünstige Variante soll alte Hardware zur Azusgabe verwendet werden. In wie weit und ob dies mit der Implementierung einiger Features und Bibliotheken möglich ist, muss ermittelt werden.
+\subsection*{Eventualfallplanung}
+Definieren bis zu welchen Browserversion die Abwärtskompatibilität besteht.
+
+\section{Schulden: Gerätekopplung}
+Um Energie zu sparen, besitzt das verwendete Bluetooth-Eingabegerät einen Standby- Modus, dieser aktiviert sich nach etwa einer Minute. Aus dem Standby kann das Eingabegerät mit einer Betätigung geweckt werden und verbindet sich daraufhin erneut mit dem System. Es ist nun aber immer ein weiterer Tastendruck nötig, wenn das Eingabegerät im Standby ist.
