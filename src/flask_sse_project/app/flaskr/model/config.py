@@ -60,7 +60,7 @@ class TableConfig(metaclass=ABCMeta):
         return deepcopy(cls._requiredButtonsCount[site])
 
 class TableTestConfig(TableConfig):
-    _succession = ("init", "playerMenu", "colorMenu", "gameMenu", None, "newGameDialog")
+    _succession = ("init", "playerMenu", "colorMenu", "gameMenu")
     _requiredButtonsCount = {"init" : 0, "playerMenu" : 1, "colorMenuSingles" : 2, "colorMenuDoubles" : 4, "gameMenu" : 1}
     _rowsInit = ("deviceCountTEST",)
     _columnsInit = ("deviceCount",)
@@ -71,6 +71,8 @@ class TableTestConfig(TableConfig):
     _columnsColorMenuDoubles = ("player1", "player2", "player3", "player4")
     _rowsGameMenu = ("badminton",)
     _columnsGameMenu = ("game",)
+    _rowsDialog = ("button",)
+    _columnsDialog = ("cancel", "ok")
     _startCursor = {"row" : 1, "column" : 1}
     _rowsAndColumns = {
         "init" : {"rows" : 1, "columns" : 1,\
@@ -82,7 +84,9 @@ class TableTestConfig(TableConfig):
         "colorMenuDoubles" : {"rows" : 6, "columns" : 4,
                               "rowContents" : _rowsColorMenu, "columnContents" : _columnsColorMenuDoubles},
         "gameMenu" : {"rows" : 1, "columns" : 1,\
-                      "rowContents" : _rowsGameMenu, "columnContents" : _columnsGameMenu}
+                      "rowContents" : _rowsGameMenu, "columnContents" : _columnsGameMenu},
+        "dialog" : {"rows" : 1, "columns" : 2,\
+                           "rowContents" : _rowsDialog, "columnContents" : _columnsDialog}
     }
 
 class TableProdConfig(TableConfig):
@@ -97,6 +101,8 @@ class TableProdConfig(TableConfig):
     _columnsColorMenuDoubles = ("player1", "player2", "player3", "player4")
     _rowsGameMenu = ("badminton",)
     _columnsGameMenu = ("game",)
+    _rowsDialog = ("button",)
+    _columnsDialog = ("cancel", "ok")
     _startCursor = {"row" : 1, "column" : 1}
     _rowsAndColumns = {
         "init" : {"rows" : 1, "columns" : 1,\
@@ -108,7 +114,9 @@ class TableProdConfig(TableConfig):
         "colorMenuDoubles" : {"rows" : 6, "columns" : 4,
                               "rowContents" : _rowsColorMenu, "columnContents" : _columnsColorMenuDoubles},
         "gameMenu" : {"rows" : 1, "columns" : 1,\
-                      "rowContents" : _rowsGameMenu, "columnContents" : _columnsGameMenu}
+                      "rowContents" : _rowsGameMenu, "columnContents" : _columnsGameMenu},
+        "dialog" : {"rows" : 1, "columns" : 2,\
+                           "rowContents" : _rowsDialog, "columnContents" : _columnsDialog}
     }
 
 class SiteConfig(metaclass=ABCMeta):
