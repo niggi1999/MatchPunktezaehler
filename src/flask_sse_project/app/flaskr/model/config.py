@@ -60,7 +60,7 @@ class TableConfig(metaclass=ABCMeta):
         return deepcopy(cls._requiredButtonsCount[site])
 
 class TableTestConfig(TableConfig):
-    _succession = ("init", "playerMenu", "colorMenu", "gameMenu")
+    _succession = ("init", "playerMenu", "colorMenu", "gameMenu", None, "newGameDialog")
     _requiredButtonsCount = {"init" : 0, "playerMenu" : 1, "colorMenuSingles" : 2, "colorMenuDoubles" : 4, "gameMenu" : 1}
     _rowsInit = ("deviceCountTEST",)
     _columnsInit = ("deviceCount",)

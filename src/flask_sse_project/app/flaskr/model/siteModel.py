@@ -307,19 +307,24 @@ class SiteModel(AbstractModel):
     def __getTeamColors(self) -> Dict[str, str]:
         color1Team1 = color2Team1 = color1Team2 = color2Team2 = None
         selectedButtons = self.getSelectedButtonsCurrentSiteVerbose()
+        print("SELECTED BUTTONS")
+        print(selectedButtons)
         for button in selectedButtons:
+            print("IN FOR")
             columnName = button["column"]
-            if "Team1" == columnName:
+            print("COLUMN NAME")
+            print(columnName)
+            if "team1" == columnName:
                 color1Team1 = color2Team1 = button["row"]
-            elif "Team2" == columnName:
+            elif "team2" == columnName:
                 color1Team2 = color2Team2 = button["row"]
-            elif "Player1" == columnName:
+            elif "player1" == columnName:
                 color1Team1 = button["row"]
-            elif "Player2" == columnName:
+            elif "player2" == columnName:
                 color2Team1 = button["row"]
-            elif "Player3" == columnName:
+            elif "player3" == columnName:
                 color1Team2 = button["row"]
-            elif "Player4" == columnName:
+            elif "player4" == columnName:
                 color2Team2 = button["row"]
         teamColors = {"color1Team1" : color1Team1, "color2Team1" : color2Team1,\
                       "color1Team2" : color1Team2, "color2Team2" : color2Team2}
