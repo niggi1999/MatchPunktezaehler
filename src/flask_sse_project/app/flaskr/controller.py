@@ -131,6 +131,6 @@ class Controller(Blueprint):
         """
         self.game = GameFactory.create(gameName)
 
-    def updateSite(self):
+    async def updateSite(self):
         publishMethod = self.model.getPublishMethod()
-        publishMethod(self.sse, self.bluetoothController)
+        await publishMethod(self.sse, self.bluetoothController)

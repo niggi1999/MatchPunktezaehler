@@ -22,8 +22,8 @@ def create_controller(sse, testBluetoothController = BluetoothController()):
     con = Controller('con', __name__, sse, testBluetoothController)
 
     @con.route('/updateSite')
-    def updateSite():
-        con.updateSite() #TODO: Auf SseController ummstellen
+    async def updateSite():
+        await con.updateSite() #TODO: Auf SseController ummstellen
         return 'Site updated'
 
     return(con)
