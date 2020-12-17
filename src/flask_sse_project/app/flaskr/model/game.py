@@ -75,7 +75,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
             print(error)
 
     async def ok(self):
-        await self.__notifyNewGame()
+        self.__notifyNewGame()
 
     def counterUp(self, teamNumber):
         """
@@ -93,7 +93,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         """
         self._undoStack.append(self.gameState())
         self._redoStack = []
-        
+
 
         if (teamNumber not in range(1, 3)):
             raise ValueError('Team Number "{}" invalid'.format(teamNumber))
@@ -253,9 +253,9 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
     def detach(self, observer):
         self.__observers.remove(observer)
 
-    async def __notifyNewGame(self):
+    def __notifyNewGame(self):
         for observer in self.__observers:
-            await observer.changeModelToLeaveGameDialog()
+            observer.changeModelToLeaveGameDialog()
 
     async def _notifyUpdate(self):
         for observer in self.__observers:

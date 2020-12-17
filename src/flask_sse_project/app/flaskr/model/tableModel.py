@@ -8,7 +8,9 @@ class TableModel():
     def __init__(self, site, config: Type[TableConfig]):
         self.__config = config
         self.__startCursor = self.__config.getStartCursor()
-        self.newTable(site)
+        newTableWorked = self.newTable(site)
+        if not newTableWorked:
+            raise ValueError("site not valid")
 
     def newTable(self, site, previouslySelectedButtons = None) -> bool: # Default can't be [] (Would be shared
         setDimensionsWorked = self.__setDimensions(site)                # between calls, Methods are Objects)

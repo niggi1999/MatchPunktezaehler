@@ -5,7 +5,7 @@ import asyncio
 from unittest.mock import patch
 from flaskr import Badminton, ServePosition, GameFactory, Controller, TableTestConfig,\
                    TableModel, TableFactory, BluetoothController, create_controller, SiteModel,\
-                   SiteTestConfig
+                   SiteTestConfig, DialogModel
 from flask_sse import ServerSentEventsBlueprint
 
 from copy import deepcopy
@@ -692,6 +692,23 @@ class TestSiteModel(unittest.TestCase):
         playerColorsComparison = {"Team1" : {"Player1" : "orange", "Player2": "red"},\
                                   "Team2" : {"Player1" : "purple", "Player2": "blue"}}
         self.assertDictEqual(siteModel.getPlayerColors(), playerColorsComparison)
+
+class TestDialogModel(unittest.TestCase):
+    def testGetCurrentSite(self):
+        dialogModel = DialogModel("newGameDialog")
+        currentSite = dialogModel.getCurrentSite()
+        self.assertEqual(currentSite, "newGameDialog")
+    def testGetCursorButtonName(self):
+        dialogModel = DialogModel("dialog")
+        cursor = dialogModel.getCursorButtonName()
+        self.assertEqual(cursor, "cancel")
+
+    @patch.object(DialogModel, "_notifyUpdate")
+    def testNotifyUpdate(self, mockUpdateSse):
+        dialogModel = DialogModel("dialog")
+        dialogModel.left()
+        dialogModel.right()
+        mockUpdateSse.assert_called_once()
 
 if __name__ == '__main__':
     unittest.main()

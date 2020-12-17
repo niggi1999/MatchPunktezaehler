@@ -1,6 +1,6 @@
 from .controller import Controller
 from .model import TableTestConfig, SiteTestConfig, TableModel, TableFactory, SiteModel,\
-                       Badminton, ServePosition, GameFactory
+                       Badminton, ServePosition, GameFactory, DialogModel
 from .bluetooth_controller import BluetoothController
 
 from flask import Flask

@@ -1,10 +1,13 @@
 from flask import Blueprint
 from .bluetooth_controller import BluetoothController
-from .model import SiteModel, AbstractModel, GameFactory, SiteProdConfig
+from .model import SiteModel, AbstractModel, GameFactory, SiteProdConfig, DialogModel
+
+import httpx
 
 import asyncio
 import threading
-import httpx
+from copy import deepcopy
+
 
 class Controller(Blueprint):
     """
@@ -39,6 +42,7 @@ class Controller(Blueprint):
         Blueprint.__init__(self, name, import_Name)
         self.sse = sse #TODO: In SseConroller verschieben
         self.model = None
+        self.lastGame= None
         self.bluetoothTread = threading.Thread(target = self.setupBluetoothThread,\
                                                args = (bluetoothController,), daemon = True)
         self.bluetoothTread.start()
@@ -53,7 +57,7 @@ class Controller(Blueprint):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         #with threading.Lock():
-        loop.run_until_complete(self.changeModelToFirstSite())
+        self.changeModelToFirstSite()
         self.bluetoothController = bluetoothController
         self.bluetoothController.attach(self)
         #self.siteModel = SiteModel()
@@ -72,7 +76,7 @@ class Controller(Blueprint):
         while True:
             pressedButton = await self.bluetoothController.readBluetooth()
             if ("left" == pressedButton):
-                self.model.left()
+                self.model.left() #TODO:rückgabe
             elif ("right" == pressedButton):
                 self.model.right()
             elif ("down" == pressedButton):
@@ -111,27 +115,24 @@ class Controller(Blueprint):
         playerColors = self.model.getPlayerColors()
         self.model = GameFactory.create(gameName, playerColors)
         self.model.attach(self)
+        if self.lastGame is not None:
+            self.model = self.lastGame
 
-    async def changeModelToFirstSite(self):
+    def changeModelToFirstSite(self):
         if self.model is not None:
             self.model.detach(self)
         self.model = SiteModel(SiteProdConfig)
         self.model.attach(self)
 
-    async def changeModelToLeaveGameDialog(self): #TODO: implementieren
-        pass
+    def changeModelToLeaveGameDialog(self):
+        self.lastGame = deepcopy(self.model)
+        self.model = DialogModel("newGameDialog")
+        self.model.attach(self)
 
-    def startGame(self, gameName):
-        """
-        Starts the game.
-
-        Calls the GameFactory to create a new game.
-
-        Parametes:
-
-            gameName (str): The name of the game to be started.
-        """
-        self.game = GameFactory.create(gameName)
+    def changeModelToChangeSidesDialog(self):
+        self.lastGame = deepcopy(self.model)
+        self.model = DialogModel("changeSidesDialog")
+        self.model.attach(self)
 
     def updateSite(self):
         publishMethod = self.model.getPublishMethod()
