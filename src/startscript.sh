@@ -1,6 +1,6 @@
 #!/bin/bash
 sleep 10
-cd /home/pi/Matchcounter/src
+cd /home/pi/MatchPunktezaehler/src
 touch starttest
 cd flask_sse_project/app
 source mpz/bin/activate
