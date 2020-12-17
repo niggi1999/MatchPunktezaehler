@@ -237,14 +237,14 @@ class SiteModel(AbstractModel):
         publishMethod = getattr(self, "update" + siteCapitalized + "Site")
         return publishMethod
 
-    async def updateInitSite(self, sse, bluetoothController):
+    def updateInitSite(self, sse, bluetoothController):
         deviceCount = bluetoothController.deviceCount()
         sse.publish({"status": "init",
         "cursorElement" : self.getActiveElementForSse(),
         "connectedController": deviceCount},
         type = "updateData")
 
-    async def updatePlayerMenuSite(self, sse, bluetoothController):
+    def updatePlayerMenuSite(self, sse, bluetoothController):
         del bluetoothController
         selectedButtons = self.getSelectedButtonsCurrentSiteVerbose()
         activeChooseField = selectedButtons[0]["column"] if selectedButtons else None
@@ -259,15 +259,15 @@ class SiteModel(AbstractModel):
         "fieldNames" : columnContents},
         type = "updateData")
 
-    async def updateColorMenuSinglesSite(self, sse, bluetoothController):
+    def updateColorMenuSinglesSite(self, sse, bluetoothController):
         playModeInteger = 1
         self.updateColorMenuSite(sse, bluetoothController, playModeInteger)
 
-    async def updateColorMenuDoublesSite(self, sse, bluetoothController):
+    def updateColorMenuDoublesSite(self, sse, bluetoothController):
         playModeInteger = 2
         self.updateColorMenuSite(sse, bluetoothController, playModeInteger)
 
-    async def updateColorMenuSite(self, sse, bluetoothController, playModeInteger):
+    def updateColorMenuSite(self, sse, bluetoothController, playModeInteger):
         del bluetoothController
         teamColors = self.__getTeamColors()
         activeElement = self.getActiveElementForSse()
@@ -325,7 +325,7 @@ class SiteModel(AbstractModel):
                       "color1Team2" : color1Team2, "color2Team2" : color2Team2}
         return teamColors
 
-    async def updateGameMenuSite(self, sse, bluetoothController):
+    def updateGameMenuSite(self, sse, bluetoothController):
         del bluetoothController
         activeElement = self.getActiveElementForSse()
         activeElementHasMoreThanOneWord = 1 < len(activeElement.split())
