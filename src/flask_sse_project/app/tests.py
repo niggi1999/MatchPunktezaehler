@@ -12,16 +12,16 @@ from copy import deepcopy
 
 class TestBadminton(unittest.TestCase):
     def testBadmintonExists(self):
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
         self.assertIsInstance(badminton, Badminton)
 
     def testCounterStartsAtZero(self):
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
         testCounter = {"Team1" : 0, "Team2" : 0}
         self.assertDictEqual(badminton.counter, testCounter)
 
     def testCounterUp(self):
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
         badminton.counterUp(1)
         badminton.counterUp(2)
 
@@ -31,7 +31,7 @@ class TestBadminton(unittest.TestCase):
             badminton.counterUp(3)
 
     def testRoundEndsTeam1(self):
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
         maxPoints = 21
         for _ in range(maxPoints):
             badminton.counterUp(1)
@@ -42,7 +42,7 @@ class TestBadminton(unittest.TestCase):
         self.assertDictEqual(badminton.counter, testCounter)
 
     def testRoundEndsTeam2(self):
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
         maxPoints = 21
         for _ in range(maxPoints):
             badminton.counterUp(2)
@@ -53,7 +53,7 @@ class TestBadminton(unittest.TestCase):
         self.assertDictEqual(badminton.counter, testCounter)
 
     def testCounterEqualAt20(self):
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
         pointsTillOvertime = 20
         for _ in range(pointsTillOvertime):
             badminton.counterUp(1)
@@ -69,7 +69,7 @@ class TestBadminton(unittest.TestCase):
         self.assertDictEqual(badminton.counter, testCounter)
 
     def testEndsWithAbsoluteEnd(self):
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
         pointsTillAbsoluteEnd = 30
         for _ in range(pointsTillAbsoluteEnd):
             badminton.counterUp(1)
@@ -81,7 +81,7 @@ class TestBadminton(unittest.TestCase):
         self.assertDictEqual(badminton.counter, testCounter)
 
     def testGameEndsAfter2WonRounds(self):
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
         pointsForWonGame = 21 * 2
         for _ in range(pointsForWonGame - 1):
             badminton.counterUp(1)
@@ -103,7 +103,7 @@ class TestBadminton(unittest.TestCase):
         self.assertDictEqual(badminton.counter, testCounter)
 
     def testUndo(self):
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
         pointsForWonGameAndRound = 21 * 3
         for _ in range(pointsForWonGameAndRound):
             badminton.counterUp(1)
@@ -129,12 +129,12 @@ class TestBadminton(unittest.TestCase):
         self.assertEqual(badminton.currentMaxPoints, maxPointsEqualAt20)
 
     def testUndoEmptyStack(self):
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
         with self.assertRaises(ValueError):
             badminton.undo()
 
     def testRedo(self):
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
 
         counterUpBy2 = 2
         for _ in range(counterUpBy2):
@@ -150,12 +150,12 @@ class TestBadminton(unittest.TestCase):
         self.assertDictEqual(badminton.counter, testCounter)
 
     def testRedoEmptyStack(self):
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
         with self.assertRaises(ValueError):
             badminton.redo()
 
     def testLastChanged(self):
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
 
         lastChanged = badminton.gameState()["lastChanged"]
         self.assertEqual(None, lastChanged)
@@ -179,7 +179,7 @@ class TestBadminton(unittest.TestCase):
         '''
 
     def testServePosition(self):
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
         servePositionCorrect = False
         firstServe = badminton.updateServePosition()
         if(firstServe == ServePosition.TEAM1RIGHT): servePositionCorrect = True
@@ -205,7 +205,7 @@ class TestBadminton(unittest.TestCase):
         self.assertEqual(badminton.updateServePosition(), ServePosition.TEAM2RIGHT)
 
     def testSideChange(self):
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
         self.assertEqual(badminton.sidesChanged, False)
         i = 0
         while(i<21):
@@ -224,7 +224,7 @@ class TestBadminton(unittest.TestCase):
         self.assertEqual(badminton.sidesChanged, False)
 
     def testPlayerPositionWithinTeam(self):
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
         firstPlayerPositions = badminton.playerPositions
         if(ServePosition.TEAM2RIGHT == badminton.servePosition):
             badminton.counterUp(1)
@@ -241,7 +241,7 @@ class TestBadminton(unittest.TestCase):
         self.assertEqual(currentPositions2["Team2"]["Player2"], currentPositions1["Team2"]["Player1"])
 
     def testPlayerPositionSideChanged(self):
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
         if(ServePosition.TEAM1RIGHT == badminton.servePosition):
             badminton.counterUp(2)
         pointsToWin = 21
@@ -271,8 +271,6 @@ class TestBadminton(unittest.TestCase):
         self.assertEqual(badminton.getAbsoluteServePosition(), 4)
         badminton.counterUp(1)
         self.assertEqual(badminton.getAbsoluteServePosition(), 3)
-
-
 
 
 class TestGameFactoy(unittest.TestCase):
@@ -676,6 +674,24 @@ class TestSiteModel(unittest.TestCase):
         loop = asyncio.get_event_loop()
         loop.run_until_complete(siteModel._SiteModel__siteForward())
         self.assertEqual(siteModel._SiteModel__site, "colorMenuDoubles")
+
+    def testGetPlayerColors(self):
+        siteModel = SiteModel(SiteTestConfig, "gameMenu")
+        siteModel.selectedButtonsStore ={'init': [], 'playerMenu': [{'row': 1, 'column': 1}],\
+                                         'colorMenuSingles': [{'row': 1, 'column': 1}, {'row': 2, 'column': 2}],\
+                                         'colorMenuDoubles': [], 'gameMenu': []}
+        playerColorsComparison = {"Team1" : {"Player1" : "orange", "Player2": "orange"},\
+                                  "Team2" : {"Player1" : "red", "Player2": "red"}}
+        self.assertDictEqual(siteModel.getPlayerColors(), playerColorsComparison)
+
+        siteModel.selectedButtonsStore = {'init': [], 'playerMenu': [{'row': 1, 'column': 2}],\
+                                          'colorMenuSingles': [],\
+                                          'colorMenuDoubles': [{'row': 1, 'column': 1}, {'row': 2, 'column': 2},\
+                                                               {'row': 3, 'column': 3}, {'row': 4, 'column': 4}],\
+                                          'gameMenu': []}
+        playerColorsComparison = {"Team1" : {"Player1" : "orange", "Player2": "red"},\
+                                  "Team2" : {"Player1" : "purple", "Player2": "blue"}}
+        self.assertDictEqual(siteModel.getPlayerColors(), playerColorsComparison)
 
 if __name__ == '__main__':
     unittest.main()
