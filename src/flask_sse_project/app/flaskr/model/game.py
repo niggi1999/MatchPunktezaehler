@@ -2,6 +2,7 @@
 from abc import ABC, abstractmethod
 from .abstractModel import AbstractModel
 
+from typing import Dict
 class Game(AbstractModel, ABC): #Must inherit in this order to be able to create a MRO
     """
     Abstract class that represents a game.
@@ -36,7 +37,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
     maxPointsWithoutOvertime = 0
     absoluteMaxPoints = 0
     roundsInAGame = 0
-    def __init__(self):
+    def __init__(self, playerColors : Dict[str, str]):
         """
         Initialises the objects attributes.
         """
@@ -46,6 +47,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         self.wonGames = {"Team1" : 0, "Team2" : 0}
         self.currentMaxPoints = self.maxPointsWithoutOvertime
         self.sidesChanged = False
+        self.playerColors = playerColors
         self.playerPositions = {"Team1" : {"Player1" : 1, "Player2": 2}, "Team2" : {"Player1" : 3, "Player2": 4}}
         self.servePosition = 0
         self._undoStack = []
@@ -97,6 +99,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         winningTeam = "Team{}".format(teamNumber)
         self.counter[winningTeam] += 1
         self.lastChanged = winningTeam
+        #TODO: Abfrage 3. Round und eins der Teams 11 Punkte (Darf nur einmal zutreffen), Seitenwechsel: self.sidesChanged evtl ändern, wenn das in der Tabelle ausgewählt wird
         self.updateModel()
         if (self.isRoundOver()):
             self.newRound(teamNumber)
@@ -248,7 +251,6 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         for observer in self.__observers:
             await observer.updateSSE()
 
-
     def getCurrentSite(self):
         return "game"
 
@@ -263,6 +265,18 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         """
         gameState = self.gameState()
         deviceCount = bluetoothController.deviceCount()
+
+        team1HighColor = team1DownColor = team2HighColor = team2DownColor = ""
+        for team, nestedDict in self.playerPositions:
+            for player, position in nestedDict:
+                if 1 == position:
+                    team1HighColor = self.playerColors[team][player]
+                elif 2 == position:
+                    team1DownColor = self.playerColors[team][player]
+                elif 3 == position:
+                    team2DownColor = self.playerColors[team][player]
+                elif 4 == position:
+                    team2HighColor = self.playerColors[team][player]
         sse.publish({"status": "game",
             "connectedController" : deviceCount,
             "counterTeam1": gameState["counter"]["Team1"],
@@ -272,10 +286,10 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
             "roundsTeam2" : gameState["wonRounds"]["Team2"],
             "gamesTeam1": gameState["wonGames"]["Team1"],
             "gamesTeam2": gameState["wonGames"]["Team2"],
-            "team1HighColor" : 'Green',
-            "team1DownColor" : 'Orange',
-            "team2HighColor" : 'Blue',
-            "team2DownColor" : 'Red',
+            "team1HighColor" : team1HighColor,
+            "team1DownColor" : team1DownColor,
+            "team2HighColor" : team2HighColor,
+            "team2DownColor" : team2DownColor,
             "team1Left" : True,
             "opacityHighSiteTeam1" : 0.2,
             "opacityDownSiteTeam1" : 1,
