@@ -105,16 +105,18 @@ class Controller(Blueprint):
             await self.updateSSE("updateSite")
 
     async def changeModelToGame(self):
-        gameNameCoordinates = self.model.selectedButtonsStore["gameMenu"][0]
-        gameName = self.model.getButtonName(gameNameCoordinates, "gameMenu")[4:]
-        self.model = GameFactory.create(gameName)
+        self.model.detach(self)
+        gameName = self.model.getGameName()
+        playerColors = self.model.getPlayerColors()
+        self.model = GameFactory.create(gameName, playerColors)
         self.model.attach(self)
 
     async def changeModelToFirstSite(self):
+        self.model.detach(self)
         self.model = SiteModel(SiteProdConfig)
         self.model.attach(self)
 
-    async def changeModelToDialogLeaveGame(self): #TODO: implementieren
+    async def changeModelToLeaveGameDialog(self): #TODO: implementieren
         pass
 
     def startGame(self, gameName):
@@ -129,6 +131,6 @@ class Controller(Blueprint):
         """
         self.game = GameFactory.create(gameName)
 
-    def updateSite(self):
+    async def updateSite(self):
         publishMethod = self.model.getPublishMethod()
-        publishMethod(self.sse, self.bluetoothController)
+        await publishMethod(self.sse, self.bluetoothController)

@@ -25,7 +25,7 @@ class SiteModel(AbstractModel):
         self.__startElementNewSite = self.__config.getStartElementNewSite()
         self.__firstSiteStartElement = self.__config.getFirstSiteStartElement()
         self.__observers = []
-        self.__loop = asyncio.get_event_loop()
+        self.__loop = asyncio.get_event_loop() #TODO:
 
     def __buildSelectedButtonsStore(self):
         self.selectedButtonsStore = {}
@@ -34,10 +34,9 @@ class SiteModel(AbstractModel):
             if "colorMenu" == nextSite:
                 self.selectedButtonsStore["colorMenuSingles"] = []
                 self.selectedButtonsStore["colorMenuDoubles"] = []
-                nextSite = self.__config.getNextElement("colorMenu", "succession")
             else:
                 self.selectedButtonsStore[nextSite] = []
-                nextSite = self.__config.getNextElement(nextSite, "succession")
+            nextSite = self.__config.getNextElement(nextSite, "succession")
 
     def __getSelectedButtonsCurrentSite(self):
         return deepcopy(self.__tableModel.selectedButtons)
@@ -51,8 +50,52 @@ class SiteModel(AbstractModel):
             activeElement = self.__tableModel.getCursorVerbose()
         return activeElement
 
+    def getActiveElementForSse(self) -> str:
+        activeElement = self.getActiveElement()
+        if "nextButton" == activeElement:
+            activeElement = "forwardButton"
+        elif "previousButton" == activeElement:
+            activeElement = "backwardButton"
+        return activeElement
+
     def getButtonName(self, buttonCoordinates, site = None) -> str:
         return self.__tableModel.getButtonName(buttonCoordinates, site)
+
+    def getGameName(self) -> str:
+        gameNameCoordinates = self.selectedButtonsStore["gameMenu"][0]
+        gameButton = self.getButtonName(gameNameCoordinates, "gameMenu")
+        gameName = gameButton[4:]
+        return gameName
+
+    def getPlayerColors(self) -> Dict[str, str]: #TODO: Refaktorieren
+        """
+        Should only be called when leaving the last site
+        """
+        playerColors = {"Team1" : {"Player1" : "", "Player2" : ""}, "Team2" : {"Player1" : "", "Player2" : ""}}
+        playMode = self.getPlayMode()
+        if "singlesmode" == playMode:
+            selectedButtons = self.selectedButtonsStore["colorMenuSingles"]
+            buttonNameTeam1 = self.getButtonName(selectedButtons[0], "colorMenuSingles")
+            buttonNameTeam2 = self.getButtonName(selectedButtons[1], "colorMenuSingles")
+            colorTeam1 = buttonNameTeam1[5:]
+            colorTeam2 = buttonNameTeam2[5:]
+            playerColors["Team1"]["Player1"] = playerColors["Team1"]["Player2"] = colorTeam1
+            playerColors["Team2"]["Player1"] = playerColors["Team2"]["Player2"] = colorTeam2
+        elif "doublesmode" == playMode:
+            selectedButtons = self.selectedButtonsStore["colorMenuDoubles"]
+            buttonNameTeam1Player1 = self.getButtonName(selectedButtons[0], "colorMenuDoubles")
+            buttonNameTeam1Player2 = self.getButtonName(selectedButtons[1], "colorMenuDoubles")
+            buttonNameTeam2Player1 = self.getButtonName(selectedButtons[2], "colorMenuDoubles")
+            buttonNameTeam2Player2 = self.getButtonName(selectedButtons[3], "colorMenuDoubles")
+            colorTeam1Player1 = buttonNameTeam1Player1[7:]
+            colorTeam1Player2 = buttonNameTeam1Player2[7:]
+            colorTeam2Player1 = buttonNameTeam2Player1[7:]
+            colorTeam2Player2 = buttonNameTeam2Player2[7:]
+            playerColors["Team1"]["Player1"] = colorTeam1Player1
+            playerColors["Team1"]["Player2"] = colorTeam1Player2
+            playerColors["Team2"]["Player1"] = colorTeam2Player1
+            playerColors["Team2"]["Player2"] = colorTeam2Player2
+        return playerColors
 
     def up(self) -> bool:
         if "table" == self.__activeSiteElement:
@@ -153,9 +196,13 @@ class SiteModel(AbstractModel):
             currentSite = "colorMenu"
         return currentSite
 
-    def __getParticularSiteForColorMenu(self):
+    def getPlayMode(self): #TODO: Verwenden
         modeButtonCoordinates = self.selectedButtonsStore["playerMenu"][0]
         mode = self.__tableModel.getButtonName(modeButtonCoordinates, "playerMenu")
+        return mode
+
+    def __getParticularSiteForColorMenu(self):
+        mode = self.getPlayMode()
         site = ""
         if "singlesmode" == mode:
             site = "colorMenuSingles"
@@ -190,21 +237,21 @@ class SiteModel(AbstractModel):
         publishMethod = getattr(self, "update" + siteCapitalized + "Site")
         return publishMethod
 
-    def updateInitSite(self, sse, bluetoothController):
+    async def updateInitSite(self, sse, bluetoothController):
         deviceCount = bluetoothController.deviceCount()
         sse.publish({"status": "init",
-        "cursorElement" : self.getActiveElement(),
+        "cursorElement" : self.getActiveElementForSse(),
         "connectedController": deviceCount},
         type = "updateData")
 
-    def updatePlayerMenuSite(self, sse, bluetoothController):
+    async def updatePlayerMenuSite(self, sse, bluetoothController):
         del bluetoothController
         selectedButtons = self.getSelectedButtonsCurrentSiteVerbose()
         activeChooseField = selectedButtons[0]["column"] if selectedButtons else None
-        activeElement = self.getActiveElement()
+        activeElement = self.getActiveElementForSse()
         cursorElement = activeElement.split()[0]
         print("CURSOR")
-        print(cursorElement)  #TODO: backwardButton/forwardButton
+        print(cursorElement)
         columnContents = self.__tableModel.getColumnContents()
         sse.publish({"status": "playerMenu",
         "cursorElement" : cursorElement,
@@ -212,18 +259,18 @@ class SiteModel(AbstractModel):
         "fieldNames" : columnContents},
         type = "updateData")
 
-    def updateColorMenuSinglesSite(self, sse, bluetoothController):
+    async def updateColorMenuSinglesSite(self, sse, bluetoothController):
         playModeInteger = 1
         self.updateColorMenuSite(sse, bluetoothController, playModeInteger)
 
-    def updateColorMenuDoublesSite(self, sse, bluetoothController):
+    async def updateColorMenuDoublesSite(self, sse, bluetoothController):
         playModeInteger = 2
         self.updateColorMenuSite(sse, bluetoothController, playModeInteger)
 
-    def updateColorMenuSite(self, sse, bluetoothController, playModeInteger):
+    async def updateColorMenuSite(self, sse, bluetoothController, playModeInteger):
         del bluetoothController
         teamColors = self.__getTeamColors()
-        activeElement = self.getActiveElement()
+        activeElement = self.getActiveElementForSse()
         activeElementHasMoreThanOneWord = 1 < len(activeElement.split())
         columnActiveElement = activeElement.split()[1] if activeElementHasMoreThanOneWord else activeElement
         rowActiveElement = activeElement.split()[0] if activeElementHasMoreThanOneWord else activeElement
@@ -278,9 +325,9 @@ class SiteModel(AbstractModel):
                       "color1Team2" : color1Team2, "color2Team2" : color2Team2}
         return teamColors
 
-    def updateGameMenuSite(self, sse, bluetoothController):
+    async def updateGameMenuSite(self, sse, bluetoothController):
         del bluetoothController
-        activeElement = self.getActiveElement()
+        activeElement = self.getActiveElementForSse()
         activeElementHasMoreThanOneWord = 1 < len(activeElement.split())
         rowActiveElement = activeElement.split()[1] if activeElementHasMoreThanOneWord else activeElement
         selectedButtons = self.getSelectedButtonsCurrentSiteVerbose()
