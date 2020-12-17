@@ -38,6 +38,7 @@ class Controller(Blueprint):
         """
         Blueprint.__init__(self, name, import_Name)
         self.sse = sse #TODO: In SseConroller verschieben
+        self.model = None
         self.bluetoothTread = threading.Thread(target = self.setupBluetoothThread,\
                                                args = (bluetoothController,), daemon = True)
         self.bluetoothTread.start()
@@ -112,7 +113,8 @@ class Controller(Blueprint):
         self.model.attach(self)
 
     async def changeModelToFirstSite(self):
-        self.model.detach(self)
+        if self.model is not None:
+            self.model.detach(self)
         self.model = SiteModel(SiteProdConfig)
         self.model.attach(self)
 
@@ -131,6 +133,6 @@ class Controller(Blueprint):
         """
         self.game = GameFactory.create(gameName)
 
-    async def updateSite(self):
+    def updateSite(self):
         publishMethod = self.model.getPublishMethod()
-        await publishMethod(self.sse, self.bluetoothController)
+        publishMethod(self.sse, self.bluetoothController)

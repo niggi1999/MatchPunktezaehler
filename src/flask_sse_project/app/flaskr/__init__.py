@@ -8,6 +8,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask_sse import sse
 
+import asyncio
 
 def create_controller(sse, testBluetoothController = BluetoothController()):
     """
@@ -22,8 +23,8 @@ def create_controller(sse, testBluetoothController = BluetoothController()):
     con = Controller('con', __name__, sse, testBluetoothController)
 
     @con.route('/updateSite')
-    async def updateSite():
-        await con.updateSite() #TODO: Auf SseController ummstellen
+    def updateSite():
+        con.updateSite() #TODO: Auf SseController ummstellen
         return 'Site updated'
 
     return(con)

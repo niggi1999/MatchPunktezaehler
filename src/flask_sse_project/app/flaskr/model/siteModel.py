@@ -237,14 +237,14 @@ class SiteModel(AbstractModel):
         publishMethod = getattr(self, "update" + siteCapitalized + "Site")
         return publishMethod
 
-    async def updateInitSite(self, sse, bluetoothController):
+    def updateInitSite(self, sse, bluetoothController):
         deviceCount = bluetoothController.deviceCount()
         sse.publish({"status": "init",
         "cursorElement" : self.getActiveElementForSse(),
         "connectedController": deviceCount},
         type = "updateData")
 
-    async def updatePlayerMenuSite(self, sse, bluetoothController):
+    def updatePlayerMenuSite(self, sse, bluetoothController):
         del bluetoothController
         selectedButtons = self.getSelectedButtonsCurrentSiteVerbose()
         activeChooseField = selectedButtons[0]["column"] if selectedButtons else None
@@ -259,15 +259,15 @@ class SiteModel(AbstractModel):
         "fieldNames" : columnContents},
         type = "updateData")
 
-    async def updateColorMenuSinglesSite(self, sse, bluetoothController):
+    def updateColorMenuSinglesSite(self, sse, bluetoothController):
         playModeInteger = 1
         self.updateColorMenuSite(sse, bluetoothController, playModeInteger)
 
-    async def updateColorMenuDoublesSite(self, sse, bluetoothController):
+    def updateColorMenuDoublesSite(self, sse, bluetoothController):
         playModeInteger = 2
         self.updateColorMenuSite(sse, bluetoothController, playModeInteger)
 
-    async def updateColorMenuSite(self, sse, bluetoothController, playModeInteger):
+    def updateColorMenuSite(self, sse, bluetoothController, playModeInteger):
         del bluetoothController
         teamColors = self.__getTeamColors()
         activeElement = self.getActiveElementForSse()
@@ -307,25 +307,30 @@ class SiteModel(AbstractModel):
     def __getTeamColors(self) -> Dict[str, str]:
         color1Team1 = color2Team1 = color1Team2 = color2Team2 = None
         selectedButtons = self.getSelectedButtonsCurrentSiteVerbose()
+        print("SELECTED BUTTONS")
+        print(selectedButtons)
         for button in selectedButtons:
+            print("IN FOR")
             columnName = button["column"]
-            if "Team1" == columnName:
+            print("COLUMN NAME")
+            print(columnName)
+            if "team1" == columnName:
                 color1Team1 = color2Team1 = button["row"]
-            elif "Team2" == columnName:
+            elif "team2" == columnName:
                 color1Team2 = color2Team2 = button["row"]
-            elif "Player1" == columnName:
+            elif "player1" == columnName:
                 color1Team1 = button["row"]
-            elif "Player2" == columnName:
+            elif "player2" == columnName:
                 color2Team1 = button["row"]
-            elif "Player3" == columnName:
+            elif "player3" == columnName:
                 color1Team2 = button["row"]
-            elif "Player4" == columnName:
+            elif "player4" == columnName:
                 color2Team2 = button["row"]
         teamColors = {"color1Team1" : color1Team1, "color2Team1" : color2Team1,\
                       "color1Team2" : color1Team2, "color2Team2" : color2Team2}
         return teamColors
 
-    async def updateGameMenuSite(self, sse, bluetoothController):
+    def updateGameMenuSite(self, sse, bluetoothController):
         del bluetoothController
         activeElement = self.getActiveElementForSse()
         activeElementHasMoreThanOneWord = 1 < len(activeElement.split())

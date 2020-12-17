@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from .abstractModel import AbstractModel
 
 from typing import Dict
-import asyncio
+from time import sleep
 class Game(AbstractModel, ABC): #Must inherit in this order to be able to create a MRO
     """
     Abstract class that represents a game.
@@ -267,7 +267,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
     def getPublishMethod(self):
         return self.updateGameSite
 
-    async def updateGameSite(self, sse, bluetoothController):
+    def updateGameSite(self, sse, bluetoothController):
         """
         Updates the SSE stream with the current counter.
 
@@ -298,8 +298,8 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
                 "opacityHighSiteTeam2" : opacities["opacityHighSiteTeam2"],
                 "opacityDownSiteTeam2" : opacities["opacityDownSiteTeam2"]}
                 , type = "updateData")
-            asyncio.sleep(0.2)
-            sse.publish({"status": "game",
+
+            print({"status": "game",
                 "connectedController" : deviceCount,
                 "counterTeam1": gameState["counter"]["Team1"],
                 "counterTeam2": gameState["counter"]["Team2"],
@@ -315,15 +315,33 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
                 "opacityHighSiteTeam1" : opacitiesForBlink["opacityHighSiteTeam1"],
                 "opacityDownSiteTeam1" : opacitiesForBlink["opacityDownSiteTeam1"],
                 "opacityHighSiteTeam2" : opacitiesForBlink["opacityHighSiteTeam2"],
-                "opacityDownSiteTeam2" : opacitiesForBlink["opacityDownSiteTeam2"]}
+                "opacityDownSiteTeam2" : opacitiesForBlink["opacityDownSiteTeam2"]})
+            sleep(0.1) #TODO:
+            sse.publish({"status": "game",
+                "connectedController" : deviceCount,
+                "counterTeam1": gameState["counter"]["Team1"],
+                "counterTeam2": gameState["counter"]["Team2"],
+                "roundsTeam1" : gameState["wonRounds"]["Team1"],
+                "roundsTeam2" : gameState["wonRounds"]["Team2"],
+                "gamesTeam1": gameState["wonGames"]["Team1"],
+                "gamesTeam2": gameState["wonGames"]["Team2"],
+                "team1HighColor" : colors["team1HighColor"],
+                "team1DownColor" : colors["team1DownColor"],
+                "team2HighColor" : colors["team2HighColor"],
+                "team2DownColor" : colors["team2DownColor"],
+                "team1Left" : True,
+                "opacityHighSiteTeam1" : opacities["opacityHighSiteTeam1"],
+                "opacityDownSiteTeam1" : opacities["opacityDownSiteTeam1"],
+                "opacityHighSiteTeam2" : opacities["opacityHighSiteTeam2"],
+                "opacityDownSiteTeam2" : opacities["opacityDownSiteTeam2"]}
                 , type = "updateData")
-            asyncio.sleep(0.2)
+            sleep(0.1)
 
     def __getColors(self):
         colors = {"team1HighColor" : "", "team1DownColor" : "",\
                   "team2HighColor" : "", "team2DownColor" : ""}
-        for team, nestedDict in self.playerPositions:
-            for player, position in nestedDict:
+        for team, nestedDict in self.playerPositions.items():
+            for player, position in nestedDict.items():
                 if 1 == position:
                     colors["team1HighColor"] = self.playerColors[team][player]
                 elif 2 == position:
@@ -332,6 +350,8 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
                     colors["team2DownColor"] = self.playerColors[team][player]
                 elif 4 == position:
                     colors["team2HighColor"] = self.playerColors[team][player]
+        for key, color in colors.items():
+            colors[key] = color.capitalize()
         return colors
 
     def __getOpacities(self):
@@ -351,7 +371,8 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
     def __getOpacitiesForBlink(self):
         opacitiesForBlink = self.__getOpacities()
         teamWhichScored = self.gameState()["lastChanged"]
-        for field in opacitiesForBlink:
-            if field.endswith(teamWhichScored):
-                opacitiesForBlink[field] = 0
+        if teamWhichScored is not None:
+            for field in opacitiesForBlink:
+                if field.endswith(teamWhichScored):
+                    opacitiesForBlink[field] = 0
         return opacitiesForBlink
