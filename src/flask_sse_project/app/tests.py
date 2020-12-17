@@ -197,6 +197,12 @@ class TestBadminton(unittest.TestCase):
         badminton.counterUp(2)
         servePosition4 = ServePosition.TEAM2RIGHT
         self.assertEqual(badminton.updateServePosition(), servePosition4)
+        for _ in range(19):
+            badminton.counterUp(1)
+        self.assertEqual(badminton.updateServePosition(), ServePosition.TEAM1RIGHT)
+        for _ in range(21):
+            badminton.counterUp(2)
+        self.assertEqual(badminton.updateServePosition(), ServePosition.TEAM2RIGHT)
 
     def testSideChange(self):
         badminton = Badminton()
@@ -246,6 +252,26 @@ class TestBadminton(unittest.TestCase):
         self.assertEqual(currentPositions1["Team1"]["Player2"], 4)
         self.assertEqual(currentPositions1["Team2"]["Player1"], 1)
         self.assertEqual(currentPositions1["Team2"]["Player2"], 2)
+    
+    def testGetAbsoluteServePosition(self):
+        badminton = Badminton()
+        badminton.servePosition = ServePosition.TEAM1LEFT
+        self.assertEqual(badminton.getAbsoluteServePosition(), 1)
+        badminton.servePosition = ServePosition.TEAM1RIGHT
+        self.assertEqual(badminton.getAbsoluteServePosition(), 2)
+        badminton.servePosition = ServePosition.TEAM2LEFT
+        self.assertEqual(badminton.getAbsoluteServePosition(), 3)
+        badminton.servePosition = ServePosition.TEAM2RIGHT
+        self.assertEqual(badminton.getAbsoluteServePosition(), 4)
+        badminton = Badminton()
+        if(ServePosition.TEAM1RIGHT == badminton.servePosition):
+            badminton.counterUp(2)
+        for _ in range(21):
+            badminton.counterUp(1)
+        self.assertEqual(badminton.getAbsoluteServePosition(), 4)
+        badminton.counterUp(1)
+        self.assertEqual(badminton.getAbsoluteServePosition(), 3)
+
 
 
 
