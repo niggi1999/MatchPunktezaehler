@@ -254,7 +254,7 @@ class TestBadminton(unittest.TestCase):
         self.assertEqual(currentPositions1["Team2"]["Player2"], 2)
     
     def testGetAbsoluteServePosition(self):
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
         badminton.servePosition = ServePosition.TEAM1LEFT
         self.assertEqual(badminton.getAbsoluteServePosition(), 1)
         badminton.servePosition = ServePosition.TEAM1RIGHT
@@ -263,7 +263,7 @@ class TestBadminton(unittest.TestCase):
         self.assertEqual(badminton.getAbsoluteServePosition(), 3)
         badminton.servePosition = ServePosition.TEAM2RIGHT
         self.assertEqual(badminton.getAbsoluteServePosition(), 4)
-        badminton = Badminton()
+        badminton = GameFactory.create("badminton")
         if(ServePosition.TEAM1RIGHT == badminton.servePosition):
             badminton.counterUp(2)
         for _ in range(21):

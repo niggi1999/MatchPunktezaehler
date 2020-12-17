@@ -1,3 +1,43 @@
+sudo apt-get -y install bluetooth bluez bluez-tools 
+sudo usermod -aG lp $USER
+newgrp lp
+
+systemctl is-enabled bluetooth.service
+
+/etc/systemd/system/bluetooth.target.wants/bluetooth.service
+
+ExecStart=/usr/lib/bluetooth/bluetoothd
+von
+ExecStart=/usr/lib/bluetooth/bluetoothd --noplugin=sap
+
+sudo systemctl daemon-reload
+
+sudo service bluetooth restart
+
+systemctl status bluetooth.service
+
+rfkill unblock bluetooth
+
+bluetoothctl
+
+agent KeyboardOnly
+
+default-agent
+
+power on
+
+scan on
+
+pair 
+
+trust
+
+connect 
+
+
+
+
+alt:
 iapt install pi-bluetooth # bluetooth bluez etc
 reboot
 
