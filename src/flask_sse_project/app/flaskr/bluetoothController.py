@@ -1,4 +1,4 @@
-from .bluetoothCoupling import couple
+#from .bluetoothCoupling import couple
 
 import evdev
 import asyncio
@@ -76,7 +76,6 @@ class BluetoothController:
 
         If a device is found, prints "Device found" and the path to the device
         """
-        couple()
         devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
         for device in devices:
             if ("SmartRemote Consumer Control" == device.name):
