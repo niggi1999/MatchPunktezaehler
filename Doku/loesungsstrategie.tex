@@ -1,7 +1,7 @@
 \chapter{Lösungsstrategie}
 
 \section{Einstieg}
-Die folgende Tabelle stellt die Qualitätsziele für den Matchpunktezähler mit den passenden Architekturansätzen gegenüber, und erleichter den Einstieg in die Lösung.\\[0.0cm]
+Die folgende Tabelle stellt die Qualitätsziele für den Matchpunktezähler mit den passenden Architekturansätzen gegenüber, und erleichtert den Einstieg in die Lösung.\\[0.0cm]
 \begin{center}
 \begin{tabular}[h]{|l|l|}
 \cline{1-2}
@@ -39,11 +39,11 @@ Es besteht aus den folgenden Teilen:
 	\item Verbindung der App und des Frontends
 \end{itemize}
 
-Die Aufteilung ermöglicht es verschiedene Spiele für den den Matchpunktezähler zu implementieren und die durch eine Auswahl anwählbar zu machen. Außerdem kann die Interpretation der Bluetooth-Signale bei Verwendung von anderer Hardware einfacher angepasst oder ausgetauscht werden.\\
-Bei einer notwendigen Anpassung der Benutzeroberfläche kann dieses Aufgrund der Schnittstelle einfach ausgetauscht werden.\\[0.4cm]
+Die Aufteilung ermöglicht es verschiedene Spiele für den den Matchpunktezähler zu implementieren und diese anwählbar zu machen. Außerdem kann die Interpretation der Bluetooth-Signale bei Verwendung von anderer Hardware einfacher angepasst oder ausgetauscht werden.\\
+Bei einer Anpassung der Benutzeroberfläche muss die Schnittstelle nur angepasst werden, wenn die Benutzeroberfläche durch die Anpassung weitere Daten benötigt.\\[0.4cm]
 
 Zentrales Element beim Entwurf der Datenstruktur ist die Spielsituation eines Badminton Spiels: Welcher Spieler hat Aufschlag, welches Team steht auf welcher Seite des Spielfeldes, welcher Spieler steht bei einem Doppel wo und wie ist der aktuelle Spielstand.
 \section{Spielstrategie}
-Um den Ablauf eines Badminton Spiels zu bestimmen, muss zunächst ein Anfangszustand bestimmt werden. Im Anschluss kann mit jedem erzielten Punkt die weitere Vorgehensweise bestimmt werden. Das Programm reagiert nur auf die Ihm gegebenen Eingaben, kann aber bei einer Fehleingabe mit einem UNDO-Mechanismus in den vorigen Zustand zurückversetzt werden.
+Um den Ablauf eines Badminton Spiels zu bestimmen, muss zunächst ein Anfangszustand bestimmt werden. Im Anschluss kann mit jedem erzielten Punkt die weitere Vorgehensweise bestimmt werden. Das Programm reagiert nur auf die gegebenen Eingaben, kann aber bei einer Fehleingabe mit dem UNDO-Mechanismus in den vorigen Zustand zurückversetzt werden.
 \section{Anbindung}
 Der Machtpunktezähler wird über eine Bluetooth-Schnittstelle mit einem Bluetooth-Eingabegerät verbunden, über welches die Eingabe an das Programm getätigt werden. Die Ausgabe an den Benutzer erfolgt über eine Website, die von mehreren Geräten abgerufen werden kann. Bei jeder Änderung wird die Anzeige automatisch aktualisiert.

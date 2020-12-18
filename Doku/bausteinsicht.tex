@@ -18,7 +18,7 @@ Der Machtpunktezähler besteht aus vier Subsystemen. Die gestrichelten Pfeile st
 \cline{1-2}
 App & Realisiert die Kommunikation, Verarbeitung der Eingaben\\&und Umsetzung der Spielregeln.\\ 
 \cline{1-2}
-Frontend & Gibt anhand der vom Backend gegebenen Daten die Spielstand grafisch aus.\\
+Frontend & Stellt anhand der vom Backend gegebenen Daten den Zustand der App grafisch aus.\\
 \cline{1-2} 
 \end{tabular}
 \end{center}
@@ -36,7 +36,7 @@ Offene Punkte werden in den einzelnen Modulen dieses Subsystems in Ebene 2 \ref{
 \subsection*{Zweck/Verantwortlichkeit}
 Das Subsystem ist für die graphische Ausgabe der in dem Subsystem App ermittelten Daten verantwortlich. Diese werden für den Endnutzer passend aufbereitet.
 \subsection*{Schnittstellen}
-Das Frontend beinhaltet keine Eigene Logik und baut sich auf den Daten des Subsystems App auf.
+Das Frontend beinhaltet so gut wie keine Eigene Logik und baut auf den Daten des Subsystems App auf.
 \subsection*{Ablageort / Datei}
 /MatchPunktezaehler/src/flask\_sse\_project/frontend/
 \subsection*{Offene Punkte}
