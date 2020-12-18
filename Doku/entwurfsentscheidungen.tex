@@ -2,7 +2,7 @@
 \section{Frontend}
 Das Frontend wurde mit dem Javascript Framework React erstellt. Aufgrund der zeitlichen Begrenzung bei der Programmierung der Software, wurde React als Javascript Framework gewählt, da React eine niedrige Einstiegshürde aufweist. 
 
-Die Struktur des Frontends entspricht einer Ablaufkette, welche durch die vom Backend übergebenen Daten gesteuert wird. Diese Ablaufkette ist in der Funktion Procedure implementiert, welche im Listing \ref{procedure} dargestellt wird. 
+Die Struktur des Frontends entspricht einer Ablaufkette, welche durch die vom Backend übergebenen Daten gesteuert wird. Diese Ablaufkette ist in der Funktion Procedure implementiert, welche im Listing \ref{procedure} dargestellt wird.
 
 \begin{lstlisting}[caption={Procedure Funktion des Frontends},captionpos=b]
 import React from "react";
@@ -42,3 +42,20 @@ export default Procedure
 Procedure bekommt beim Aufruf die Daten des Backends übergeben, welche in Abhängigkeit des Status variieren. Der Status ist ein String der vom Backend an das Frontend übergeben wird. Dieser String definiert auf welcher Seite der Benutzeroberfläche sich der Benutzer befindet. In Listing \ref{procedure} in Zeile 11 ist dargestellt, dass die Wahl der Seite durch ein Switch Case der Status Variable erfolgt. Entspricht die Status Variable z.B. dem String \glqq init\grqq{} , so wird die Init-Seite der Benutzeroberfläche dargestellt. Diese Implementierung wird verwendet, da so die Steuerung der Software in der Verantwortung des Backends liegt. Außerdem können auf diese Weise sehr leicht neue Seiten der Benutzeroberfläche hinzugefügt werden, da lediglich das Switch Case erweitert werden muss.
 
 \section{Backend}
+Für das Backend wurde die Programmiersprache Python verwendet, da es sich hierbei um eine populäre Serversprache
+handelt. Als Framework kam dabei \glqq Flask\grqq{} zum Einsatz, da es relativ lightweight ist und alle nötigen
+Funktionalitäten bietet. Ein weiterer Grund für Flask war die dafür zur Verfügung stehende Bibliothek \glqq
+flask-sse\grqq{}, die die Arbeit mit Server-Sent-Events vereinfacht. \newline Die Server-Sent-Events sind essenziell
+für die Kommunikation mit dem Frontend, da die Seite nicht andauernd neu geladen werden soll. Die \glqq
+flask-sse\grqq{} Bibliothek funktioniert nur im Zusammenhang mit einem Flask Request Context. Es muss also zum
+auslösen eines SSE Events eine HTTP Anfrage vorliegen. Um diese Anfragen zu erstellen wird der HTTP-Client \glqq
+httpx\grqq{} verwendet. Dieser ist sehr populär und bietet die Möglichkeit asynchron Anfragen zu stellen. \newline
+Für die Bluetooth Kommunikation wird die Bibliothek \glqq evdev\grqq{} verwendet, da eine relativ einfache
+Möglichkeit bietet um asynchron Bluetooth Signale zu empfangen. Außerdem lässt sich einfach ein Gerät verbinden.
+\newline Für Tests wird die Bibliothek \glqq unittest\grqq{} verwendet, da sie umfangreiche Features bietet und mit
+in der Standardbibliothek enthalten ist. \newline Alle Model Klassen erben von einer Abstrakten Oberklasse \glqq
+abstractModel\grqq{}. Diese bietet eine Schnittstelle um empfangene Tastendrücke weiterzugeben. Wenn ein Objekt über
+die \glqq attach\grqq{} Methode subscribed hat, so wird es bei Änderungen im Model informiert. Anschließend kann mit
+\glqq getPublishMethod\grqq{} eine Methode erhalten werden, die die geänderten Daten auf den SSE-Stream published.
+\newline Die Bluetooth Kommunikation läuft in einem separaten Thread ab, da parallel auf Tastendrücke und neue
+HTTP Anfragen reagiert werden muss.
