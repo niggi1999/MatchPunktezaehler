@@ -96,7 +96,7 @@ class TableProdConfig(TableConfig):
     _columnsInit = ("deviceCount",)
     _rowsPlayerMenu = ("mode",)
     _columnsPlayerMenu = ("singles", "doubles")
-    _rowsColorMenu = ("orange", "red", "purple", "blue", "green", "black")
+    _rowsColorMenu = ("orange", "red", "purple", "blue", "green", "yellow")
     _columnsColorMenuSingles = ("team1", "team2")
     _columnsColorMenuDoubles = ("player1", "player2", "player3", "player4")
     _rowsGameMenu = ("badminton",)

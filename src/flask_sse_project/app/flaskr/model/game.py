@@ -326,34 +326,16 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
                 "roundsTeam2" : gameState["wonRounds"]["Team2"],
                 "gamesTeam1": gameState["wonGames"]["Team1"],
                 "gamesTeam2": gameState["wonGames"]["Team2"],
-                "team1HighColor" : colors["team1HighColor"],
-                "team1DownColor" : colors["team1DownColor"],
-                "team2HighColor" : colors["team2HighColor"],
-                "team2DownColor" : colors["team2DownColor"],
+                "leftSideHighColor" : colors["leftSideHighColor"],
+                "leftSideDownColor" : colors["leftSideDownColor"],
+                "rightSideHighColor" : colors["rightSideHighColor"],
+                "rightSideDownColor" : colors["rightSideDownColor"],
                 "team1Left" : True,
-                "opacityHighSiteTeam1" : opacities["opacityHighSiteTeam1"],
-                "opacityDownSiteTeam1" : opacities["opacityDownSiteTeam1"],
-                "opacityHighSiteTeam2" : opacities["opacityHighSiteTeam2"],
-                "opacityDownSiteTeam2" : opacities["opacityDownSiteTeam2"]}
+                "leftSideHighColorOpacity" : opacitiesForBlink["leftSideHighColorOpacity"],
+                "leftSideDownColorOpacity" : opacitiesForBlink["leftSideDownColorOpacity"],
+                "rightSideHighColorOpacity" : opacitiesForBlink["rightSideHighColorOpacity"],
+                "rightSideDownColorOpacity" : opacitiesForBlink["rightSideDownColorOpacity"]}
                 , type = "updateData")
-
-            print({"status": "game",
-                "connectedController" : deviceCount,
-                "counterTeam1": gameState["counter"]["Team1"],
-                "counterTeam2": gameState["counter"]["Team2"],
-                "roundsTeam1" : gameState["wonRounds"]["Team1"],
-                "roundsTeam2" : gameState["wonRounds"]["Team2"],
-                "gamesTeam1": gameState["wonGames"]["Team1"],
-                "gamesTeam2": gameState["wonGames"]["Team2"],
-                "team1HighColor" : colors["team1HighColor"],
-                "team1DownColor" : colors["team1DownColor"],
-                "team2HighColor" : colors["team2HighColor"],
-                "team2DownColor" : colors["team2DownColor"],
-                "team1Left" : True,
-                "opacityHighSiteTeam1" : opacitiesForBlink["opacityHighSiteTeam1"],
-                "opacityDownSiteTeam1" : opacitiesForBlink["opacityDownSiteTeam1"],
-                "opacityHighSiteTeam2" : opacitiesForBlink["opacityHighSiteTeam2"],
-                "opacityDownSiteTeam2" : opacitiesForBlink["opacityDownSiteTeam2"]})
             sleep(0.1) #TODO:
             sse.publish({"status": "game",
                 "connectedController" : deviceCount,
@@ -363,50 +345,50 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
                 "roundsTeam2" : gameState["wonRounds"]["Team2"],
                 "gamesTeam1": gameState["wonGames"]["Team1"],
                 "gamesTeam2": gameState["wonGames"]["Team2"],
-                "team1HighColor" : colors["team1HighColor"],
-                "team1DownColor" : colors["team1DownColor"],
-                "team2HighColor" : colors["team2HighColor"],
-                "team2DownColor" : colors["team2DownColor"],
+                "leftSideHighColor" : colors["leftSideHighColor"],
+                "leftSideDownColor" : colors["leftSideDownColor"],
+                "rightSideHighColor" : colors["rightSideHighColor"],
+                "rightSideDownColor" : colors["rightSideDownColor"],
                 "team1Left" : True,
-                "opacityHighSiteTeam1" : opacities["opacityHighSiteTeam1"],
-                "opacityDownSiteTeam1" : opacities["opacityDownSiteTeam1"],
-                "opacityHighSiteTeam2" : opacities["opacityHighSiteTeam2"],
-                "opacityDownSiteTeam2" : opacities["opacityDownSiteTeam2"]}
+                "leftSideHighColorOpacity" : opacities["leftSideHighColorOpacity"],
+                "leftSideDownColorOpacity" : opacities["leftSideDownColorOpacity"],
+                "rightSideHighColorOpacity" : opacities["rightSideHighColorOpacity"],
+                "rightSideDownColorOpacity" : opacities["rightSideDownColorOpacity"]}
                 , type = "updateData")
             sleep(0.1)
 
     def __getColors(self):
-        colors = {"team1HighColor" : "", "team1DownColor" : "",\
-                  "team2HighColor" : "", "team2DownColor" : ""}
+        colors = {"leftSideHighColor" : "", "leftSideDownColor" : "",\
+                  "rightSideHighColor" : "", "rightSideDownColor" : ""}
         for team, nestedDict in self.playerPositions.items():
             for player, position in nestedDict.items():
                 if 1 == position:
-                    colors["team1HighColor"] = self.playerColors[team][player]
+                    colors["leftSideHighColor"] = self.playerColors[team][player]
                 elif 2 == position:
-                    colors["team1DownColor"] = self.playerColors[team][player]
+                    colors["leftSideDownColor"] = self.playerColors[team][player]
                 elif 3 == position:
-                    colors["team2DownColor"] = self.playerColors[team][player]
+                    colors["rightSideDownColor"] = self.playerColors[team][player]
                 elif 4 == position:
-                    colors["team2HighColor"] = self.playerColors[team][player]
+                    colors["rightSideHighColor"] = self.playerColors[team][player]
         for key, color in colors.items():
             colors[key] = color.capitalize()
         return colors
 
     def __getOpacities(self):
-        opacities = {"opacityHighSiteTeam1" : 0.2, "opacityDownSiteTeam1" : 0.2,\
-                     "opacityHighSiteTeam2" : 0.2, "opacityDownSiteTeam2" : 0.2}
+        opacities = {"leftSideHighColorOpacity" : 0.2, "leftSideDownColorOpacity" : 0.2,\
+                     "rightSideHighColorOpacity" : 0.2, "rightSideDownColorOpacity" : 0.2}
         servePosition = self.getAbsoluteServePosition()
         if 1 == servePosition:
-            opacities["opacityHighSiteTeam1"] = 1
+            opacities["leftSideHighColorOpacity"] = 1
         elif 2 == servePosition:
-            opacities["opacityDownSiteTeam1"] = 1
+            opacities["leftSideDownColorOpacity"] = 1
         elif 3 == servePosition:
-            opacities["opacityDownSiteTeam2"] = 1
+            opacities["rightSideHighColorOpacity"] = 1
         elif 4 == servePosition:
-            opacities["opacityHighSiteTeam2"] = 1
+            opacities["rightSideDownColorOpacity"] = 1
         return opacities
 
-    def __getOpacitiesForBlink(self):
+    def __getOpacitiesForBlink(self): #TODO: testen
         opacitiesForBlink = self.__getOpacities()
         teamWhichScored = self.gameState()["lastChanged"]
         if teamWhichScored is not None:
