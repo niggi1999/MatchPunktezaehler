@@ -3,6 +3,9 @@ from .abstractModel import AbstractModel
 
 from typing import Callable
 class DialogModel(AbstractModel):
+    """
+    A model which represents a dialog
+    """
     def __init__(self, site):
         self.__site = site
         self.__tableModel = TableFactory.create("dialog")

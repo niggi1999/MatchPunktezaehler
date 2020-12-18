@@ -5,6 +5,11 @@ from copy import deepcopy
 from typing import Dict, Callable
 
 class SiteModel(AbstractModel):
+    """
+    A Model, which represents a Site
+
+    The Site contains a table, a nextButton and a previous Button.
+    """
     def __init__(self, siteConfig, testSite = None):
         self.__config = siteConfig
         self.__setInitialValues()

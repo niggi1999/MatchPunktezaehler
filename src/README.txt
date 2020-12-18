@@ -33,7 +33,13 @@ Browser:
 
 
 Raspberry:
-    Static IP: 192.168.178.71
+    Static IP: 192.168.178.72
+    
+	
+    Auf Raspberry redis-server mit sudo apt-get install redis-server installieren
+    redis-server aus /MatchPunktezaehler/src/flask_sse_project/requirements.txt endfernen
+    In /MatchPunktezaehler/src/flask_sse_project/frontend/src/App.js an zwei Stellen localhost mit Rapberry Ad-hoc-Wlan-Adresse(192.168.4.1) ersetzen
+
     In app:
         __init__.py
             app.config.from_object('config.DevConfig')
@@ -50,7 +56,8 @@ Raspberry:
 	    vorher: npm run build
 	    sudo serve -s -n build -l 3000
 
-    Auf Raspberry redis-server mit sudo apt-get install redis-server installieren
+    
+   
 
     export FLASK_APP=flaskr      Nur mit development server nötig(nicht mit gunicorn)
     Proxy Gunicorn from Webserver
@@ -115,7 +122,10 @@ wpa_key_mgmt=WPA-PSK
 wpa_pairwise=TKIP
 rsn_pairwise=CCMP
 
+
 Interfaces:
+nur auf Ubuntu:
+(
 Wechsel auf interfaces datei :
 https://linuxconfig.org/how-to-switch-back-networking-to-etc-network-interfaces-on-ubuntu-20-04-focal-fossa-linux
 $ sudo apt update
@@ -125,6 +135,7 @@ Vermutlich nicht nötig($ sudo dpkg -P cloud-init
 $ sudo rm -fr /etc/cloud/)
 
 $ sudo systemctl disable --now systemd-resolved
+)
 
 Interfaces konfigurieren:
 
@@ -164,10 +175,11 @@ Server und Frontend automatisch starten:
 
 in Matchcounter/src
 chmod +777 startscript.sh
+
 sudo crontab -e
 
 folgendes hinzufügen:
-@reboot cd /home/pi/MatchPunktezaehler/src(phad zu startscript.sh) && ./startscript.sh
+@reboot bash /home/pi/MatchPunktezaehler/src/startscript.sh
 
 
  

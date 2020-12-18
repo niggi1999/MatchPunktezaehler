@@ -5,6 +5,9 @@ from typing import List, Dict, Type
 from .config import TableConfig
 
 class TableModel():
+    """
+    A model, which represents a table
+    """
     def __init__(self, site, config: Type[TableConfig]):
         self.__config = config
         self.__startCursor = self.__config.getStartCursor()
