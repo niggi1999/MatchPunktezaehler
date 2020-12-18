@@ -10,14 +10,14 @@ function Init (props) {
 
     switch(props.data.connectedController) {
         case 0:
-            message = <h1 className="message">There is no connected Controller. Check your Bluetooth-Connection</h1>;
+            message = <h1 className="message">There is no connected Controller. Check your Bluetooth-Connection.</h1>;
             break;
         case 1:
-            message = <h1 className="message">There is one connected Controller</h1>;
+            message = <h1 className="message">There is one connected Controller.</h1>;
             fowardButtonActive = true;
             break;
         case 2:
-            message = <h1 className="message">There are two connected Controllers</h1>;
+            message = <h1 className="message">There are two connected Controllers.</h1>;
             fowardButtonActive = true;
             break;
         default:

@@ -6,7 +6,7 @@ import ChooseField from "./chooseField"
 function GameMenu (props) {
 
     let fowardButtonActive = false;
-    let message = <h1>"Choose the Game you want to play"</h1>;
+    let message = <h1>Choose the Game you want to play.</h1>;
 
     if(props.activeChooseField) {
         fowardButtonActive = true;

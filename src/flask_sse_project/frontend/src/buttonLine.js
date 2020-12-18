@@ -20,7 +20,6 @@ function ButtonLine(props) {
         borderWidth: "10px",
         borderColor: "red",
         fontSize: "xx-large",
-        position: "absolute",
         left: "0",
     };
 
