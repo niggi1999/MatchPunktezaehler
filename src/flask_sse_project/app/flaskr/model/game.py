@@ -42,19 +42,63 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         """
         Initialises the objects attributes.
         """
-        self.counter = {"Team1" : 0, "Team2" : 0}
-        self.lastChanged = None
-        self.wonRounds = {"Team1" : 0, "Team2" : 0}
-        self.wonGames = {"Team1" : 0, "Team2" : 0}
-        self.currentMaxPoints = self.maxPointsWithoutOvertime
-        self.sidesChanged = False
-        self.playerColors = playerColors
-        self.playerPositions = {"Team1" : {"Player1" : 1, "Player2": 2}, "Team2" : {"Player1" : 3, "Player2": 4}}
-        self.servePosition = 0
-        self._undoStack = []
-        self._redoStack = []
-        self.__observers = []
+        initialGameState = {
+            "counter" : {"Team1" : 0, "Team2" : 0},
+            "lastChanged" : None,
+            "wonRounds" : {"Team1" : 0, "Team2" : 0},
+            "wonGames" : {"Team1" : 0, "Team2" : 0},
+            "currentMaxPoints" : self.maxPointsWithoutOvertime,
+            "sidesChanged" : False,
+            "playerPositions" : {"Team1" : {"Player1" : 1, "Player2": 2}, "Team2" : {"Player1" : 3, "Player2": 4}},
+            "servePosition" : 0,
+            "playerColors" : playerColors,
+            "undoStack" : [],
+            "redoStack" : [],
+            "observers" : []}
+        self.setGameState(initialGameState)
+
+    def gameState(self):
+        """
+        Returns the current game state.
+
+        Returns:
+
+            gameState (dict): Contains the current counter, wonRound, wonGames and currentMaxPoints.
+        """
+        gameState = {"counter" : {"Team1" : self.counter["Team1"], "Team2" : self.counter["Team2"]},\
+                     "lastChanged" : self.lastChanged,\
+                     "wonRounds" : {"Team1" : self.wonRounds["Team1"], "Team2" : self.wonRounds["Team2"]},\
+                     "wonGames" : {"Team1" : self.wonGames["Team1"], "Team2" : self.wonGames["Team2"]},\
+                     "currentMaxPoints" : self.currentMaxPoints,\
+                     "sidesChanged" : self.sidesChanged,\
+                     "playerPositions" : self.playerPositions,\
+                     "servePosition" : self.servePosition,\
+                     "playerColors" : self.playerColors,\
+                     "undoStack" : self._undoStack,\
+                     "redoStack" : self._redoStack,\
+                     "observers" : self.__observers,\
+                     "gameName" : self.__getGameName()}
+        return gameState
+
+    def setGameState(self, gameState):
+        self.counter = gameState["counter"]
+        self.lastChanged = gameState["lastChanged"]
+        self.wonRounds = gameState["wonRounds"]
+        self.wonGames = gameState["wonGames"]
+        self.currentMaxPoints = gameState["currentMaxPoints"]
+        self.sidesChanged = gameState["sidesChanged"]
+        self.playerPositions = gameState["playerPositions"]
+        self.servePosition = gameState["servePosition"]
+        self.playerColors = gameState["playerColors"]
+        self._undoStack = gameState["undoStack"]
+        self._redoStack = gameState["redoStack"]
+        self.__observers = gameState["observers"]
         self.updateModel()
+
+    def __getGameName(self):
+        className = self.__class__.__name__
+        gameName = className[0].lower() + className[1:]
+        return gameName
 
     def right(self):
         self.counterUp(teamNumber = 2)
@@ -100,10 +144,17 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         winningTeam = "Team{}".format(teamNumber)
         self.counter[winningTeam] += 1
         self.lastChanged = winningTeam
-        #TODO: Abfrage 3. Round und eins der Teams 11 Punkte (Darf nur einmal zutreffen), Seitenwechsel: self.sidesChanged evtl ändern, wenn das in der Tabelle ausgewählt wird
+        self.checkForSideChangeRequest()
         self.updateModel()
         if (self.isRoundOver()):
             self.newRound(teamNumber)
+
+    def checkForSideChangeRequest(self):
+        inThirdRound = self.wonRounds["Team1"] == 1 and self.wonRounds["Team2"] == 1
+        oneTeamAt11AndOtherTeamUnder11 = (self.counter["Team1"] == 11 and self.counter["Team2"] < 11) or\
+                                         (self.counter["Team2"] == 11 and self.counter["Team1"] < 11)
+        if inThirdRound and oneTeamAt11AndOtherTeamUnder11:
+            self.__notifySideChangeRequest()
 
     def newRound(self, winningTeamNumber):
         """
@@ -185,24 +236,6 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         """
         pass
 
-    def gameState(self):
-        """
-        Returns the current game state.
-
-        Returns:
-
-            gameState (dict): Contains the current counter, wonRound, wonGames and currentMaxPoints.
-        """
-        gameState = {"counter" : {"Team1" : self.counter["Team1"], "Team2" : self.counter["Team2"]},\
-                     "lastChanged" : self.lastChanged,\
-                     "wonRounds" : {"Team1" : self.wonRounds["Team1"], "Team2" : self.wonRounds["Team2"]},\
-                     "wonGames" : {"Team1" : self.wonGames["Team1"], "Team2" : self.wonGames["Team2"]},\
-                     "currentMaxPoints" : self.currentMaxPoints,\
-                     "sidesChanged" : self.sidesChanged,\
-                     "playerPositions" : self.playerPositions,\
-                     "servePosition" : self.servePosition}
-        return gameState
-
     def undo(self):
         """
         Undoes the last event.
@@ -248,10 +281,15 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
             self.servePosition = nextGameState["servePosition"]
 
     def attach(self, observer):
-        self.__observers.append(observer)
+        if observer not in self.__observers:
+            self.__observers.append(observer)
 
     def detach(self, observer):
         self.__observers.remove(observer)
+
+    def __notifySideChangeRequest(self):
+        for observer in self.__observers:
+            observer.changeModelToChangeSidesDialog()
 
     def __notifyNewGame(self):
         for observer in self.__observers:

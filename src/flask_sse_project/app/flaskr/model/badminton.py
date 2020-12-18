@@ -87,10 +87,14 @@ class Badminton(Game):
             True: If the current game is over.
             False: If the current game is not over.
         """
-        if (self.roundsInAGame == self.wonRounds["Team1"] or self.roundsInAGame == self.counter["Team2"]):
+        if (self.roundsInAGame == self.wonRounds["Team1"] or self.roundsInAGame == self.wonRounds["Team2"]):
             return True
         else:
             return False
+
+    def changeSides(self):
+        self.sidesChanged = not self.sidesChanged
+        self.updateModel()
     
     def updateModel(self):
         """

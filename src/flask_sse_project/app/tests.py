@@ -272,6 +272,10 @@ class TestBadminton(unittest.TestCase):
         badminton.counterUp(1)
         self.assertEqual(badminton.getAbsoluteServePosition(), 3)
 
+    def testGetGameName(self):
+        badminton = GameFactory.create("badminton")
+        gameName = badminton._Badminton__getGameName()
+        self.assertEqual(gameName, "badminton")
 
 class TestGameFactoy(unittest.TestCase):
     def testGameFactoryWorks(self):

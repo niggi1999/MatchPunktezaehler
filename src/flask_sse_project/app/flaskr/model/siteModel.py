@@ -217,7 +217,8 @@ class SiteModel(AbstractModel):
             self.__activeSiteElement = self.__startElementNewSite
 
     def attach(self, observer):
-        self.__observers.append(observer)
+        if observer not in self.__observers:
+            self.__observers.append(observer)
 
     def detach(self, observer):
         self.__observers.remove(observer)

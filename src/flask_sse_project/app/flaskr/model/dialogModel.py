@@ -9,12 +9,10 @@ class DialogModel(AbstractModel):
         self.__observers = []
 
     def right(self):
-        if self.__tableModel.goRight():
-            self._notifyUpdate()
+        self.__tableModel.goRight()
 
     def left(self):
-        if self.__tableModel.goLeft():
-            self._notifyUpdate()
+        self.__tableModel.goLeft()
 
     def up(self):
         pass
@@ -50,7 +48,8 @@ class DialogModel(AbstractModel):
         return cursorSse
 
     def attach(self, observer):
-        self.__observers.append(observer)
+        if observer not in self.__observers:
+            self.__observers.append(observer)
 
     def detach(self, observer):
         self.__observers.remove(observer)
@@ -65,7 +64,7 @@ class DialogModel(AbstractModel):
                 observer.changeModelToFirstSite()
         elif "changeSidesDialog" == self.__site:
             for observer in self.__observers:
-                observer.changeModelToGame()
+                observer.changeModelToGame(changeSidesRequested  = True)
 
     def _notifyCancel(self):
         for observer in self.__observers:
@@ -78,10 +77,15 @@ class DialogModel(AbstractModel):
 
     def updateNewGameDialog(self, sse, bluetoothController):
         del bluetoothController
+        print("IN UPDATE_NEW_GAME_DIALOG")
         sse.publish({"status": "leaveGame",
-            "cursorElement" : self.getCursorForSse()})
+            "cursorElement" : self.getCursorForSse()},
+            type = "updateData")
+        print("SSE DICT")
+        print({"status": "leaveGame", "cursorElement" : self.getCursorForSse()})
 
-    def updateSideChangeDialog(self, sse, bluetoothController):
+    def updateChangeSidesDialog(self, sse, bluetoothController):
         del bluetoothController
-        sse.publish({"status": "changeSides",
-            "cursorElement" : self.getCursorForSse()})
+        sse.publish({"status": "changeSide",
+            "cursorElement" : self.getCursorForSse()},
+            type = "updateData")

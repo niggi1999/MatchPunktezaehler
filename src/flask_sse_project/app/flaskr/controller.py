@@ -42,7 +42,7 @@ class Controller(Blueprint):
         Blueprint.__init__(self, name, import_Name)
         self.sse = sse #TODO: In SseConroller verschieben
         self.model = None
-        self.lastGame= None
+        self.lastGameState = None
         self.bluetoothTread = threading.Thread(target = self.setupBluetoothThread,\
                                                args = (bluetoothController,), daemon = True)
         self.bluetoothTread.start()
@@ -109,31 +109,41 @@ class Controller(Blueprint):
         if "init" == self.model.getCurrentSite():
             await self.updateSSE("updateSite")
 
-    async def changeModelToGame(self):
+    def changeModelToGame(self, changeSidesRequested = False):
         self.model.detach(self)
-        gameName = self.model.getGameName()
-        playerColors = self.model.getPlayerColors()
-        self.model = GameFactory.create(gameName, playerColors)
+        if self.lastGameState is None:
+            gameName = self.model.getGameName()
+            playerColors = self.model.getPlayerColors()
+            self.model = GameFactory.create(gameName, playerColors)
+        else:
+            self.model = GameFactory.create(self.lastGameState["gameName"])
+            self.model.setGameState(self.lastGameState)
+            self.lastGameState = None
+        if changeSidesRequested:
+            self.model.changeSides()
+
         self.model.attach(self)
-        if self.lastGame is not None:
-            self.model = self.lastGame
 
     def changeModelToFirstSite(self):
+        self.lastGameState = None
         if self.model is not None:
             self.model.detach(self)
         self.model = SiteModel(SiteProdConfig)
         self.model.attach(self)
 
     def changeModelToLeaveGameDialog(self):
-        self.lastGame = deepcopy(self.model)
+        self.lastGameState = self.model.gameState()
         self.model = DialogModel("newGameDialog")
         self.model.attach(self)
 
     def changeModelToChangeSidesDialog(self):
-        self.lastGame = deepcopy(self.model)
+        self.lastGameState = self.model.gameState()
         self.model = DialogModel("changeSidesDialog")
         self.model.attach(self)
 
     def updateSite(self):
+        print("IN UPDATE SITE")
         publishMethod = self.model.getPublishMethod()
+        print("PUBLISH METHOD")
+        print(publishMethod)
         publishMethod(self.sse, self.bluetoothController)
