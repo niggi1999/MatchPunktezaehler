@@ -8,7 +8,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
     """
     Abstract class that represents a game.
 
-    When subclassed the class attributes and the methods isRoundOver() isGameOver() must be overridden.
+    When subclassed the class attributes and the methods isRoundOver() and isGameOver() must be overridden.
 
     Class Attributes:
 
@@ -77,7 +77,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
                      "undoStack" : self._undoStack,\
                      "redoStack" : self._redoStack,\
                      "observers" : self.__observers,\
-                     "gameName" : self.__getGameName()}
+                     "gameName" : self._getGameName()}
         return gameState
 
     def setGameState(self, gameState):
@@ -95,7 +95,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         self.__observers = gameState["observers"]
         self.updateModel()
 
-    def __getGameName(self):
+    def _getGameName(self):
         className = self.__class__.__name__
         gameName = className[0].lower() + className[1:]
         return gameName
@@ -260,7 +260,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
 
     def redo(self):
         """
-
+        Redoes the last Event
 
         Raises:
 
@@ -366,7 +366,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         return opacities
 
     '''
-    def __getOpacitiesForBlink(self): #TODO: testen
+    def __getOpacitiesForBlink(self):
         opacitiesForBlink = self.__getOpacities()
         teamWhichScored = self.gameState()["lastChanged"]
         if teamWhichScored is not None:

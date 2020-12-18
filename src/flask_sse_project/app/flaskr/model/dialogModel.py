@@ -77,12 +77,9 @@ class DialogModel(AbstractModel):
 
     def updateNewGameDialog(self, sse, bluetoothController):
         del bluetoothController
-        print("IN UPDATE_NEW_GAME_DIALOG")
         sse.publish({"status": "leaveGame",
             "cursorElement" : self.getCursorForSse()},
             type = "updateData")
-        print("SSE DICT")
-        print({"status": "leaveGame", "cursorElement" : self.getCursorForSse()})
 
     def updateChangeSidesDialog(self, sse, bluetoothController):
         del bluetoothController

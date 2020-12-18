@@ -25,7 +25,6 @@ class SiteModel(AbstractModel):
         self.__startElementNewSite = self.__config.getStartElementNewSite()
         self.__firstSiteStartElement = self.__config.getFirstSiteStartElement()
         self.__observers = []
-        self.__loop = asyncio.get_event_loop() #TODO:
 
     def __buildSelectedButtonsStore(self):
         self.selectedButtonsStore = {}
@@ -67,8 +66,10 @@ class SiteModel(AbstractModel):
         gameName = gameButton[4:]
         return gameName
 
-    def getPlayerColors(self) -> Dict[str, str]: #TODO: Refaktorieren
+    def getPlayerColors(self) -> Dict[str, str]:
         """
+        Returns the selected Colors
+
         Should only be called when leaving the last site
         """
         playerColors = {"Team1" : {"Player1" : "", "Player2" : ""}, "Team2" : {"Player1" : "", "Player2" : ""}}
@@ -196,7 +197,7 @@ class SiteModel(AbstractModel):
             currentSite = "colorMenu"
         return currentSite
 
-    def getPlayMode(self): #TODO: Verwenden
+    def getPlayMode(self):
         modeButtonCoordinates = self.selectedButtonsStore["playerMenu"][0]
         mode = self.__tableModel.getButtonName(modeButtonCoordinates, "playerMenu")
         return mode
@@ -231,8 +232,6 @@ class SiteModel(AbstractModel):
         for observer in self.__observers:
             await observer.updateSSE()
 
-    #Methode die updated Zurückgeben, Methode bekommt sse und bluetooth Controller übergeben
-    #TODO: Alles weiter unten refaktorieren
     def getPublishMethod(self) -> Callable:
         siteCapitalized = self.__site[0].upper() + self.__site[1:]
         publishMethod = getattr(self, "update" + siteCapitalized + "Site")
@@ -251,8 +250,6 @@ class SiteModel(AbstractModel):
         activeChooseField = selectedButtons[0]["column"] if selectedButtons else None
         activeElement = self.getActiveElementForSse()
         cursorElement = activeElement.split()[0]
-        print("CURSOR")
-        print(cursorElement)
         columnContents = self.__tableModel.getColumnContents()
         sse.publish({"status": "playerMenu",
         "cursorElement" : cursorElement,
@@ -271,50 +268,45 @@ class SiteModel(AbstractModel):
     def updateColorMenuSite(self, sse, bluetoothController, playModeInteger):
         del bluetoothController
         teamColors = self.__getTeamColors()
-        activeElement = self.getActiveElementForSse()
-        activeElementHasMoreThanOneWord = 1 < len(activeElement.split())
-        columnActiveElement = activeElement.split()[1] if activeElementHasMoreThanOneWord else activeElement
-        rowActiveElement = activeElement.split()[0] if activeElementHasMoreThanOneWord else activeElement
-        if "nextButton" == rowActiveElement:
-            rowActiveElement = 1 * playModeInteger
-        elif "previousButton" == rowActiveElement:
-            rowActiveElement = 2 * playModeInteger
-        else:
-            rowActiveElement = rowActiveElement[-1]
-        try:
-            rowActiveElement = int(rowActiveElement)
-        except:
-            pass
-        print("COLOR1TEAM1")
-        print(teamColors["color1Team1"])
-        print("TABLEACTIVE")
-        print(rowActiveElement)
-        print("CURSOR")
-        print(columnActiveElement)
-        print("FIELD NAME")
-        print(self.__tableModel.getRowContents())
-        print("TEAM COLORS")
-        print(teamColors)
-        print({"status": "nameMenu", "cursorElement" : "orange", "playMode": playModeInteger, "fieldNames" : self.__tableModel.getRowContents(), "color1Team1": teamColors["color1Team1"], "color2Team1": teamColors["color2Team1"], "color1Team2": teamColors["color1Team2"], "color2Team2": teamColors["color2Team2"], "tableActive" : rowActiveElement})
+        rowAndColumnActiveElement = self.__getRowAndColumnActiveElement()
+        rowActiveElement = rowAndColumnActiveElement["rowActiveElement"]
+        columnActiveElement = rowAndColumnActiveElement["columnActiveElement"]
+        columnActiveElement = self.__computeColumnActiveElement(columnActiveElement, playModeInteger)
         sse.publish({"status": "nameMenu",
-        "cursorElement" : columnActiveElement,
+        "cursorElement" : rowActiveElement,
         "playMode": playModeInteger,
         "fieldNames" : self.__tableModel.getRowContents(),
         "color1Team1": teamColors["color1Team1"], "color2Team1": teamColors["color2Team1"],
         "color1Team2": teamColors["color1Team2"], "color2Team2": teamColors["color2Team2"],
-        "tableActive" : rowActiveElement}, #TODO: Tauschen
+        "tableActive" : columnActiveElement},
         type = "updateData")
+
+    def __getRowAndColumnActiveElement(self) -> Dict[str, str]:
+        activeElement = self.getActiveElementForSse()
+        activeElementHasMoreThanOneWord = 1 < len(activeElement.split())
+        rowActiveElement = activeElement.split()[1] if activeElementHasMoreThanOneWord else activeElement
+        columnActiveElement = activeElement.split()[0] if activeElementHasMoreThanOneWord else activeElement
+        return {"rowActiveElement" : rowActiveElement, "columnActiveElement" : columnActiveElement}
+
+    def __computeColumnActiveElement(self, columnActiveElement, playModeInteger):
+        if "nextButton" == columnActiveElement:
+            columnActiveElement = 1 * playModeInteger
+        elif "previousButton" == columnActiveElement:
+            columnActiveElement = 2 * playModeInteger
+        else:
+            columnActiveElement = columnActiveElement[-1]
+        try:
+            columnActiveElement = int(columnActiveElement)
+        except:
+            pass
+        return columnActiveElement
+
 
     def __getTeamColors(self) -> Dict[str, str]:
         color1Team1 = color2Team1 = color1Team2 = color2Team2 = None
         selectedButtons = self.getSelectedButtonsCurrentSiteVerbose()
-        print("SELECTED BUTTONS")
-        print(selectedButtons)
         for button in selectedButtons:
-            print("IN FOR")
             columnName = button["column"]
-            print("COLUMN NAME")
-            print(columnName)
             if "team1" == columnName:
                 color1Team1 = color2Team1 = button["row"]
             elif "team2" == columnName:

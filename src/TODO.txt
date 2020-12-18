@@ -1,14 +1,4 @@
-Eine Model Klasse für jede Seite im Frontend
-    mit getState()
-Abrufen im Controller und publishen auf sse stream (jeweils mit anderem type)
-    Alternativen:
-        Unterklassen von Controller mit eigener Interpretation
-        Abfrage in read Bluetooth je nachdem in welchen state
-
 Den gewinnenden Punkt noch anzeigen (3 Sekunden ca.)
-
-Mehrere Geräte
-
 
 Seite mit Punkt blinkt auf-->Was sich geändert hat auf SSE stream publishen
                                 Wenn undo/redo dann gesamten Bildschirm blinken lassen

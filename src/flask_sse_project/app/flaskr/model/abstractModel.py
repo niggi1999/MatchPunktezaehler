@@ -1,8 +1,18 @@
 from abc import ABC, abstractmethod
 
 class AbstractModel(ABC):
+    """
+    Abstract Base Class for all Models
+
+    When subclassed all methods must be implemented.
+    """
     @abstractmethod
     def right(self):
+        """
+        Computes the press of the right button
+
+        Must be implemented in subclass.
+        """
         pass
 
     @abstractmethod

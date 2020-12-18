@@ -1,5 +1,5 @@
 from flask import Blueprint
-from .bluetooth_controller import BluetoothController
+from .bluetoothController import BluetoothController
 from .model import SiteModel, AbstractModel, GameFactory, SiteProdConfig, DialogModel
 
 import httpx
@@ -40,7 +40,7 @@ class Controller(Blueprint):
             sse (ServerSentEventsBlueprint): The Object for sending Server Sent Events.
         """
         Blueprint.__init__(self, name, import_Name)
-        self.sse = sse #TODO: In SseConroller verschieben
+        self.sse = sse
         self.model = None
         self.lastGameState = None
         self.bluetoothTread = threading.Thread(target = self.setupBluetoothThread,\
@@ -76,7 +76,7 @@ class Controller(Blueprint):
         while True:
             pressedButton = await self.bluetoothController.readBluetooth()
             if ("left" == pressedButton):
-                self.model.left() #TODO:rückgabe
+                self.model.left()
             elif ("right" == pressedButton):
                 self.model.right()
             elif ("down" == pressedButton):
@@ -88,7 +88,7 @@ class Controller(Blueprint):
             else:
                 continue
 
-            await self.updateSSE("updateSite") #TODO: Nur zum Test, später nur aus SseController heraus, SseController zum Observer von siteModel machen
+            await self.updateSSE("updateSite")
 
     @staticmethod
     async def updateSSE(path):
@@ -142,8 +142,5 @@ class Controller(Blueprint):
         self.model.attach(self)
 
     def updateSite(self):
-        print("IN UPDATE SITE")
         publishMethod = self.model.getPublishMethod()
-        print("PUBLISH METHOD")
-        print(publishMethod)
         publishMethod(self.sse, self.bluetoothController)

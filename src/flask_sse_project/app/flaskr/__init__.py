@@ -1,7 +1,7 @@
 from .controller import Controller
 from .model import TableTestConfig, SiteTestConfig, TableModel, TableFactory, SiteModel,\
                        Badminton, ServePosition, GameFactory, DialogModel
-from .bluetooth_controller import BluetoothController
+from .bluetoothController import BluetoothController
 
 from flask import Flask
 
@@ -24,7 +24,7 @@ def create_controller(sse, testBluetoothController = BluetoothController()):
 
     @con.route('/updateSite')
     def updateSite():
-        con.updateSite() #TODO: Auf SseController ummstellen
+        con.updateSite()
         return 'Site updated'
 
     return(con)

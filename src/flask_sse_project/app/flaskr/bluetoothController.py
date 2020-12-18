@@ -1,3 +1,5 @@
+from .bluetoothCoupling import couple
+
 import evdev
 import asyncio
 
@@ -51,7 +53,7 @@ class BluetoothController:
         """
         self.__observers.remove(observer)
 
-    async def notify(self):
+    async def notify(self): #TODO: Notiy when client connects (Needs frontend Server Proxy)
         """
         Calls updateDeviceCount() for all observers
         """
@@ -74,12 +76,13 @@ class BluetoothController:
 
         If a device is found, prints "Device found" and the path to the device
         """
+        couple()
         devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
         for device in devices:
             if ("SmartRemote Consumer Control" == device.name):
                 self.device = evdev.InputDevice(device.path)
                 print("Device found")
-                await self.notify() #TODO: Notiy only when client connects, Device is found or Device disconnects (Needs frontend Server Proxy)
+                await self.notify()
 
     async def readBluetooth(self):
         """
