@@ -10,7 +10,7 @@ constructor(){
         data: {status: 'init', //always needed
           cursorElement: "forwardButton", //always needed
 
-          //connectedController: 1, //for initSite
+          connectedController: 0, //for initSite
           
           //activeChooseField: "1vs1", //for PlayerMenuSite
           //fieldNames: ["1vs1", "2vs2"], //for PlayerMenuSite
