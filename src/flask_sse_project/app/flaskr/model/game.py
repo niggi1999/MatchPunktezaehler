@@ -315,47 +315,24 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         deviceCount = bluetoothController.deviceCount()
         colors = self.__getColors()
         opacities = self.__getOpacities()
-        opacitiesForBlink = self.__getOpacitiesForBlink()
-        timesToBlink = 2
-        for _ in range(timesToBlink):
-            sse.publish({"status": "game",
-                "connectedController" : deviceCount,
-                "counterTeam1": gameState["counter"]["Team1"],
-                "counterTeam2": gameState["counter"]["Team2"],
-                "roundsTeam1" : gameState["wonRounds"]["Team1"],
-                "roundsTeam2" : gameState["wonRounds"]["Team2"],
-                "gamesTeam1": gameState["wonGames"]["Team1"],
-                "gamesTeam2": gameState["wonGames"]["Team2"],
-                "leftSideHighColor" : colors["leftSideHighColor"],
-                "leftSideDownColor" : colors["leftSideDownColor"],
-                "rightSideHighColor" : colors["rightSideHighColor"],
-                "rightSideDownColor" : colors["rightSideDownColor"],
-                "team1Left" : not self.sidesChanged,
-                "leftSideHighColorOpacity" : opacitiesForBlink["leftSideHighColorOpacity"],
-                "leftSideDownColorOpacity" : opacitiesForBlink["leftSideDownColorOpacity"],
-                "rightSideHighColorOpacity" : opacitiesForBlink["rightSideHighColorOpacity"],
-                "rightSideDownColorOpacity" : opacitiesForBlink["rightSideDownColorOpacity"]}
-                , type = "updateData")
-            sleep(0.1) #TODO:
-            sse.publish({"status": "game",
-                "connectedController" : deviceCount,
-                "counterTeam1": gameState["counter"]["Team1"],
-                "counterTeam2": gameState["counter"]["Team2"],
-                "roundsTeam1" : gameState["wonRounds"]["Team1"],
-                "roundsTeam2" : gameState["wonRounds"]["Team2"],
-                "gamesTeam1": gameState["wonGames"]["Team1"],
-                "gamesTeam2": gameState["wonGames"]["Team2"],
-                "leftSideHighColor" : colors["leftSideHighColor"],
-                "leftSideDownColor" : colors["leftSideDownColor"],
-                "rightSideHighColor" : colors["rightSideHighColor"],
-                "rightSideDownColor" : colors["rightSideDownColor"],
-                "team1Left" : not self.sidesChanged,
-                "leftSideHighColorOpacity" : opacities["leftSideHighColorOpacity"],
-                "leftSideDownColorOpacity" : opacities["leftSideDownColorOpacity"],
-                "rightSideHighColorOpacity" : opacities["rightSideHighColorOpacity"],
-                "rightSideDownColorOpacity" : opacities["rightSideDownColorOpacity"]}
-                , type = "updateData")
-            sleep(0.1)
+        sse.publish({"status": "game",
+            "connectedController" : deviceCount,
+            "counterTeam1": gameState["counter"]["Team1"],
+            "counterTeam2": gameState["counter"]["Team2"],
+            "roundsTeam1" : gameState["wonRounds"]["Team1"],
+            "roundsTeam2" : gameState["wonRounds"]["Team2"],
+            "gamesTeam1": gameState["wonGames"]["Team1"],
+            "gamesTeam2": gameState["wonGames"]["Team2"],
+            "leftSideHighColor" : colors["leftSideHighColor"],
+            "leftSideDownColor" : colors["leftSideDownColor"],
+            "rightSideHighColor" : colors["rightSideHighColor"],
+            "rightSideDownColor" : colors["rightSideDownColor"],
+            "team1Left" : not self.sidesChanged,
+            "leftSideHighColorOpacity" : opacities["leftSideHighColorOpacity"],
+            "leftSideDownColorOpacity" : opacities["leftSideDownColorOpacity"],
+            "rightSideHighColorOpacity" : opacities["rightSideHighColorOpacity"],
+            "rightSideDownColorOpacity" : opacities["rightSideDownColorOpacity"]}
+            , type = "updateData")
 
     def __getColors(self):
         colors = {"leftSideHighColor" : "", "leftSideDownColor" : "",\
@@ -388,6 +365,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
             opacities["rightSideHighColorOpacity"] = 1
         return opacities
 
+    '''
     def __getOpacitiesForBlink(self): #TODO: testen
         opacitiesForBlink = self.__getOpacities()
         teamWhichScored = self.gameState()["lastChanged"]
@@ -396,3 +374,4 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
                 if field.endswith(teamWhichScored):
                     opacitiesForBlink[field] = 0
         return opacitiesForBlink
+    '''
