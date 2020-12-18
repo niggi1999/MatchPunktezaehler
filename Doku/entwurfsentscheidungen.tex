@@ -48,7 +48,7 @@ Funktionalitäten bietet. Ein weiterer Grund für Flask war die dafür zur Verf�
 flask-sse\grqq{}, die die Arbeit mit Server-Sent-Events vereinfacht. \newline Die Server-Sent-Events sind essenziell
 für die Kommunikation mit dem Frontend, da die Seite nicht andauernd neu geladen werden soll. Die \glqq
 flask-sse\grqq{} Bibliothek funktioniert nur im Zusammenhang mit einem Flask Request Context. Es muss also zum
-auslösen eines SSE Events eine HTTP Anfrage vorliegen. Um diese Anfragen zu erstellen wird der HTTP-Client \glqq
+Auslösen eines SSE Events eine HTTP Anfrage vorliegen. Um diese Anfragen zu erstellen wird der HTTP-Client \glqq
 httpx\grqq{} verwendet. Dieser ist sehr populär und bietet die Möglichkeit asynchron Anfragen zu stellen. \newline
 Für die Bluetooth Kommunikation wird die Bibliothek \glqq evdev\grqq{} verwendet, da eine relativ einfache
 Möglichkeit bietet um asynchron Bluetooth Signale zu empfangen. Außerdem lässt sich einfach ein Gerät verbinden.
@@ -57,5 +57,5 @@ in der Standardbibliothek enthalten ist. \newline Alle Model Klassen erben von e
 abstractModel\grqq{}. Diese bietet eine Schnittstelle um empfangene Tastendrücke weiterzugeben. Wenn ein Objekt über
 die \glqq attach\grqq{} Methode subscribed hat, so wird es bei Änderungen im Model informiert. Anschließend kann mit
 \glqq getPublishMethod\grqq{} eine Methode erhalten werden, die die geänderten Daten auf den SSE-Stream published.
-\newline Die Bluetooth Kommunikation läuft in einem separaten Thread ab, da parallel auf Tastendrücke und neue
+\newline Die Bluetooth Kommunikation läuft in einem separaten Thread ab, da parallel auf Tastendrücke und auf neue
 HTTP Anfragen reagiert werden muss.
