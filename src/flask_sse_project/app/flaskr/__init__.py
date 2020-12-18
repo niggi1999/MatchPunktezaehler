@@ -8,8 +8,6 @@ from flask import Flask
 from flask_cors import CORS
 from flask_sse import sse
 
-import asyncio
-
 def create_controller(sse, testBluetoothController = BluetoothController()):
     """
     Factory Method, which creates a new controller with the given sse object
@@ -29,7 +27,7 @@ def create_controller(sse, testBluetoothController = BluetoothController()):
 
     return(con)
 
-def create_app(test_config=None):
+def create_app(test_config = None):
     """
     Factory Method, which creates a new flask app.
 
@@ -49,7 +47,7 @@ def create_app(test_config=None):
         app.config.from_mapping(test_config)
 
     with app.app_context():
-        app.register_blueprint(sse, url_prefix='/events')
-        app.register_blueprint(create_controller(sse), url_prefix='/con')
+        app.register_blueprint(sse, url_prefix = '/events')
+        app.register_blueprint(create_controller(sse), url_prefix = '/con')
 
     return app

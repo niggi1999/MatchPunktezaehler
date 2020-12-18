@@ -81,6 +81,9 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         return gameState
 
     def setGameState(self, gameState):
+        """
+        Sets the game to the given gameState
+        """
         self.counter = gameState["counter"]
         self.lastChanged = gameState["lastChanged"]
         self.wonRounds = gameState["wonRounds"]
@@ -96,29 +99,47 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         self.updateModel()
 
     def _getGameName(self):
+        """
+        Returns the name of the game
+        """
         className = self.__class__.__name__
         gameName = className[0].lower() + className[1:]
         return gameName
 
     def right(self):
+        """
+        Calls counterUp() for Team 2
+        """
         self.counterUp(teamNumber = 2)
 
     def left(self):
+        """
+        Calls counterUp() for Team 1
+        """
         self.counterUp(teamNumber = 1)
 
     def up(self):
+        """
+        trys to redo
+        """
         try:
             self.redo()
         except ValueError as error:
             print(error)
 
     def down(self):
+        """
+        trys to undo
+        """
         try:
             self.undo()
         except ValueError as error:
             print(error)
 
     async def ok(self):
+        """
+        calls __notifyNewGame
+        """
         self.__notifyNewGame()
 
     def counterUp(self, teamNumber):
@@ -150,6 +171,12 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
             self.newRound(teamNumber)
 
     def checkForSideChangeRequest(self):
+        """
+        Checks if a side change must be requested
+
+        Checks if the game is in Round 3 and one Team has 11 Points, if that is true
+        __notifySideChangeRequest will be called
+        """
         inThirdRound = self.wonRounds["Team1"] == 1 and self.wonRounds["Team2"] == 1
         oneTeamAt11AndOtherTeamUnder11 = (self.counter["Team1"] == 11 and self.counter["Team2"] < 11) or\
                                          (self.counter["Team2"] == 11 and self.counter["Team1"] < 11)
@@ -281,21 +308,40 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
             self.servePosition = nextGameState["servePosition"]
 
     def attach(self, observer):
+        """
+        Attaches a new Observer
+        """
         if observer not in self.__observers:
             self.__observers.append(observer)
 
     def detach(self, observer):
+        """
+        Removes a Observer.
+
+        Parameters:
+
+            observer (Controller): The observer to be removed.
+        """
         self.__observers.remove(observer)
 
     def __notifySideChangeRequest(self):
+        """
+        Calls changeModelToChangeSidesDialog in all observers
+        """
         for observer in self.__observers:
             observer.changeModelToChangeSidesDialog()
 
     def __notifyNewGame(self):
+        """
+        Calls changeModelToLeaveGameDialog in all observers
+        """
         for observer in self.__observers:
             observer.changeModelToLeaveGameDialog()
 
     async def _notifyUpdate(self):
+        """
+        Calls updateSSE in all observers
+        """
         for observer in self.__observers:
             await observer.updateSSE()
 
@@ -335,6 +381,9 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
             , type = "updateData")
 
     def __getColors(self):
+        """
+        Returns the colors mapped to the fields
+        """
         colors = {"leftSideHighColor" : "", "leftSideDownColor" : "",\
                   "rightSideHighColor" : "", "rightSideDownColor" : ""}
         for team, nestedDict in self.playerPositions.items():
@@ -352,6 +401,9 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         return colors
 
     def __getOpacities(self):
+        """
+        Returns the opacities mapped to the fields
+        """
         opacities = {"leftSideHighColorOpacity" : 0.2, "leftSideDownColorOpacity" : 0.2,\
                      "rightSideHighColorOpacity" : 0.2, "rightSideDownColorOpacity" : 0.2}
         servePosition = self.getAbsoluteServePosition()

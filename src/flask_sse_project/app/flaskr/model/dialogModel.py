@@ -48,10 +48,20 @@ class DialogModel(AbstractModel):
         return cursorSse
 
     def attach(self, observer):
+        """
+        Attaches a new Observer
+        """
         if observer not in self.__observers:
             self.__observers.append(observer)
 
     def detach(self, observer):
+        """
+        Removes a Observer.
+
+        Parameters:
+
+            observer (Controller): The observer to be removed.
+        """
         self.__observers.remove(observer)
 
     async def _notifyUpdate(self):

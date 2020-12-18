@@ -106,10 +106,16 @@ class Controller(Blueprint):
             print("")
 
     async def updateDeviceCount(self):
+        """
+        Updates the shown device count
+        """
         if "init" == self.model.getCurrentSite():
             await self.updateSSE("updateSite")
 
     def changeModelToGame(self, changeSidesRequested = False):
+        """
+        Changes the Model to a specific game
+        """
         self.model.detach(self)
         if self.lastGameState is None:
             gameName = self.model.getGameName()
@@ -125,6 +131,9 @@ class Controller(Blueprint):
         self.model.attach(self)
 
     def changeModelToFirstSite(self):
+        """
+        Resets the model to the first site
+        """
         self.lastGameState = None
         if self.model is not None:
             self.model.detach(self)
@@ -132,15 +141,28 @@ class Controller(Blueprint):
         self.model.attach(self)
 
     def changeModelToLeaveGameDialog(self):
+        """
+        Changes the Model to a leave game dialog
+
+        Saves the current Game State, so it can be resumed
+        """
         self.lastGameState = self.model.gameState()
         self.model = DialogModel("newGameDialog")
         self.model.attach(self)
 
     def changeModelToChangeSidesDialog(self):
+        """
+        Changes the Model to a change sides dialog
+
+        Saves the current Game State, so it can be resumed
+        """
         self.lastGameState = self.model.gameState()
         self.model = DialogModel("changeSidesDialog")
         self.model.attach(self)
 
     def updateSite(self):
+        """
+        Updates the displayed data
+        """
         publishMethod = self.model.getPublishMethod()
         publishMethod(self.sse, self.bluetoothController)
