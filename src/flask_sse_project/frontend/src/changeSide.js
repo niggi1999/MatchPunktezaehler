@@ -4,7 +4,7 @@ import "./init.css"
 
 
 function ChangeSide (props) {
-let message = <h1 className="message">Team {props.data.team} do you want to change Sides?</h1>
+let message = <h1 className="message">Losing Team do you want to change Sides?</h1>
 
     return (
     <div className="config" >
