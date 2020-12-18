@@ -7,25 +7,25 @@ class App extends React.Component {
 constructor(){
     super()
       this.state = {
-        data: {status: 'nameMenu', //always needed
-          cursorElement: "Orange", //always needed
+        data: {status: 'init', //always needed
+          cursorElement: "forwardButton", //always needed
 
           //connectedController: 1, //for initSite
           
           //activeChooseField: "1vs1", //for PlayerMenuSite
           //fieldNames: ["1vs1", "2vs2"], //for PlayerMenuSite
 
-          playMode: 2, color1Team1: "Green", color2Team1: null, //for nameMenuSite
-          color1Team2: null, color2Team2: null, //for nameMenuSite
-          fieldNames: ["Orange", "Red", "Purple", "Blue", "Green", "Black"], //for nameMenuSite
-          tableActive: 2,
+          //playMode: 2, color1Team1: "Green", color2Team1: null, //for nameMenuSite
+          //color1Team2: null, color2Team2: null, //for nameMenuSite
+          //fieldNames: ["Orange", "Red", "Purple", "Blue", "Green", "Black"], //for nameMenuSite
+          //tableActive: 2,
 
           //activeChooseField: "Badminton", //for GameMenuSite
           //fieldNames: ["Badminton", "Volleyball", "Tennis"], //for GameMenuSite
 
-          counterTeam1: 11, counterTeam2: 12, roundsTeam1: 1, roundsTeam2: 1, gamesTeam1:7, gamesTeam2: 6, //for GameSite
-          leftSideHighColor: 'Green', leftSideDownColor: 'Orange', rightSideHighColor: 'Blue', rightSideDownColor: 'Red', team1Left: false, //for GameSite
-          leftSideHighColorOpacity: 0.2, leftSideDownColorOpacity: 1, rightSideHighColorOpacity: 0.2, rightSideDownColorOpacity: 0.2, //for GameSite
+          //counterTeam1: 11, counterTeam2: 12, roundsTeam1: 1, roundsTeam2: 1, gamesTeam1:7, gamesTeam2: 6, //for GameSite
+          //leftSideHighColor: 'Green', leftSideDownColor: 'Orange', rightSideHighColor: 'Blue', rightSideDownColor: 'Red', team1Left: false, //for GameSite
+          //leftSideHighColorOpacity: 0.2, leftSideDownColorOpacity: 1, rightSideHighColorOpacity: 0.2, rightSideDownColorOpacity: 0.2, //for GameSite
 
           //team: 1, // for changeSide
       }
