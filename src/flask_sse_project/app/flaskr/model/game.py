@@ -330,7 +330,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
                 "leftSideDownColor" : colors["leftSideDownColor"],
                 "rightSideHighColor" : colors["rightSideHighColor"],
                 "rightSideDownColor" : colors["rightSideDownColor"],
-                "team1Left" : True,
+                "team1Left" : not self.sidesChanged,
                 "leftSideHighColorOpacity" : opacitiesForBlink["leftSideHighColorOpacity"],
                 "leftSideDownColorOpacity" : opacitiesForBlink["leftSideDownColorOpacity"],
                 "rightSideHighColorOpacity" : opacitiesForBlink["rightSideHighColorOpacity"],
@@ -349,7 +349,7 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
                 "leftSideDownColor" : colors["leftSideDownColor"],
                 "rightSideHighColor" : colors["rightSideHighColor"],
                 "rightSideDownColor" : colors["rightSideDownColor"],
-                "team1Left" : True,
+                "team1Left" : not self.sidesChanged,
                 "leftSideHighColorOpacity" : opacities["leftSideHighColorOpacity"],
                 "leftSideDownColorOpacity" : opacities["leftSideDownColorOpacity"],
                 "rightSideHighColorOpacity" : opacities["rightSideHighColorOpacity"],
@@ -383,9 +383,9 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         elif 2 == servePosition:
             opacities["leftSideDownColorOpacity"] = 1
         elif 3 == servePosition:
-            opacities["rightSideHighColorOpacity"] = 1
-        elif 4 == servePosition:
             opacities["rightSideDownColorOpacity"] = 1
+        elif 4 == servePosition:
+            opacities["rightSideHighColorOpacity"] = 1
         return opacities
 
     def __getOpacitiesForBlink(self): #TODO: testen
