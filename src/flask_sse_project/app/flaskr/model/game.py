@@ -404,8 +404,8 @@ class Game(AbstractModel, ABC): #Must inherit in this order to be able to create
         """
         Returns the opacities mapped to the fields
         """
-        opacities = {"leftSideHighColorOpacity" : 0.2, "leftSideDownColorOpacity" : 0.2,\
-                     "rightSideHighColorOpacity" : 0.2, "rightSideDownColorOpacity" : 0.2}
+        opacities = {"leftSideHighColorOpacity" : 0.3, "leftSideDownColorOpacity" : 0.3,\
+                     "rightSideHighColorOpacity" : 0.3, "rightSideDownColorOpacity" : 0.3}
         servePosition = self.getAbsoluteServePosition()
         if 1 == servePosition:
             opacities["leftSideHighColorOpacity"] = 1

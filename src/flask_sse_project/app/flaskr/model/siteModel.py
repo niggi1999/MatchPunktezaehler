@@ -235,7 +235,7 @@ class SiteModel(AbstractModel):
 
     async def __notifyStartGame(self):
         for observer in self.__observers:
-            await observer.changeModelToGame()
+            observer.changeModelToGame()
 
     async def _notifyUpdate(self):
         for observer in self.__observers:
